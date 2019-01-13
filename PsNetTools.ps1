@@ -11,6 +11,11 @@
     [PsNetTools]::tping('sbb.ch', 80) 
     [PsNetTools]::tping('sbb.ch', 80, 100)
 
+    uping - udp port scanner
+    [PsNetTools]::uping() 
+    [PsNetTools]::uping('sbb.ch') 
+    [PsNetTools]::uping('sbb.ch', 53) 
+    [PsNetTools]::uping('sbb.ch', 53, 100)
 #>
 Class PsNetTools {
 
@@ -72,6 +77,11 @@ Class PsNetTools {
         Write-Warning "$($function): No Target specified!"
     }
 
+    [void]static tping([String] $TargetName) {
+        $function  = 'tping()'
+        Write-Warning "$($function): No TcpPort and Timeout specified!"
+    }
+
     [void]static tping([String] $TargetName, [int] $TcpPort) {
         $function  = 'tping()'
         Write-Warning "$($function): No TcpPort or Timeout specified!"
@@ -121,5 +131,80 @@ Class PsNetTools {
         return $resultset    
     }
 
+    [void]static uping() {
+        $function  = 'uping()'
+        Write-Warning "$($function): No Target specified!"
+    }
+
+    [void]static uping([String] $TargetName) {
+        $function  = 'uping()'
+        Write-Warning "$($function): No UdpPort and Timeout specified!"
+    }
+
+    [void]static uping([String] $TargetName, [int] $UdpPort) {
+        $function  = 'uping()'
+        Write-Warning "$($function): No UdpPort or Timeout specified!"
+    }
+
+    [object]static uping([String] $TargetName, [int] $UdpPort, [int] $Timeout) {
+
+        $function  = 'uping()'
+        $resultset = @()
+
+        if(([String]::IsNullOrEmpty($TargetName))){
+            Write-Warning "$($function): Empty TargetName specified!"
+        }
+        else{
+            $udpclient      = $null
+            $connect        = $null
+            $patience       = $null
+            $udpsucceeded   = $null
+            $dgram          = $null
+            $byte           = $null
+            $remoteendpoint = $null
+            $receivebytes   = $null
+
+            try {
+                $udpclient = New-Object System.Net.Sockets.UdpClient
+                $connect   = $udpclient.Connect($TargetName,$UdpPort)
+                $patience  = $udpclient.Client.ReceiveTimeout = $Timeout
+                
+                $dgram = new-object system.text.asciiencoding
+                $byte  = $dgram.GetBytes("TEST")
+                [void]$udpclient.Send($byte,$byte.length)
+                $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
+            
+                try{
+                    $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
+                }
+                catch{
+                    #Write-Warning $($Error[0])
+                    $udpsucceeded = $false
+                    $Error.Clear()
+                }
+            
+                if (-not([String]::IsNullOrEmpty($receivebytes))) {
+                    [string]$returndata = $dgram.GetString($receivebytes)
+                    $udpsucceeded = $true
+                } 
+            
+                $udpclient.Close()
+                $udpclient.Dispose()
+            
+                $obj = [PSCustomObject]@{
+                    TargetName    = $TargetName
+                    UdpPort       = $UdpPort
+                    UdpSucceeded  = $udpsucceeded
+                    MaxTimeout    = "$($Timeout)ms"
+                }
+                $resultset += $obj
+                    
+            } catch {
+                Write-Warning "$($function): Could not connect to $TargetName over udpport $UdpPort within $($Timeout)ms!"
+                $error.Clear()
+            }                
+        }    
+        return $resultset    
+    }
     #endregion
 }
