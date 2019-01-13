@@ -32,7 +32,7 @@ It's like the cmdlet Test-NetConnection, but with the ability to specify a timeo
 ````
 PS /> [PsNetTools]::uping('sbb.ch', 53, 100)
 
-TargetName TcpPort TcpSucceeded MaxTimeout
+TargetName UdpPort TcpSucceeded MaxTimeout
 ---------- ------- ------------ ----------
 sbb.ch          53         True 100ms
 ````
