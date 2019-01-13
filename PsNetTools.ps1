@@ -10,6 +10,7 @@
     [PsNetTools]::tping('sbb.ch') 
     [PsNetTools]::tping('sbb.ch', 80) 
     [PsNetTools]::tping('sbb.ch', 80, 100)
+
 #>
 Class PsNetTools {
 
@@ -94,9 +95,13 @@ Class PsNetTools {
                 $tcpclient = New-Object System.Net.Sockets.TcpClient
                 $connect   = $TcpClient.BeginConnect($TargetName,$TcpPort,$null,$null)
                 $patience  = $connect.AsyncWaitHandle.WaitOne($Timeout,$false) 
-        
-                $tcpsucceeded = $tcpclient.Connected
-                $tcpclient.EndConnect($connect)
+                if(!($patience)){
+                    $tcpsucceeded = $false
+                }
+                else{
+                    $tcpsucceeded = $tcpclient.Connected
+                    $tcpclient.EndConnect($connect)
+                }
                 $tcpclient.Close()
                 $tcpclient.Dispose()
         
@@ -109,7 +114,7 @@ Class PsNetTools {
                 $resultset += $obj
         
             } catch {
-                Write-Warning "$($function): Could not connect to $TargetName!"
+                Write-Warning "$($function): Could not connect to $TargetName over tcpport $TcpPort within $($Timeout)ms!"
                 $error.Clear()
             }                
         }    
