@@ -38,7 +38,7 @@ sbb.ch          53         True 100ms
 ````
 
 ## Wping
-wping - tcp port scanner.  
+wping - http web request scanner.  
 It's like the cmdlet Invoke-WebRequest, but with the ability to specify 'noproxy' with PowerShell 5.1.  
 
 ````
