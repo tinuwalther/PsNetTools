@@ -35,7 +35,7 @@ Class PsNetTools {
     #region methods
     [void]static dig() {
         $function  = 'dig()'
-        Write-Warning "$($function): No TargetName specified!"
+        Write-Warning "Usage: [PsNetTools]::dig('sbb.ch')"
     }
 
     [object]static dig([String] $TargetName) {
@@ -81,7 +81,7 @@ Class PsNetTools {
 
     [void]static tping() {
         $function  = 'tping()'
-        Write-Warning "$($function): No Target specified!"
+        Write-Warning "Usage: [PsNetTools]::tping('sbb.ch', 443, 100)"
     }
 
     [void]static tping([String] $TargetName) {
@@ -140,7 +140,7 @@ Class PsNetTools {
 
     [void]static uping() {
         $function  = 'uping()'
-        Write-Warning "$($function): No Target specified!"
+        Write-Warning "Usage: [PsNetTools]::uping('sbb.ch', 53, 100)"
     }
 
     [void]static uping([String] $TargetName) {
@@ -216,8 +216,8 @@ Class PsNetTools {
 
     [void]static wping() {
         $function  = 'wping()'
-        Write-Warning "$($function): No Url specified!"
-    }
+        Write-Host "Usage: [PsNetTools]::wping('https://sbb.ch', 1000)"
+   }
 
     [void]static wping([String]$url) {
         $function  = 'wping()'
