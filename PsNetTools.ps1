@@ -16,6 +16,13 @@
     [PsNetTools]::uping('sbb.ch') 
     [PsNetTools]::uping('sbb.ch', 53) 
     [PsNetTools]::uping('sbb.ch', 53, 100)
+
+    wping - http web request scanner
+    [PsNetTools]::wping() 
+    [PsNetTools]::wping('https://sbb.ch') 
+    [PsNetTools]::wping('https://sbb.ch', 1000) 
+    [PsNetTools]::wping('https://sbb.ch', 1000, 'noproxy') 
+
 #>
 Class PsNetTools {
 
@@ -24,7 +31,7 @@ Class PsNetTools {
 
     #region Constructor
     #endregion
-
+    
     #region methods
     [void]static dig() {
         $function  = 'dig()'
@@ -201,6 +208,107 @@ Class PsNetTools {
                     
             } catch {
                 Write-Warning "$($function): Could not connect to $TargetName over udpport $UdpPort within $($Timeout)ms!"
+                $error.Clear()
+            }                
+        }    
+        return $resultset    
+    }
+
+    [void]static wping() {
+        $function  = 'wping()'
+        Write-Warning "$($function): No Url specified!"
+    }
+
+    [void]static wping([String]$url) {
+        $function  = 'wping()'
+        Write-Warning "$($function): No timeout specified!"
+    }
+
+    [object]static wping([String]$url,[int]$timeout) {
+
+        $function  = 'wping()'
+        $resultset = @()
+    
+        if(([String]::IsNullOrEmpty($url))){
+            Write-Warning "$($function): Empty Url specified!"
+        }
+        else{
+            $webreqest   = $null
+            $response    = $null
+            $responseuri = $null
+            $statuscode  = $null
+
+            try {
+                $webreqest = [system.Net.HttpWebRequest]::Create($url)
+                $webreqest.Timeout = $timeout
+
+                try{
+                    $response    = $webreqest.GetResponse()
+                    $responseuri = $response.ResponseUri
+                    $statuscode  = $response.StatusCode
+                    $response.Close()
+                }
+                catch [Exception]{
+                    $statuscode = $($_.Exception.Message)
+                    $Error.Clear()
+                }
+
+                $obj = [PSCustomObject]@{
+                    TargetName    = $Url
+                    ResponseUri   = $responseuri
+                    StatusCode    = $statuscode
+                    MaxTimeout    = "$($Timeout)ms"
+                }
+                $resultset += $obj
+
+            } catch {
+                Write-Warning "$($function): Could not connect to $Url within $($Timeout)ms!"
+                $error.Clear()
+            }                
+        }    
+        return $resultset    
+    }
+    
+    [object]static wping([String]$url,[int]$timeout,[String]$noproxy) {
+
+        $function  = 'wping()'
+        $resultset = @()
+    
+        if(([String]::IsNullOrEmpty($url))){
+            Write-Warning "$($function): Empty Url specified!"
+        }
+        else{
+            $webreqest   = $null
+            $response    = $null
+            $responseuri = $null
+            $statuscode  = $null
+
+            try {
+                $webreqest = [system.Net.HttpWebRequest]::Create($url)
+                $webreqest.Timeout = $timeout
+                $webreqest.Proxy = [System.Net.GlobalProxySelection]::GetEmptyWebProxy()
+
+                try{
+                    $response    = $webreqest.GetResponse()
+                    $responseuri = $response.ResponseUri
+                    $statuscode  = $response.StatusCode
+                    $response.Close()
+                }
+                catch [Exception]{
+                    $statuscode = $($_.Exception.Message)
+                    $Error.Clear()
+                }
+
+                $obj = [PSCustomObject]@{
+                    TargetName    = $Url
+                    ResponseUri   = $responseuri
+                    StatusCode    = $statuscode
+                    MaxTimeout    = "$($Timeout)ms"
+                }
+                $resultset += $obj
+
+            } catch {
+                Write-Warning "$($function): Could not connect to $Url within $($Timeout)ms!"
                 $error.Clear()
             }                
         }    
