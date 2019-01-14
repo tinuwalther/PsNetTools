@@ -1,4 +1,6 @@
 <#
+    using module .\PsNetTools\PsNetTools.psm1
+
     dig - domain information groper
     [PsNetTools]::dig() 
     [PsNetTools]::dig('') 
@@ -30,6 +32,9 @@ Class PsNetTools {
     #endregion
 
     #region Constructor
+    PsNetTools(){
+        Write-Host "Loading PsNetTools"
+    }
     #endregion
     
     #region methods
