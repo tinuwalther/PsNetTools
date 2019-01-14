@@ -38,9 +38,9 @@ Class PsNetTools {
     #endregion
     
     #region methods
-    [void]static dig() {
+    [string]static dig() {
         $function  = 'dig()'
-        Write-Warning "Usage: [PsNetTools]::dig('sbb.ch')"
+        return "Usage: [PsNetTools]::dig('sbb.ch')"
     }
 
     [object]static dig([String] $TargetName) {
@@ -84,19 +84,19 @@ Class PsNetTools {
         return $resultset
     }
 
-    [void]static tping() {
+    [string]static tping() {
         $function  = 'tping()'
-        Write-Warning "Usage: [PsNetTools]::tping('sbb.ch', 443, 100)"
+        return "Usage: [PsNetTools]::tping('sbb.ch', 443, 100)"
     }
 
-    [void]static tping([String] $TargetName) {
+    [string]static tping([String] $TargetName) {
         $function  = 'tping()'
-        Write-Warning "$($function): No TcpPort and Timeout specified!"
+        return "$($function): No TcpPort and Timeout specified!"
     }
 
-    [void]static tping([String] $TargetName, [int] $TcpPort) {
+    [string]static tping([String] $TargetName, [int] $TcpPort) {
         $function  = 'tping()'
-        Write-Warning "$($function): No TcpPort or Timeout specified!"
+        return "$($function): No TcpPort or Timeout specified!"
     }
 
     [object]static tping([String] $TargetName, [int] $TcpPort, [int] $Timeout) {
@@ -143,19 +143,19 @@ Class PsNetTools {
         return $resultset    
     }
 
-    [void]static uping() {
+    [string]static uping() {
         $function  = 'uping()'
-        Write-Warning "Usage: [PsNetTools]::uping('sbb.ch', 53, 100)"
+        return "Usage: [PsNetTools]::uping('sbb.ch', 53, 100)"
     }
 
-    [void]static uping([String] $TargetName) {
+    [string]static uping([String] $TargetName) {
         $function  = 'uping()'
-        Write-Warning "$($function): No UdpPort and Timeout specified!"
+        return "$($function): No UdpPort and Timeout specified!"
     }
 
-    [void]static uping([String] $TargetName, [int] $UdpPort) {
+    [string]static uping([String] $TargetName, [int] $UdpPort) {
         $function  = 'uping()'
-        Write-Warning "$($function): No UdpPort or Timeout specified!"
+        return "$($function): No UdpPort or Timeout specified!"
     }
 
     [object]static uping([String] $TargetName, [int] $UdpPort, [int] $Timeout) {
@@ -219,14 +219,14 @@ Class PsNetTools {
         return $resultset    
     }
 
-    [void]static wping() {
+    [string]static wping() {
         $function  = 'wping()'
-        Write-Host "Usage: [PsNetTools]::wping('https://sbb.ch', 1000)"
+        return "Usage: [PsNetTools]::wping('https://sbb.ch', 1000)"
    }
 
-    [void]static wping([String]$url) {
+    [string]static wping([String]$url) {
         $function  = 'wping()'
-        Write-Warning "$($function): No timeout specified!"
+        return "$($function): No timeout specified!"
     }
 
     [object]static wping([String]$url,[int]$timeout) {
