@@ -1,4 +1,6 @@
 <#
+    using module ..\PsNetTools\PsNetTools.psm1
+
     dig - domain information groper
     [PsNetTools]::dig() 
     [PsNetTools]::dig('') 
@@ -21,7 +23,7 @@
     [PsNetTools]::wping() 
     [PsNetTools]::wping('https://sbb.ch') 
     [PsNetTools]::wping('https://sbb.ch', 1000) 
-    [PsNetTools]::wping('https://sbb.ch', 1000, 'noproxy') 
+    [PsNetTools]::wping('https://sbb.ch', 1000, $true) 
 
 #>
 Class PsNetTools {
@@ -30,12 +32,15 @@ Class PsNetTools {
     #endregion
 
     #region Constructor
+    PsNetTools(){
+        Write-Host "Loading PsNetTools"
+    }
     #endregion
     
     #region methods
-    [void]static dig() {
+    [string]static dig() {
         $function  = 'dig()'
-        Write-Warning "$($function): No TargetName specified!"
+        return "Usage: [PsNetTools]::dig('sbb.ch')"
     }
 
     [object]static dig([String] $TargetName) {
@@ -47,51 +52,78 @@ Class PsNetTools {
             Write-Warning "$($function): Empty TargetName specified!"
         }
         else{
+            $computer    = $null
             $addresses   = $null
             $ipv4address = $null
             $ipv6address = $null
+            $ipv4pattern = '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
             try {
-                $addresses = [System.Net.Dns]::GetHostAddressesAsync($TargetName).GetAwaiter().GetResult()
-                if(-not([String]::IsNullOrEmpty($addresses))){
-                    foreach($item in $addresses){
-                        if($($item.AddressFamily) -eq 'InterNetwork'){
-                            $ipv4address = $item.IPAddressToString
-                        }
-                        if($($item.AddressFamily) -eq 'InterNetworkV6'){
-                            $ipv6address = $item.IPAddressToString
-                        }
-                        $resultset = [PSCustomObject]@{
-                            TargetName  = $TargetName
-                            IpV4Address = $ipv4address
-                            IpV6Address = $ipv6address
+                if($TargetName -match $ipv4pattern){
+                    $true
+                    $addresses = [System.Net.Dns]::GetHostByAddress($TargetName)
+                    if(-not([String]::IsNullOrEmpty($addresses))){
+                        $computer = $addresses.hostname
+                        foreach($item in $addresses.AddressList){
+                            if($($item.AddressFamily) -eq 'InterNetwork'){
+                                $ipv4address = $item.IPAddressToString
+                            }
+                            if($($item.AddressFamily) -eq 'InterNetworkV6'){
+                                $ipv6address = $item.IPAddressToString
+                            }
+                            $resultset = [PSCustomObject]@{
+                                TargetName  = $computer
+                                IpV4Address = $ipv4address
+                                IpV6Address = $ipv6address
+                            }
                         }
                     }
+                    else{
+                        return $null
+                    }
                 }
-                else{
-                    return $null
+                elseif($TargetName.GetType() -eq [String]){
+                    $addresses = [System.Net.Dns]::GetHostAddressesAsync($TargetName).GetAwaiter().GetResult()
+                    if(-not([String]::IsNullOrEmpty($addresses))){
+                        foreach($item in $addresses){
+                            if($($item.AddressFamily) -eq 'InterNetwork'){
+                                $ipv4address = $item.IPAddressToString
+                            }
+                            if($($item.AddressFamily) -eq 'InterNetworkV6'){
+                                $ipv6address = $item.IPAddressToString
+                            }
+                            $resultset = [PSCustomObject]@{
+                                TargetName  = $TargetName
+                                IpV4Address = $ipv4address
+                                IpV6Address = $ipv6address
+                            }
+                        }
+                    }
+                    else{
+                        return $null
+                    }
                 }
             } 
             catch {
-                Write-Warning "$($function): Could not resolve $TargetName!"
+                return "WARNING: $($_.Exception.Message)"
                 $error.Clear()
             }
         }
         return $resultset
     }
 
-    [void]static tping() {
+    [string]static tping() {
         $function  = 'tping()'
-        Write-Warning "$($function): No Target specified!"
+        return "Usage: [PsNetTools]::tping('sbb.ch', 443, 100)"
     }
 
-    [void]static tping([String] $TargetName) {
+    [string]static tping([String] $TargetName) {
         $function  = 'tping()'
-        Write-Warning "$($function): No TcpPort and Timeout specified!"
+        return "$($function): No TcpPort and Timeout specified!"
     }
 
-    [void]static tping([String] $TargetName, [int] $TcpPort) {
+    [string]static tping([String] $TargetName, [int] $TcpPort) {
         $function  = 'tping()'
-        Write-Warning "$($function): No TcpPort or Timeout specified!"
+        return "$($function): No TcpPort or Timeout specified!"
     }
 
     [object]static tping([String] $TargetName, [int] $TcpPort, [int] $Timeout) {
@@ -131,26 +163,26 @@ Class PsNetTools {
                 $resultset += $obj
         
             } catch {
-                Write-Warning "$($function): Could not connect to $TargetName over tcpport $TcpPort within $($Timeout)ms!"
+                return "WARNING: $($_.Exception.Message)"
                 $error.Clear()
             }                
         }    
         return $resultset    
     }
 
-    [void]static uping() {
+    [string]static uping() {
         $function  = 'uping()'
-        Write-Warning "$($function): No Target specified!"
+        return "Usage: [PsNetTools]::uping('sbb.ch', 53, 100)"
     }
 
-    [void]static uping([String] $TargetName) {
+    [string]static uping([String] $TargetName) {
         $function  = 'uping()'
-        Write-Warning "$($function): No UdpPort and Timeout specified!"
+        return "$($function): No UdpPort and Timeout specified!"
     }
 
-    [void]static uping([String] $TargetName, [int] $UdpPort) {
+    [string]static uping([String] $TargetName, [int] $UdpPort) {
         $function  = 'uping()'
-        Write-Warning "$($function): No UdpPort or Timeout specified!"
+        return "$($function): No UdpPort or Timeout specified!"
     }
 
     [object]static uping([String] $TargetName, [int] $UdpPort, [int] $Timeout) {
@@ -207,21 +239,21 @@ Class PsNetTools {
                 $resultset += $obj
                     
             } catch {
-                Write-Warning "$($function): Could not connect to $TargetName over udpport $UdpPort within $($Timeout)ms!"
+                return "WARNING: $($_.Exception.Message)"
                 $error.Clear()
             }                
         }    
         return $resultset    
     }
 
-    [void]static wping() {
+    [string]static wping() {
         $function  = 'wping()'
-        Write-Warning "$($function): No Url specified!"
-    }
+        return "Usage: [PsNetTools]::wping('https://sbb.ch', 1000)"
+   }
 
-    [void]static wping([String]$url) {
+    [string]static wping([String]$url) {
         $function  = 'wping()'
-        Write-Warning "$($function): No timeout specified!"
+        return "$($function): No timeout specified!"
     }
 
     [object]static wping([String]$url,[int]$timeout) {
@@ -247,22 +279,22 @@ Class PsNetTools {
                     $responseuri = $response.ResponseUri
                     $statuscode  = $response.StatusCode
                     $response.Close()
-                }
-                catch [Exception]{
-                    $statuscode = $($_.Exception.Message)
+
+                    $obj = [PSCustomObject]@{
+                        TargetName    = $Url
+                        ResponseUri   = $responseuri
+                        StatusCode    = $statuscode
+                        MaxTimeout    = "$($Timeout)ms"
+                    }
+                    $resultset += $obj
+
+                } catch [Exception]{
+                    return "WARNING: $($_.Exception.Message)"
                     $Error.Clear()
                 }
 
-                $obj = [PSCustomObject]@{
-                    TargetName    = $Url
-                    ResponseUri   = $responseuri
-                    StatusCode    = $statuscode
-                    MaxTimeout    = "$($Timeout)ms"
-                }
-                $resultset += $obj
-
             } catch {
-                Write-Warning "$($function): Could not connect to $Url within $($Timeout)ms!"
+                return "WARNING: $($_.Exception.Message)"
                 $error.Clear()
             }                
         }    
@@ -293,22 +325,22 @@ Class PsNetTools {
                     $responseuri = $response.ResponseUri
                     $statuscode  = $response.StatusCode
                     $response.Close()
-                }
-                catch [Exception]{
-                    $statuscode = $($_.Exception.Message)
+
+                    $obj = [PSCustomObject]@{
+                        TargetName    = $Url
+                        ResponseUri   = $responseuri
+                        StatusCode    = $statuscode
+                        MaxTimeout    = "$($Timeout)ms"
+                    }
+                    $resultset += $obj
+
+                } catch {
+                    return "WARNING: $($_.Exception.Message)"
                     $Error.Clear()
                 }
 
-                $obj = [PSCustomObject]@{
-                    TargetName    = $Url
-                    ResponseUri   = $responseuri
-                    StatusCode    = $statuscode
-                    MaxTimeout    = "$($Timeout)ms"
-                }
-                $resultset += $obj
-
             } catch {
-                Write-Warning "$($function): Could not connect to $Url within $($Timeout)ms!"
+                return "WARNING: $($_.Exception.Message)"
                 $error.Clear()
             }                
         }    
