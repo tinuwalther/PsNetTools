@@ -39,7 +39,6 @@ Class PsNetTools {
     
     #region methods
     [string]static dig() {
-        $function  = 'dig()'
         return "Usage: [PsNetTools]::dig('sbb.ch')"
     }
 
@@ -112,7 +111,6 @@ Class PsNetTools {
     }
 
     [string]static tping() {
-        $function  = 'tping()'
         return "Usage: [PsNetTools]::tping('sbb.ch', 443, 100)"
     }
 
@@ -171,7 +169,6 @@ Class PsNetTools {
     }
 
     [string]static uping() {
-        $function  = 'uping()'
         return "Usage: [PsNetTools]::uping('sbb.ch', 53, 100)"
     }
 
@@ -247,7 +244,6 @@ Class PsNetTools {
     }
 
     [string]static wping() {
-        $function  = 'wping()'
         return "Usage: [PsNetTools]::wping('https://sbb.ch', 1000)"
    }
 
@@ -301,7 +297,7 @@ Class PsNetTools {
         return $resultset    
     }
     
-    [object]static wping([String]$url,[int]$timeout,[String]$noproxy) {
+    [object]static wping([String]$url,[int]$timeout,[bool]$noproxy) {
 
         $function  = 'wping()'
         $resultset = @()
@@ -318,7 +314,9 @@ Class PsNetTools {
             try {
                 $webreqest = [system.Net.HttpWebRequest]::Create($url)
                 $webreqest.Timeout = $timeout
-                $webreqest.Proxy = [System.Net.GlobalProxySelection]::GetEmptyWebProxy()
+                if($noproxy){
+                    $webreqest.Proxy = [System.Net.GlobalProxySelection]::GetEmptyWebProxy()
+                }
 
                 try{
                     $response    = $webreqest.GetResponse()
@@ -348,3 +346,64 @@ Class PsNetTools {
     }
     #endregion
 }
+
+function PsNetDig{
+    [CmdletBinding()]
+    param(
+         [Parameter(Mandatory=$true)]
+         [String] $Destination
+    )    
+    return [PsNetTools]::dig($Destination)
+}
+
+function PsNetTping{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [String] $Destination,
+
+        [Parameter(Mandatory=$true)]
+        [Int] $TcpPort,
+
+        [Parameter(Mandatory=$true)]
+        [Int] $Timeout
+ )    
+    return [PsNetTools]::tping($Destination, $TcpPort, $Timeout)
+}
+
+function PsNetUping{
+    [CmdletBinding()]
+    param(
+         [Parameter(Mandatory=$true)]
+         [String] $Destination,
+
+         [Parameter(Mandatory=$true)]
+         [Int] $UdpPort,
+ 
+         [Parameter(Mandatory=$true)]
+         [Int] $Timeout
+    )    
+    return [PsNetTools]::uping($Destination, $UdpPort, $Timeout)
+}
+
+function PsNetWping{
+    [CmdletBinding()]
+    param(
+         [Parameter(Mandatory=$true)]
+         [String] $Destination,
+
+         [Parameter(Mandatory=$true)]
+         [Int] $Timeout,
+ 
+         [Parameter(Mandatory=$false)]
+         [Switch] $NoProxy
+    )  
+    if($NoProxy) {
+        return [PsNetTools]::wping($Destination, $Timeout, $true)
+    }
+    else{
+        return [PsNetTools]::wping($Destination, $Timeout)
+    }
+}
+
+Export-ModuleMember -Function PsNetDig, PsNetTping, PsNetUping, PsNetWping

@@ -1,99 +1,120 @@
-using module ..\PsNetTools\PsNetTools.psm1
+#using module ..\PsNetTools\PsNetTools.psm1
+Import-Module ..\PsNetTools\PsNetTools.psm1 -Force
 
 Describe "Testing class PsNetTools" {
 
-    Context "Testing method dig" {  
-          
-        it "[NEG] Testing dig without parameter(s)"{
-            ([PsNetTools]::dig()) | should match 'Usage:'
+    Context "Testing method PsNetDig" {  
+        
+        if($IsMacOS){
+            it "[NEG] Testing PsNetDig with false Hostname as parameter(s)"{
+                (PsNetDig -Destination 'sbb.66') | should match 'Device not configured'
+            }
+                    
+            it "[NEG] Testing PsNetDig with false IP Address as parameter(s)"{
+                (PsNetDig -Destination '127.0.0.255') | should match 'Device not configured'
+            }
         }
 
-        it "[NEG] Testing dig with false Hostname as parameter(s)"{
-            ([PsNetTools]::dig('sbb.66')) | should match 'No such host is known'
-        }
-                
-        it "[NEG] Testing dig with false IP Address as parameter(s)"{
-            ([PsNetTools]::dig('127.0.0.255')) | should match 'The requested name is valid'
-        }
-                
-        it "[POS] Testing dig with Hostname as parameter(s)"{
-            ([PsNetTools]::dig('sbb.ch')) | should BeOfType [Object]
+        if($IsWindows){
+            it "[NEG] Testing PsNetDig with false Hostname as parameter(s)"{
+                (PsNetDig -Destination 'sbb.66') | should match 'No such host is known'
+            }
+                    
+            it "[NEG] Testing PsNetDig with false IP Address as parameter(s)"{
+                (PsNetDig -Destination '127.0.0.255') | should match 'The requested name is valid'
+            }
         }
 
-        it "[POS] Testing dig with IP Address as parameter(s)"{
-            ([PsNetTools]::dig('127.0.0.1')) | should BeOfType [Object]
+        it "[POS] Testing PsNetDig with Hostname as parameter(s)"{
+            (PsNetDig -Destination 'sbb.ch') | should BeOfType [Object]
+        }
+
+        it "[POS] Testing PsNetDig with IP Address as parameter(s)"{
+            (PsNetDig -Destination '127.0.0.1') | should BeOfType [Object]
         }
 
     }
         
-    Context "Testing method tping" {     
+    Context "Testing method PsNetTping" {     
        
-        it "[NEG] Testing tping without parameter(s)"{
-            ([PsNetTools]::tping()) | should match 'Usage:'
-        }
-                
-        it "[NEG] Testing tping with false Hostname as parameter(s)"{
-            ([PsNetTools]::tping('sbb.66', 443, 1000)) | should match 'No such host is known'
+        if($IsMacOS){
+            it "[NEG] Testing PsNetTping with false Hostname as parameter(s)"{
+            (PsNetTping -Destination 'sbb.66' -TcpPort 443 -Timeout 1000) | should match 'Device not configured'
+            }
         }
 
-        it "[NEG] Testing tping with false Port as parameter(s)"{
-            ([PsNetTools]::tping('sbb.ch', 443443, 1000)) | should match 'Parameter name: port'
+        if($IsWindows){
+            it "[NEG] Testing PsNetTping with false Hostname as parameter(s)"{
+            (PsNetTping -Destination 'sbb.66' -TcpPort 443 -Timeout 1000) | should match 'No such host is known'
+            }
         }
 
-        it "[NEG] Testing tping with false IP Address as parameter(s)"{
-            ([PsNetTools]::tping('255.255.255.255', 443, 1000)) | should match 'The requested address is not valid'
+        it "[NEG] Testing PsNetTping with false Port as parameter(s)"{
+            (PsNetTping -Destination 'sbb.ch' -TcpPort 443443 -Timeout 1000) | should match 'Parameter name: port'
         }
 
-        it "[POS] Testing tping with Hostname as parameter(s)"{
-            ([PsNetTools]::tping('sbb.ch', 443, 1000)) | should BeOfType [Object]
+        if($IsMacOS){
+            it "[NEG] Testing PsNetTping with false IP Address as parameter(s)"{
+                (PsNetTping -Destination '255.255.255.255' -TcpPort 443 -Timeout 1000) | should match 'Permission denied'
+            }
         }
 
-        it "[POS] Testing tping with IP Address as parameter(s)"{
-            ([PsNetTools]::tping('194.150.245.142', 443, 1000)) | should BeOfType [Object]
+        if($IsWindows){
+            it "[NEG] Testing PsNetTping with false IP Address as parameter(s)"{
+                (PsNetTping -Destination '255.255.255.255' -TcpPort 443 -Timeout 1000) | should match 'The requested address is not valid'
+            }
         }
 
-    }
-
-    Context "Testing method uping" {
-        
-        it "[NEG] Testing uping without parameter(s)"{
-            ([PsNetTools]::uping()) | should match 'Usage:'
-        }
-                
-        it "[NEG] Testing uping with false Port as parameter(s)"{
-            ([PsNetTools]::uping('sbb.ch', 443443, 1000)) | should match 'Parameter name: port'
+        it "[POS] Testing PsNetTping with Hostname as parameter(s)"{
+            (PsNetTping -Destination 'sbb.ch' -TcpPort 443 -Timeout 1000) | should BeOfType [Object]
         }
 
-        it "[NEG] Testing uping with false IP Address as parameter(s)"{
-            ([PsNetTools]::uping('255.255.255.255', 443, 1000)).UdpSucceeded | should be $false
-        }
-
-        it "[POS] Testing uping with Hostname as parameter(s)"{
-            ([PsNetTools]::uping('sbb.ch', 443, 1000)) | should BeOfType [Object]
-        }
-
-        it "[POS] Testing uping with IP Address as parameter(s)"{
-            ([PsNetTools]::uping('194.150.245.142', 443, 1000)) | should BeOfType [Object]
+        it "[POS] Testing PsNetTping with IP Address as parameter(s)"{
+            (PsNetTping -Destination '194.150.245.142' -TcpPort 443 -Timeout 1000) | should BeOfType [Object]
         }
 
     }
 
-    Context "Testing method wping" {
+    Context "Testing method PsNetUping" {
         
-        it "[NEG] Testing wping without parameter(s)"{
-            ([PsNetTools]::wping()) | should match 'Usage:'
-        }
-                
-        it "[NEG] Testing wping with false Hostname as parameter(s)"{
-            ([PsNetTools]::wping('file://sbb.66', 1000)) | should match 'The UNC path should be of the form'
+        it "[NEG] Testing PsNetUping with false Port as parameter(s)"{
+            (PsNetUping -Destination 'sbb.ch' -UdpPort 443443 -Timeout 1000) | should match 'Parameter name: port'
         }
 
-        it "[POS] Testing wping without noproxy parameter(s)"{
-            ([PsNetTools]::wping('https://sbb.ch', 1000)) | should BeOfType [Object]
+        it "[NEG] Testing PsNetUping with false IP Address as parameter(s)"{
+            (PsNetUping -Destination '255.255.255.255' -UdpPort 53 -Timeout 1000).UdpSucceeded | should be $false
         }
 
-        it "[POS] Testing wping with all parameter(s)"{
-            ([PsNetTools]::wping('https://sbb.ch', 1000, 'noproxy')) | should BeOfType [Object]
+        it "[POS] Testing PsNetUping with Hostname as parameter(s)"{
+            (PsNetUping -Destination 'sbb.ch' -UdpPort 53 -Timeout 1000) | should BeOfType [Object]
+        }
+
+        it "[POS] Testing PsNetUping with IP Address as parameter(s)"{
+            (PsNetUping -Destination '194.150.245.142' -UdpPort 53 -Timeout 1000) | should BeOfType [Object]
+        }
+
+    }
+
+    Context "Testing method PsNetWping" {
+        
+        if($IsMacOS){
+            it "[NEG] Testing PsNetWping with false protocol as parameter(s)"{
+            (PsNetWping -Destination 'file://sbb.ch' -Timeout 1000) | should match 'Could not find file'
+            }
+        }
+
+        if($IsWindows){
+            it "[NEG] Testing PsNetWping with false protocol as parameter(s)"{
+            (PsNetWping -Destination 'file://sbb.ch' -Timeout 1000) | should match 'The UNC path should be of the form'
+            }
+        }
+
+        it "[POS] Testing PsNetWping without noproxy parameter(s)"{
+            (PsNetWping -Destination 'https://sbb.ch' -Timeout 1000) | should BeOfType [Object]
+        }
+
+        it "[POS] Testing PsNetWping with all parameter(s)"{
+            (PsNetWping -Destination 'https://sbb.ch' -Timeout 1000 -NoProxy) | should BeOfType [Object]
         }
 
     }
