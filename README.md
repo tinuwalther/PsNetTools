@@ -1,13 +1,13 @@
 # PsNetTools
 
-PowerShell Networking Tools as Class
+PsNetTools is a cross platform PowerShell module to test some network features on Windows and Mac.  
 
 ## Usage
 
 Import Module:  
 
 ````powershell
-Import-Module .\PsNetTools.psm1 -Force
+Import-Module .\PsNetTools.psd1 -Force
 ````
 
 List all ExportedCommands:  
@@ -15,9 +15,9 @@ List all ExportedCommands:
 ````powershell
 Get-Module PsNetTools
 
-ModuleType Version    Name                                ExportedCommands
----------- -------    ----                                ----------------
-Script     0.0        PsNetTools                          {PsNetDig, PsNetTping, PsNetUping, PsNetWping}
+ModuleType Version    Name            ExportedCommands
+---------- -------    ----            ----------------
+Script     0.1.0      PsNetTools      {PsNetDig, PsNetTping, PsNetUping, PsNetWping}
 ````
 
 ## PsNetDig
