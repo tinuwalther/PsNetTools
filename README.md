@@ -109,3 +109,25 @@ TargetName     ResponseUri            StatusCode MaxTimeout
 ----------     -----------            ---------- ----------
 https://sbb.ch https://www.sbb.ch/de/         OK 1000ms
 ````
+
+## PsNetFtpPing
+
+ftpping - ftp request scanner.  
+It's like the cmdlet Invoke-WebRequest, but with the ability to specify 'noproxy' with PowerShell 5.1.  
+
+### Get-Help PsNetFtpPing
+
+PsNetFtpPing -Destination -Timeout
+
+- Destination: WebUri
+- Timeout:     Timeout in ms
+
+### Example PsNetFtpPing
+
+````
+PS /> PsNetFtpPing -Destination 'https://sbb.ch' -Timeout 1000
+
+TargetName     ResponseUri            StatusCode MaxTimeout
+----------     -----------            ---------- ----------
+https://sbb.ch https://www.sbb.ch/de/         OK 1000ms
+````
