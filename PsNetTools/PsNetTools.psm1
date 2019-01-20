@@ -2,27 +2,15 @@
     using module ..\PsNetTools\PsNetTools.psm1
 
     dig - domain information groper
-    [PsNetTools]::dig() 
-    [PsNetTools]::dig('') 
     [PsNetTools]::dig('sbb.ch')
-    [PsNetTools]::dig('sbb.chr')
 
     tping - tcp port scanner
-    [PsNetTools]::tping() 
-    [PsNetTools]::tping('sbb.ch') 
-    [PsNetTools]::tping('sbb.ch', 80) 
     [PsNetTools]::tping('sbb.ch', 80, 100)
 
     uping - udp port scanner
-    [PsNetTools]::uping() 
-    [PsNetTools]::uping('sbb.ch') 
-    [PsNetTools]::uping('sbb.ch', 53) 
     [PsNetTools]::uping('sbb.ch', 53, 100)
 
     wping - http web request scanner
-    [PsNetTools]::wping() 
-    [PsNetTools]::wping('https://sbb.ch') 
-    [PsNetTools]::wping('https://sbb.ch', 1000) 
     [PsNetTools]::wping('https://sbb.ch', 1000, $true) 
 
 #>
@@ -114,16 +102,6 @@ Class PsNetTools {
         return "Usage: [PsNetTools]::tping('sbb.ch', 443, 100)"
     }
 
-    [string]static tping([String] $TargetName) {
-        $function  = 'tping()'
-        return "$($function): No TcpPort and Timeout specified!"
-    }
-
-    [string]static tping([String] $TargetName, [int] $TcpPort) {
-        $function  = 'tping()'
-        return "$($function): No TcpPort or Timeout specified!"
-    }
-
     [object]static tping([String] $TargetName, [int] $TcpPort, [int] $Timeout) {
 
         $function  = 'tping()'
@@ -170,16 +148,6 @@ Class PsNetTools {
 
     [string]static uping() {
         return "Usage: [PsNetTools]::uping('sbb.ch', 53, 100)"
-    }
-
-    [string]static uping([String] $TargetName) {
-        $function  = 'uping()'
-        return "$($function): No UdpPort and Timeout specified!"
-    }
-
-    [string]static uping([String] $TargetName, [int] $UdpPort) {
-        $function  = 'uping()'
-        return "$($function): No UdpPort or Timeout specified!"
     }
 
     [object]static uping([String] $TargetName, [int] $UdpPort, [int] $Timeout) {
@@ -245,11 +213,6 @@ Class PsNetTools {
 
     [string]static wping() {
         return "Usage: [PsNetTools]::wping('https://sbb.ch', 1000)"
-   }
-
-    [string]static wping([String]$url) {
-        $function  = 'wping()'
-        return "$($function): No timeout specified!"
     }
 
     [object]static wping([String]$url,[int]$timeout) {
@@ -326,6 +289,56 @@ Class PsNetTools {
 
                     $obj = [PSCustomObject]@{
                         TargetName    = $Url
+                        ResponseUri   = $responseuri
+                        StatusCode    = $statuscode
+                        MaxTimeout    = "$($Timeout)ms"
+                    }
+                    $resultset += $obj
+
+                } catch {
+                    return "WARNING: $($_.Exception.Message)"
+                    $Error.Clear()
+                }
+
+            } catch {
+                return "WARNING: $($_.Exception.Message)"
+                $error.Clear()
+            }                
+        }    
+        return $resultset    
+    }
+
+    [object]static ftpping([String]$uri,[int]$timeout,[PSCredential]$creds) {
+
+        #https://www.opentechguides.com/how-to/article/powershell/154/directory-listing.html
+
+        $function  = 'ftpping()'
+        $resultset = @()
+    
+        if(([String]::IsNullOrEmpty($uri))){
+            Write-Warning "$($function): Empty Uri specified!"
+        }
+        else{
+            $ftprequest  = $null
+            $response    = $null
+            $responseuri = $null
+            $statuscode  = $null
+
+            try {
+                $ftprequest = [System.Net.FtpWebRequest]::Create($uri)
+                $ftprequest.Credentials = New-Object System.Net.NetworkCredential($creds.UserName, $creds.Password)
+                $ftprequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
+                $ftprequest.Timeout = $timeout
+
+                try{
+
+                    $response    = $ftprequest.GetResponse()
+                    $responseuri = $response.ResponseUri
+                    $statuscode  = $response.StatusCode
+                    $response.Close()
+
+                    $obj = [PSCustomObject]@{
+                        TargetName    = $Uri
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
                         MaxTimeout    = "$($Timeout)ms"
