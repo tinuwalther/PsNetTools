@@ -2,38 +2,27 @@
     using module ..\PsNetTools\PsNetTools.psm1
 
     dig - domain information groper
-    [PsNetTools]::dig() 
-    [PsNetTools]::dig('') 
     [PsNetTools]::dig('sbb.ch')
-    [PsNetTools]::dig('sbb.chr')
 
     tping - tcp port scanner
-    [PsNetTools]::tping() 
-    [PsNetTools]::tping('sbb.ch') 
-    [PsNetTools]::tping('sbb.ch', 80) 
     [PsNetTools]::tping('sbb.ch', 80, 100)
 
     uping - udp port scanner
-    [PsNetTools]::uping() 
-    [PsNetTools]::uping('sbb.ch') 
-    [PsNetTools]::uping('sbb.ch', 53) 
     [PsNetTools]::uping('sbb.ch', 53, 100)
 
     wping - http web request scanner
-    [PsNetTools]::wping() 
-    [PsNetTools]::wping('https://sbb.ch') 
-    [PsNetTools]::wping('https://sbb.ch', 1000) 
     [PsNetTools]::wping('https://sbb.ch', 1000, $true) 
 
 #>
 Class PsNetTools {
 
     #region Properties with default values
+    [String]$Message = $null
     #endregion
 
     #region Constructor
     PsNetTools(){
-        Write-Host "Loading PsNetTools"
+        $this.Message = "Loading PsNetTools"
     }
     #endregion
     
@@ -58,7 +47,7 @@ Class PsNetTools {
             $ipv4pattern = '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
             try {
                 if($TargetName -match $ipv4pattern){
-                    $true
+                    $start     = Get-Date
                     $addresses = [System.Net.Dns]::GetHostByAddress($TargetName)
                     if(-not([String]::IsNullOrEmpty($addresses))){
                         $computer = $addresses.hostname
@@ -69,10 +58,13 @@ Class PsNetTools {
                             if($($item.AddressFamily) -eq 'InterNetworkV6'){
                                 $ipv6address = $item.IPAddressToString
                             }
+                            $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                            
                             $resultset = [PSCustomObject]@{
                                 TargetName  = $computer
                                 IpV4Address = $ipv4address
                                 IpV6Address = $ipv6address
+                                Duration    = "$($duration)ms"
                             }
                         }
                     }
@@ -81,6 +73,7 @@ Class PsNetTools {
                     }
                 }
                 elseif($TargetName.GetType() -eq [String]){
+                    $start     = Get-Date
                     $addresses = [System.Net.Dns]::GetHostAddressesAsync($TargetName).GetAwaiter().GetResult()
                     if(-not([String]::IsNullOrEmpty($addresses))){
                         foreach($item in $addresses){
@@ -90,10 +83,13 @@ Class PsNetTools {
                             if($($item.AddressFamily) -eq 'InterNetworkV6'){
                                 $ipv6address = $item.IPAddressToString
                             }
+                            $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                            
                             $resultset = [PSCustomObject]@{
                                 TargetName  = $TargetName
                                 IpV4Address = $ipv4address
                                 IpV6Address = $ipv6address
+                                Duration    = "$($duration)ms"
                             }
                         }
                     }
@@ -114,16 +110,6 @@ Class PsNetTools {
         return "Usage: [PsNetTools]::tping('sbb.ch', 443, 100)"
     }
 
-    [string]static tping([String] $TargetName) {
-        $function  = 'tping()'
-        return "$($function): No TcpPort and Timeout specified!"
-    }
-
-    [string]static tping([String] $TargetName, [int] $TcpPort) {
-        $function  = 'tping()'
-        return "$($function): No TcpPort or Timeout specified!"
-    }
-
     [object]static tping([String] $TargetName, [int] $TcpPort, [int] $Timeout) {
 
         $function  = 'tping()'
@@ -139,6 +125,7 @@ Class PsNetTools {
             $tcpsucceeded = $null
 
             try {
+                $start     = Get-Date
                 $tcpclient = New-Object System.Net.Sockets.TcpClient
                 $connect   = $TcpClient.BeginConnect($TargetName,$TcpPort,$null,$null)
                 $patience  = $connect.AsyncWaitHandle.WaitOne($Timeout,$false) 
@@ -151,11 +138,13 @@ Class PsNetTools {
                 }
                 $tcpclient.Close()
                 $tcpclient.Dispose()
-        
+                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                
                 $obj = [PSCustomObject]@{
                     TargetName    = $TargetName
                     TcpPort       = $TcpPort
                     TcpSucceeded  = $tcpsucceeded
+                    Duration      = "$($duration)ms"
                     MaxTimeout    = "$($Timeout)ms"
                 }
                 $resultset += $obj
@@ -170,16 +159,6 @@ Class PsNetTools {
 
     [string]static uping() {
         return "Usage: [PsNetTools]::uping('sbb.ch', 53, 100)"
-    }
-
-    [string]static uping([String] $TargetName) {
-        $function  = 'uping()'
-        return "$($function): No UdpPort and Timeout specified!"
-    }
-
-    [string]static uping([String] $TargetName, [int] $UdpPort) {
-        $function  = 'uping()'
-        return "$($function): No UdpPort or Timeout specified!"
     }
 
     [object]static uping([String] $TargetName, [int] $UdpPort, [int] $Timeout) {
@@ -201,6 +180,7 @@ Class PsNetTools {
             $receivebytes   = $null
 
             try {
+                $start     = Get-Date
                 $udpclient = New-Object System.Net.Sockets.UdpClient
                 $connect   = $udpclient.Connect($TargetName,$UdpPort)
                 $patience  = $udpclient.Client.ReceiveTimeout = $Timeout
@@ -226,11 +206,13 @@ Class PsNetTools {
             
                 $udpclient.Close()
                 $udpclient.Dispose()
-            
+                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                
                 $obj = [PSCustomObject]@{
                     TargetName    = $TargetName
                     UdpPort       = $UdpPort
                     UdpSucceeded  = $udpsucceeded
+                    Duration      = "$($duration)ms"
                     MaxTimeout    = "$($Timeout)ms"
                 }
                 $resultset += $obj
@@ -245,11 +227,6 @@ Class PsNetTools {
 
     [string]static wping() {
         return "Usage: [PsNetTools]::wping('https://sbb.ch', 1000)"
-   }
-
-    [string]static wping([String]$url) {
-        $function  = 'wping()'
-        return "$($function): No timeout specified!"
     }
 
     [object]static wping([String]$url,[int]$timeout) {
@@ -267,6 +244,7 @@ Class PsNetTools {
             $statuscode  = $null
 
             try {
+                $start     = Get-Date
                 $webreqest = [system.Net.HttpWebRequest]::Create($url)
                 $webreqest.Timeout = $timeout
 
@@ -275,11 +253,13 @@ Class PsNetTools {
                     $responseuri = $response.ResponseUri
                     $statuscode  = $response.StatusCode
                     $response.Close()
-
+                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                    
                     $obj = [PSCustomObject]@{
                         TargetName    = $Url
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
+                        Duration      = "$($duration)ms"
                         MaxTimeout    = "$($Timeout)ms"
                     }
                     $resultset += $obj
@@ -312,6 +292,7 @@ Class PsNetTools {
             $statuscode  = $null
 
             try {
+                $start     = Get-Date
                 $webreqest = [system.Net.HttpWebRequest]::Create($url)
                 $webreqest.Timeout = $timeout
                 if($noproxy){
@@ -323,11 +304,65 @@ Class PsNetTools {
                     $responseuri = $response.ResponseUri
                     $statuscode  = $response.StatusCode
                     $response.Close()
-
+                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                    
                     $obj = [PSCustomObject]@{
                         TargetName    = $Url
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
+                        Duration      = "$($duration)ms"
+                        MaxTimeout    = "$($Timeout)ms"
+                    }
+                    $resultset += $obj
+
+                } catch {
+                    return "WARNING: $($_.Exception.Message)"
+                    $Error.Clear()
+                }
+
+            } catch {
+                return "WARNING: $($_.Exception.Message)"
+                $error.Clear()
+            }                
+        }    
+        return $resultset    
+    }
+
+    [object]static ftpping([String]$uri,[int]$timeout,[PSCredential]$creds) {
+
+        #https://www.opentechguides.com/how-to/article/powershell/154/directory-listing.html
+
+        $function  = 'ftpping()'
+        $resultset = @()
+    
+        if(([String]::IsNullOrEmpty($uri))){
+            Write-Warning "$($function): Empty Uri specified!"
+        }
+        else{
+            $ftprequest  = $null
+            $response    = $null
+            $responseuri = $null
+            $statuscode  = $null
+
+            try {
+                $start      = Get-Date
+                $ftprequest = [System.Net.FtpWebRequest]::Create($uri)
+                $ftprequest.Credentials = New-Object System.Net.NetworkCredential($creds.UserName, $creds.Password)
+                $ftprequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
+                $ftprequest.Timeout = $timeout
+
+                try{
+                    $response    = $ftprequest.GetResponse()
+                    $responseuri = $response.ResponseUri
+                    $statuscode  = $response.StatusCode
+                    $response.Close()
+                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                    
+                    $obj = [PSCustomObject]@{
+                        TargetName    = $Uri
+                        ResponseUri   = $responseuri
+                        StatusCode    = $statuscode
+                        Duration      = "$($duration)ms"
                         MaxTimeout    = "$($Timeout)ms"
                     }
                     $resultset += $obj
@@ -405,5 +440,3 @@ function PsNetWping{
         return [PsNetTools]::wping($Destination, $Timeout)
     }
 }
-
-Export-ModuleMember -Function PsNetDig, PsNetTping, PsNetUping, PsNetWping

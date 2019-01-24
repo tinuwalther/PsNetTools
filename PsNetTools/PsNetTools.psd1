@@ -12,7 +12,7 @@
 RootModule = 'PsNetTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.1'
+ModuleVersion = '0.1.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -24,7 +24,7 @@ GUID = '6ac75004-c390-4ae4-aa13-7a0e869c43b1'
 Author = 'Martin Walther'
 
 # Company or vendor of this module
-CompanyName = 'Foto & IT Martin Walther'
+CompanyName = 'Martin Walther Foto & IT'
 
 # Copyright statement for this module
 Copyright = '(c) 2019 Martin Walther. All rights reserved.'
