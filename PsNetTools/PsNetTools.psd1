@@ -24,7 +24,7 @@ GUID = '6ac75004-c390-4ae4-aa13-7a0e869c43b1'
 Author = 'Martin Walther'
 
 # Company or vendor of this module
-CompanyName = 'Foto & IT Martin Walther'
+CompanyName = 'Martin Walther Foto & IT'
 
 # Copyright statement for this module
 Copyright = '(c) 2019 Martin Walther. All rights reserved.'

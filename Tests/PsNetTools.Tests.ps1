@@ -6,7 +6,6 @@ $RootFolder = (get-item $TestsPath).Parent
 Push-Location -Path $RootFolder.FullName
 set-location  -Path $RootFolder.FullName
 
-Write-Verbose "Importing module"
 Import-Module .\PsNetTools -Force
 Import-Module -Name Pester -Force
 
@@ -24,7 +23,7 @@ Describe "Testing class PsNetTools" {
             }
                     
             it "[NEG] [Mac] Testing PsNetDig with false IP Address as parameter(s)"{
-                (PsNetDig -Destination '255.255.255.255') | should match 'Device not configured'
+                (PsNetDig -Destination '255.255.255.256') | should match 'Device not configured'
             }
         }
 
@@ -33,15 +32,8 @@ Describe "Testing class PsNetTools" {
                 (PsNetDig -Destination 'sbb.powershell') | should match 'No such host is known'
             }
                 
-            if($PSVersionTable.PSVersion.Major -lt 6){
-                it "[NEG] [Win] Testing PsNetDig with false IP Address as parameter(s)"{
-                    (PsNetDig -Destination '255.255.255.255') | should match 'The requested name is valid'
-                }
-            }
-            else{
-                it "[NEG] [Win] Testing PsNetDig with false IP Address as parameter(s)"{
-                    (PsNetDig -Destination '255.255.255.255') | should match 'No such host is known'
-                }
+            it "[NEG] [Win] Testing PsNetDig with false IP Address as parameter(s)"{
+                (PsNetDig -Destination '255.255.255.256') | should match 'No such host is known'
             }
         }
     

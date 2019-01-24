@@ -2,7 +2,7 @@
 
 ## v0.1.2
 
-- Adding PsFtpPing Method
+- Adding Duration in return objects
   
 ## v0.1.1
 
