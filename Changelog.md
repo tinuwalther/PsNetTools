@@ -1,5 +1,9 @@
 # Overview of Changes
 
+## v0.2.0
+
+- Adding Network Adapter Configuration Method
+
 ## v0.1.2
 
 - Adding Duration in return objects
