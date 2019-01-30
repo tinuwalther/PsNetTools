@@ -435,10 +435,12 @@ Class PsNetTools {
 
     [object] static GetNetadapters(){
 
-        $function  = 'netadapters()'
+        #https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinterface.getipproperties?view=netframework-4.7.2#System_Net_NetworkInformation_NetworkInterface_GetIPProperties
+
+        $function  = 'GetNetadapters()'
         $resultset = @()
 
-        #try{
+        try{
             $nics = [System.Net.NetworkInformation.NetworkInterface]::GetAllNetworkInterfaces()
             foreach($adapter in $nics){
 
@@ -457,6 +459,8 @@ Class PsNetTools {
                 }
             
                 $obj = [PSCustomObject]@{
+
+                    Succeeded            = $true
                     
                     Id                   = $adapter.Id
                     Name                 = $adapter.Name
@@ -467,6 +471,8 @@ Class PsNetTools {
                     IsReceiveOnly        = $adapter.IsReceiveOnly
                     SupportsMulticast    = $adapter.SupportsMulticast
                     
+                    IpV4Addresses        = $null
+                    IpV6Addresses        = $null
                     PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
 
                     IsDnsEnabled         = $properties.IsDnsEnabled
@@ -482,17 +488,25 @@ Class PsNetTools {
             
                 }
                 $resultset += $obj
-        #    }
-        #} catch {
-        #    return "WARNING: $($_.Exception.Message)"
-        #    $error.Clear()
+            }
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded  = $false
+                Activity   = $($_.CategoryInfo).Activity
+                Message    = $($_.Exception.Message)
+                Category   = $($_.CategoryInfo).Category
+                Exception  = $($_.Exception.GetType().FullName)
+                TargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
         }                
         return $resultset
     }
     #endregion
 }
 
-function PsNetDig{
+function Test-PsNetDig{
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
@@ -501,7 +515,7 @@ function PsNetDig{
     return [PsNetTools]::dig($Destination)
 }
 
-function PsNetTping{
+function Test-PsNetTping{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
@@ -516,7 +530,7 @@ function PsNetTping{
     return [PsNetTools]::tping($Destination, $TcpPort, $Timeout)
 }
 
-function PsNetUping{
+function Test-PsNetUping{
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
@@ -531,7 +545,7 @@ function PsNetUping{
     return [PsNetTools]::uping($Destination, $UdpPort, $Timeout)
 }
 
-function PsNetWping{
+function Test-PsNetWping{
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
