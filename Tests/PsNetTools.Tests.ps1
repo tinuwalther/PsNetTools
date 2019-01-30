@@ -19,21 +19,21 @@ Describe "Testing class PsNetTools" {
         
         if($IsMacOS){
             it "[NEG] [Mac] Testing Test-PsNetDig with false Hostname as parameter(s)"{
-                (Test-PsNetDig -Destination 'sbb.powershell').Succeeded | should not BeTrue
+                (Test-PsNetDig -Destination 'sbb.powershell').Succeeded | should BeFalse
             }
                     
             it "[NEG] [Mac] Testing Test-PsNetDig with false IP Address as parameter(s)"{
-                (Test-PsNetDig -Destination '255.255.255.256').Succeeded | should not BeTrue
+                (Test-PsNetDig -Destination '255.255.255.256').Succeeded | should BeFalse
             }
         }
 
         if($IsWindows){
             it "[NEG] [Win] Testing Test-PsNetDig with false Hostname as parameter(s)"{
-                (Test-PsNetDig -Destination 'sbb.powershell').Succeeded | should not BeTrue
+                (Test-PsNetDig -Destination 'sbb.powershell').Succeeded | should BeFalse
             }
                 
             it "[NEG] [Win] Testing Test-PsNetDig with false IP Address as parameter(s)"{
-                (Test-PsNetDig -Destination '255.255.255.256').Succeeded | should not BeTrue
+                (Test-PsNetDig -Destination '255.255.255.256').Succeeded | should BeFalse
             }
         }
     
@@ -51,29 +51,29 @@ Describe "Testing class PsNetTools" {
        
         if($IsMacOS){
             it "[NEG] [Mac] Testing Test-PsNetTping with false Hostname as parameter(s)"{
-            (Test-PsNetTping -Destination 'sbb.powershell' -TcpPort 443 -Timeout 1000).Succeeded | should not BeTrue
+            (Test-PsNetTping -Destination 'sbb.powershell' -TcpPort 443 -Timeout 1000).Succeeded | should BeFalse
             }
         }
 
         if($IsWindows){
             it "[NEG] [Win] Testing Test-PsNetTping with false Hostname as parameter(s)"{
-            (Test-PsNetTping -Destination 'sbb.powershell' -TcpPort 443 -Timeout 1000).Succeeded | should not BeTrue
+            (Test-PsNetTping -Destination 'sbb.powershell' -TcpPort 443 -Timeout 1000).Succeeded | should BeFalse
             }
         }
 
         it "[NEG] [Any] Testing Test-PsNetTping with false Port as parameter(s)"{
-            (Test-PsNetTping -Destination 'sbb.ch' -TcpPort 443443 -Timeout 1000).Succeeded | should not BeTrue
+            (Test-PsNetTping -Destination 'sbb.ch' -TcpPort 443443 -Timeout 1000).Succeeded | should BeFalse
         }
 
         if($IsMacOS){
             it "[NEG] [Mac] Testing Test-PsNetTping with false IP Address as parameter(s)"{
-                (Test-PsNetTping -Destination '255.255.255.255' -TcpPort 443 -Timeout 1000).Succeeded | should not BeTrue
+                (Test-PsNetTping -Destination '255.255.255.255' -TcpPort 443 -Timeout 1000).Succeeded | should BeFalse
             }
         }
 
         if($IsWindows){
             it "[NEG] [Win] Testing Test-PsNetTping with false IP Address as parameter(s)"{
-                (Test-PsNetTping -Destination '255.255.255.255' -TcpPort 443 -Timeout 1000).Succeeded | should not BeTrue
+                (Test-PsNetTping -Destination '255.255.255.255' -TcpPort 443 -Timeout 1000).Succeeded | should BeFalse
             }
         }
 
@@ -90,11 +90,11 @@ Describe "Testing class PsNetTools" {
     Context "Testing method Test-PsNetUping" {
         
         it "[NEG] [Any] Testing Test-PsNetUping with false Port as parameter(s)"{
-            (Test-PsNetUping -Destination 'sbb.ch' -UdpPort 443443 -Timeout 1000).Succeeded | should not BeTrue
+            (Test-PsNetUping -Destination 'sbb.ch' -UdpPort 443443 -Timeout 1000).Succeeded | should BeFalse
         }
 
         it "[NEG] [Any] Testing Test-PsNetUping with false IP Address as parameter(s)"{
-            (Test-PsNetUping -Destination '255.255.255.255' -UdpPort 53 -Timeout 1000).Succeeded | should not BeTrue
+            (Test-PsNetUping -Destination '255.255.255.256' -UdpPort 53 -Timeout 1000).Succeeded | should BeFalse
         }
 
         it "[POS] [Any] Testing Test-PsNetUping with Hostname as parameter(s)"{
@@ -111,13 +111,13 @@ Describe "Testing class PsNetTools" {
         
         if($IsMacOS){
             it "[NEG] [Mac] Testing Test-PsNetWping with false Uri as parameter(s)"{
-            (Test-PsNetWping -Destination 'https:sbb.ch' -Timeout 1000).Succeeded | should not BeTrue
+            (Test-PsNetWping -Destination 'https:sbb.ch' -Timeout 1000).Succeeded | should BeFalse
             }
         }
 
         if($IsWindows){
             it "[NEG] [Win] Testing Test-PsNetWping with false Uri as parameter(s)"{
-            (Test-PsNetWping -Destination 'https:sbb.ch' -Timeout 1000).Succeeded | should not BeTrue
+            (Test-PsNetWping -Destination 'https:sbb.ch' -Timeout 1000).Succeeded | should BeFalse
             }
         }
 
