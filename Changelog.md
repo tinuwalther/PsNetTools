@@ -2,7 +2,7 @@
 
 ## v0.2.0
 
-- Adding Network Adapter Configuration Method
+- Adding Network Adapter Configuration Methods
 
 ## v0.1.2
 

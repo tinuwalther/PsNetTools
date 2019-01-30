@@ -15,6 +15,12 @@
 - [Test-PsNetWping](#test-psnetwping)
   - [Get-Help Test-PsNetWping](#get-help-test-psnetwping)
   - [Example Test-PsNetWping](#example-test-psnetwping)
+- [Get-PsNetAdapters](#get-psnetadapters)
+  - [Get-Help Get-PsNetAdapters](#get-help-get-psnetadapters)
+  - [Example Get-PsNetAdapterConfiguration](#example-get-psnetadapterconfiguration)
+- [Get-PsNetAdapterConfiguration](#get-psnetadapterconfiguration)
+  - [Get-Help Get-PsNetAdapterConfiguration](#get-help-get-psnetadapterconfiguration)
+  - [Example Get-PsNetAdapterConfiguration](#example-get-psnetadapterconfiguration-1)
 
 # PsNetTools
 
@@ -133,4 +139,73 @@ ResponseUri : https://www.sbb.ch/de/
 StatusCode  : OK
 Duration    : 231ms
 MaxTimeout  : 1000ms
+````
+
+# Get-PsNetAdapters
+
+Get-PsNetAdapters -get the network interface for all adapters.  
+
+## Get-Help Get-PsNetAdapters
+
+Get-PsNetAdapters
+
+## Example Get-PsNetAdapterConfiguration
+
+````powershell
+Get-PsNetAdapters | Where-Object Index -eq 11
+
+Succeeded            : True
+Index                : 11
+Id                   : {<GUID>}
+Name                 : Wi-Fi or Ethernet or Wwanpp or Wireless80211
+Description          : Intel(R) Dual Band Wireless-AC 8265
+NetworkInterfaceType : Wireless80211
+OperationalStatus    : Up or Down
+Speed                : 866700000
+IsReceiveOnly        : False or True
+SupportsMulticast    : True or False
+IpVersion            : {IPv4, IPv6}
+````
+
+# Get-PsNetAdapterConfiguration
+
+Get-PsNetAdapterConfiguration - get the network interface configuration for all adapters.  
+
+## Get-Help Get-PsNetAdapterConfiguration
+
+Get-PsNetAdapterConfiguration
+
+## Example Get-PsNetAdapterConfiguration
+
+````powershell
+Get-PsNetAdapterConfiguration | Where-Object Index -eq 11
+
+Succeeded            : True
+Index                : 11
+Id                   : {<GUID>}
+Name                 : Wi-Fi or Ethernet or Wwanpp or Wireless80211
+Description          : Intel(R) Dual Band Wireless-AC 8265
+NetworkInterfaceType : Wireless80211
+OperationalStatus    : Up or Down
+Speed                : 866700000
+IsReceiveOnly        : False or True
+SupportsMulticast    : True or False
+IpVersion            : {IPv4, IPv6}
+IpV4Addresses        : {<IP Address V4>}
+IpV6Addresses        : {<IP Address V6>}
+PhysicalAddres       : MAC Address
+IsDnsEnabled         : False or True
+IsDynamicDnsEnabled  : True or False
+DnsSuffix            : <DNS Suffix>
+DnsAddresses         : {<IP Address V4>}
+Mtu                  : False or True
+IsForwardingEnabled  : True or False
+IsAPIPAEnabled       : False or True
+IsAPIPAActive        : True or False
+IsDhcpEnabled        : True or False
+DhcpServerAddresses  : {<IP Address V4>}
+UsesWins             : False or True
+WinsServersAddresses : {<IP Address V4>}
+GatewayIpV4Addresses : {<IP Address V4>}
+GatewayIpV6Addresses : {<IP Address V6>}
 ````
