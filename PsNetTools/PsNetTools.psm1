@@ -444,10 +444,24 @@ Class PsNetTools {
             $nics = [System.Net.NetworkInformation.NetworkInterface]::GetAllNetworkInterfaces()
             foreach($adapter in $nics){
 
-                $properties  = $adapter.GetIPProperties()
-                
+                $IpVersion            = @()
                 $GatewayIpV4Addresses = @()
                 $GatewayIpV6Addresses = @()
+
+                $properties     = $adapter.GetIPProperties()
+                $IpV4properties = $properties.GetIPv4Properties()
+                $IpV6properties = $properties.GetIPv6Properties()
+                            
+                $IpV4 = [System.Net.NetworkInformation.NetworkInterfaceComponent]::IPv4
+                $IpV6 = [System.Net.NetworkInformation.NetworkInterfaceComponent]::IPv6
+            
+                if($adapter.Supports($IpV4)){
+                    $IpVersion += 'IPv4'
+                }
+            
+                if($adapter.Supports($IpV6)){
+                    $IpVersion += 'IPv6'
+                }
 
                 foreach($gateway in $properties.GatewayAddresses){
                     if($gateway.Address.AddressFamily -eq 'InterNetwork6'){
@@ -461,7 +475,78 @@ Class PsNetTools {
                 $obj = [PSCustomObject]@{
 
                     Succeeded            = $true
-                    
+
+                    Id                   = $adapter.Id
+                    Index                = $IpV4properties.Index
+                    Name                 = $adapter.Name
+                    Description          = $adapter.Description
+                    NetworkInterfaceType = $adapter.NetworkInterfaceType
+                    OperationalStatus    = $adapter.OperationalStatus
+                    Speed                = $adapter.Speed
+                    IsReceiveOnly        = $adapter.IsReceiveOnly
+                    SupportsMulticast    = $adapter.SupportsMulticast
+                    PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
+                }
+                $resultset += $obj
+            }
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded  = $false
+                Activity   = $($_.CategoryInfo).Activity
+                Message    = $($_.Exception.Message)
+                Category   = $($_.CategoryInfo).Category
+                Exception  = $($_.Exception.GetType().FullName)
+                TargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
+        }                
+        return $resultset
+    }
+
+    [object] static GetNetadapterConfiguration(){
+
+        #https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinterface.getipproperties?view=netframework-4.7.2#System_Net_NetworkInformation_NetworkInterface_GetIPProperties
+
+        $function  = 'GetNetadapterConfigurations()'
+        $resultset = @()
+
+        try{
+            $nics = [System.Net.NetworkInformation.NetworkInterface]::GetAllNetworkInterfaces()
+            foreach($adapter in $nics){
+
+                $IpVersion            = @()
+                $GatewayIpV4Addresses = @()
+                $GatewayIpV6Addresses = @()
+
+                $properties     = $adapter.GetIPProperties()
+                $IpV4properties = $properties.GetIPv4Properties()
+                $IpV6properties = $properties.GetIPv6Properties()
+                            
+                $IpV4 = [System.Net.NetworkInformation.NetworkInterfaceComponent]::IPv4
+                $IpV6 = [System.Net.NetworkInformation.NetworkInterfaceComponent]::IPv6
+            
+                if($adapter.Supports($IpV4)){
+                    $IpVersion += 'IPv4'
+                }
+            
+                if($adapter.Supports($IpV6)){
+                    $IpVersion += 'IPv6'
+                }
+
+                foreach($gateway in $properties.GatewayAddresses){
+                    if($gateway.Address.AddressFamily -eq 'InterNetwork6'){
+                        $GatewayIpV6Addresses += $gateway.Address.IPAddressToString
+                    }
+                    if($gateway.Address.AddressFamily -eq 'InterNetwork'){
+                        $GatewayIpV4Addresses += $gateway.Address.IPAddressToString
+                    }
+                }
+            
+                $obj = [PSCustomObject]@{
+
+                    Succeeded            = $true
+
                     Id                   = $adapter.Id
                     Name                 = $adapter.Name
                     Description          = $adapter.Description
@@ -470,22 +555,33 @@ Class PsNetTools {
                     Speed                = $adapter.Speed
                     IsReceiveOnly        = $adapter.IsReceiveOnly
                     SupportsMulticast    = $adapter.SupportsMulticast
-                    
+            
+                    IpVersion            = $IpVersion
                     IpV4Addresses        = $null
                     IpV6Addresses        = $null
                     PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
-
+                    
                     IsDnsEnabled         = $properties.IsDnsEnabled
                     IsDynamicDnsEnabled  = $properties.IsDynamicDnsEnabled
                     DnsSuffix            = $properties.DnsSuffix
                     DnsAddresses         = $properties.DnsAddresses
-                    DhcpServerAddresses  = $properties.DhcpServerAddresses
+                    
+                    Index                = $IpV4properties.Index
+                    Mtu                  = $IpV4properties.IsAutomaticPrivateAddressingActive
             
+                    IsForwardingEnabled  = $IpV4properties.IsDhcpEnabled
+                    IsAPIPAEnabled       = $IpV4properties.IsForwardingEnabled
+                    IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingEnabled
+            
+                    IsDhcpEnabled        = $IpV4properties.IsDhcpEnabled
+                    DhcpServerAddresses  = $properties.DhcpServerAddresses
+                    
+                    UsesWins             = $IpV4properties.UsesWins
                     WinsServersAddresses = $properties.WinsServersAddresses
-
+             
                     GatewayIpV4Addresses = $GatewayIpV4Addresses
                     GatewayIpV6Addresses = $GatewayIpV6Addresses
-            
+                                    
                 }
                 $resultset += $obj
             }
@@ -569,4 +665,10 @@ function Get-PsNetAdapters{
     [CmdletBinding()]
     param()    
     return [PsNetTools]::GetNetadapters()
+}
+
+function Get-PsNetAdapterConfiguration{
+    [CmdletBinding()]
+    param()    
+    return [PsNetTools]::GetNetadapterConfiguration()
 }
