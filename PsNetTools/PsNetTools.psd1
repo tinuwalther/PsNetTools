@@ -12,7 +12,7 @@
 RootModule = 'PsNetTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.2'
+ModuleVersion = '0.2.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -69,7 +69,7 @@ PowerShellVersion = '5.1'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('PsNetDig', 'PsNetTping', 'PsNetUping', 'PsNetWping')
+FunctionsToExport = @('Test-PsNetDig', 'Test-PsNetTping', 'Test-PsNetUping', 'Test-PsNetWping', 'Get-PsNetAdapters', 'Get-PsNetAdapterConfiguration')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -107,7 +107,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'https://github.com/tinuwalther/PsNetTools/blob/master/Change_Log.md'
+        ReleaseNotes = 'https://github.com/tinuwalther/PsNetTools/blob/master/ChangeLog.md'
 
     } # End of PSData hashtable
 
