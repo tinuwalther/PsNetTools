@@ -27,10 +27,6 @@ Class PsNetTools {
     #endregion
     
     #region methods
-    [string]static dig() {
-        return "Usage: [PsNetTools]::dig('sbb.ch')"
-    }
-
     [object]static dig([String] $TargetName) {
         
         $function  = 'dig()'
@@ -61,6 +57,7 @@ Class PsNetTools {
                             $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
                             
                             $resultset = [PSCustomObject]@{
+                                Succeeded    = $true
                                 TargetName  = $computer
                                 IpV4Address = $ipv4address
                                 IpV6Address = $ipv6address
@@ -86,6 +83,7 @@ Class PsNetTools {
                             $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
                             
                             $resultset = [PSCustomObject]@{
+                                Succeeded   = $true
                                 TargetName  = $TargetName
                                 IpV4Address = $ipv4address
                                 IpV6Address = $ipv6address
@@ -99,15 +97,19 @@ Class PsNetTools {
                 }
             } 
             catch {
-                return "WARNING: $($_.Exception.Message)"
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Activity   = $($_.CategoryInfo).Activity
+                    Message    = $($_.Exception.Message)
+                    Category   = $($_.CategoryInfo).Category
+                    Exception  = $($_.Exception.GetType().FullName)
+                    TargetName = $($_.CategoryInfo).TargetName
+                }
+                $resultset += $obj
                 $error.Clear()
             }
         }
         return $resultset
-    }
-
-    [string]static tping() {
-        return "Usage: [PsNetTools]::tping('sbb.ch', 443, 100)"
     }
 
     [object]static tping([String] $TargetName, [int] $TcpPort, [int] $Timeout) {
@@ -141,6 +143,7 @@ Class PsNetTools {
                 $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
                 
                 $obj = [PSCustomObject]@{
+                    Succeeded     = $true
                     TargetName    = $TargetName
                     TcpPort       = $TcpPort
                     TcpSucceeded  = $tcpsucceeded
@@ -150,15 +153,19 @@ Class PsNetTools {
                 $resultset += $obj
         
             } catch {
-                return "WARNING: $($_.Exception.Message)"
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Activity   = $($_.CategoryInfo).Activity
+                    Message    = $($_.Exception.Message)
+                    Category   = $($_.CategoryInfo).Category
+                    Exception  = $($_.Exception.GetType().FullName)
+                    TargetName = $($_.CategoryInfo).TargetName
+                }
+                $resultset += $obj
                 $error.Clear()
             }                
         }    
         return $resultset    
-    }
-
-    [string]static uping() {
-        return "Usage: [PsNetTools]::uping('sbb.ch', 53, 100)"
     }
 
     [object]static uping([String] $TargetName, [int] $UdpPort, [int] $Timeout) {
@@ -194,9 +201,7 @@ Class PsNetTools {
                     $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
                 }
                 catch{
-                    #Write-Warning $($Error[0])
-                    $udpsucceeded = $false
-                    $Error.Clear()
+                    $error.Clear()
                 }
             
                 if (-not([String]::IsNullOrEmpty($receivebytes))) {
@@ -209,6 +214,7 @@ Class PsNetTools {
                 $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
                 
                 $obj = [PSCustomObject]@{
+                    Succeeded     = $true
                     TargetName    = $TargetName
                     UdpPort       = $UdpPort
                     UdpSucceeded  = $udpsucceeded
@@ -218,15 +224,19 @@ Class PsNetTools {
                 $resultset += $obj
                     
             } catch {
-                return "WARNING: $($_.Exception.Message)"
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Activity   = $($_.CategoryInfo).Activity
+                    Message    = $($_.Exception.Message)
+                    Category   = $($_.CategoryInfo).Category
+                    Exception  = $($_.Exception.GetType().FullName)
+                    TargetName = $($_.CategoryInfo).TargetName
+                }
+                $resultset += $obj
                 $error.Clear()
             }                
         }    
         return $resultset    
-    }
-
-    [string]static wping() {
-        return "Usage: [PsNetTools]::wping('https://sbb.ch', 1000)"
     }
 
     [object]static wping([String]$url,[int]$timeout) {
@@ -256,6 +266,7 @@ Class PsNetTools {
                     $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
                     
                     $obj = [PSCustomObject]@{
+                        Succeeded     = $true
                         TargetName    = $Url
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
@@ -265,12 +276,28 @@ Class PsNetTools {
                     $resultset += $obj
 
                 } catch [Exception]{
-                    return "WARNING: $($_.Exception.Message)"
-                    $Error.Clear()
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Activity   = $($_.CategoryInfo).Activity
+                        Message    = $($_.Exception.Message)
+                        Category   = $($_.CategoryInfo).Category
+                        Exception  = $($_.Exception.GetType().FullName)
+                        TargetName = $($_.CategoryInfo).TargetName
+                    }
+                    $resultset += $obj
+                    $error.Clear()
                 }
 
             } catch {
-                return "WARNING: $($_.Exception.Message)"
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Activity   = $($_.CategoryInfo).Activity
+                    Message    = $($_.Exception.Message)
+                    Category   = $($_.CategoryInfo).Category
+                    Exception  = $($_.Exception.GetType().FullName)
+                    TargetName = $($_.CategoryInfo).TargetName
+                }
+                $resultset += $obj
                 $error.Clear()
             }                
         }    
@@ -307,6 +334,7 @@ Class PsNetTools {
                     $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
                     
                     $obj = [PSCustomObject]@{
+                        Succeeded     = $true
                         TargetName    = $Url
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
@@ -316,12 +344,28 @@ Class PsNetTools {
                     $resultset += $obj
 
                 } catch {
-                    return "WARNING: $($_.Exception.Message)"
-                    $Error.Clear()
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Activity   = $($_.CategoryInfo).Activity
+                        Message    = $($_.Exception.Message)
+                        Category   = $($_.CategoryInfo).Category
+                        Exception  = $($_.Exception.GetType().FullName)
+                        TargetName = $($_.CategoryInfo).TargetName
+                    }
+                    $resultset += $obj
+                    $error.Clear()
                 }
 
             } catch {
-                return "WARNING: $($_.Exception.Message)"
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Activity   = $($_.CategoryInfo).Activity
+                    Message    = $($_.Exception.Message)
+                    Category   = $($_.CategoryInfo).Category
+                    Exception  = $($_.Exception.GetType().FullName)
+                    TargetName = $($_.CategoryInfo).TargetName
+                }
+                $resultset += $obj
                 $error.Clear()
             }                
         }    
@@ -359,6 +403,7 @@ Class PsNetTools {
                     $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
                     
                     $obj = [PSCustomObject]@{
+                        Succeeded     = $true
                         TargetName    = $Uri
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
@@ -368,68 +413,31 @@ Class PsNetTools {
                     $resultset += $obj
 
                 } catch {
-                    return "WARNING: $($_.Exception.Message)"
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Activity   = $($_.CategoryInfo).Activity
+                        Message    = $($_.Exception.Message)
+                        Category   = $($_.CategoryInfo).Category
+                        Exception  = $($_.Exception.GetType().FullName)
+                        TargetName = $($_.CategoryInfo).TargetName
+                    }
+                    $resultset += $obj
                     $Error.Clear()
                 }
 
             } catch {
-                return "WARNING: $($_.Exception.Message)"
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Activity   = $($_.CategoryInfo).Activity
+                    Message    = $($_.Exception.Message)
+                    Category   = $($_.CategoryInfo).Category
+                    Exception  = $($_.Exception.GetType().FullName)
+                    TargetName = $($_.CategoryInfo).TargetName
+                }
+                $resultset += $obj
                 $error.Clear()
             }                
         }    
-        return $resultset
-    }
-
-    [object]static netadapterconfig([int]$InterfaceIndex){
-
-        $function  = 'netadapterconfig()'
-        $resultset = @()
-
-        if(([String]::IsNullOrEmpty($InterfaceIndex))){
-            Write-Warning "$($function): Empty InterfaceIndex specified!"
-        }
-        else{
-            try {
-                $objWin32 = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object {
-                    ($_.InterfaceIndex -eq $InterfaceIndex)
-                }
-            } catch {
-                return "WARNING: $($_.Exception.Message)"
-                $error.Clear()
-            }                
-    
-            if($objWin32){
-    
-                $IPV4Addresspattern = '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
-                $IPV6Addresspattern = '(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))'
-                $IPV4Subnetpattern = '^(((255\.){3}(255|254|252|248|240|224|192|128|0+))|((255\.){2}(255|254|252|248|240|224|192|128|0+)\.0)|((255\.)(255|254|252|248|240|224|192|128|0+)(\.0+){2})|((255|254|252|248|240|224|192|128|0+)(\.0+){3}))$'
-                $IPV6Subnetpattern = '^\d+$'
-    
-                $obj = [PSCustomObject]@{
-    
-                    Index                       = $objWin32.Index
-                    InterfaceIndex              = $objWin32.InterfaceIndex
-                    NetworkInterfaceDescription = $objWin32.Description
-    
-                    IPV4Address                 = $objWin32.IPAddress -match $IPV4Addresspattern
-                    IPV4DefaultGateway          = $objWin32.DefaultIPGateway -match $IPV4Addresspattern
-                    IPV4SubnetMask              = $objWin32.IPSubnet -match $IPV4Subnetpattern
-                    
-                    IPV6Address                 = $objWin32.IPAddress -match $IPV6Addresspattern
-                    IPV6DefaultGateway          = $objWin32.DefaultIPGateway -match $IPV6Addresspattern
-                    IPV6SubnetMask              = $objWin32.IPSubnet -match $IPV6Subnetpattern
-    
-                    DNSHostName                 = $objWin32.DNSHostName
-                    DNSDomain                   = $objWin32.DNSDomain
-                    DNSServerSearchOrder        = $objWin32.DNSServerSearchOrder
-                    DNSDomainSuffixSearchOrder  = $objWin32.DNSDomainSuffixSearchOrder
-                    MACAddress                  = $objWin32.MACAddress
-    
-                }
-                $resultset += $obj
-
-            }
-        }
         return $resultset
     }
 
@@ -488,6 +496,7 @@ Class PsNetTools {
                 TargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
+            $error.Clear()
         }                
         return $resultset
     }
@@ -596,6 +605,7 @@ Class PsNetTools {
                 TargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
+            $error.Clear()
         }                
         return $resultset
     }
