@@ -98,11 +98,11 @@ Describe "Testing class PsNetTools" {
         }
 
         it "[POS] [Any] Testing Test-PsNetUping with Hostname as parameter(s)"{
-            (Test-PsNetUping -Destination 'sbb.ch' -UdpPort 53 -Timeout 1000).Succeeded | should BeTrue
+            (Test-PsNetUping -Destination 'sbb.ch' -UdpPort 53 -Timeout 1500).Succeeded | should BeTrue
         }
 
         it "[POS] [Any] Testing Test-PsNetUping with IP Address as parameter(s)"{
-            (Test-PsNetUping -Destination '194.150.245.142' -UdpPort 53 -Timeout 1000).Succeeded | should BeTrue
+            (Test-PsNetUping -Destination '194.150.245.142' -UdpPort 53 -Timeout 1500).Succeeded | should BeTrue
         }
 
     }
