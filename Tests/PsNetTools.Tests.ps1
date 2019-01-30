@@ -136,6 +136,10 @@ Describe "Testing class PsNetTools" {
         it "[POS] [Any] Testing Get-PsNetAdapters"{
             (Get-PsNetAdapters).Succeeded | should BeTrue
         }
+
+        it "[POS] [Any] Testing Get-PsNetAdapterConfiguration"{
+            (Get-PsNetAdapterConfiguration).Succeeded | should BeTrue
+        }
     }
 
 }
