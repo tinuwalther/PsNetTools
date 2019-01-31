@@ -4,10 +4,12 @@ $TestsPath  = Split-Path $MyInvocation.MyCommand.Path
 $RootFolder = (get-item $TestsPath).Parent
 
 Push-Location -Path $RootFolder.FullName
-set-location  -Path $RootFolder.FullName
+Set-Location  -Path $RootFolder.FullName
 
 Import-Module .\PsNetTools -Force
-Import-Module -Name Pester -Force
+if(!(Get-Module Pester)){
+    Import-Module -Name Pester
+}
 
 Describe "Testing class PsNetTools" {
 
