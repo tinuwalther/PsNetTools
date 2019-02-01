@@ -201,6 +201,7 @@ Class PsNetTools {
                     $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
                 }
                 catch{
+                    $udpsucceeded = $false
                     $error.Clear()
                 }
             
