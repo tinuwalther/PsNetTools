@@ -16,7 +16,10 @@ if(Test-Path $ExportPath){
     Remove-Item -Path $ExportPath -Force
 }
 $Date = Get-Date
-"#Generated at $($Date) by Martin Walther" | out-File -FilePath $ExportPath -Encoding utf8 -Append
+"<#" | out-File -FilePath $ExportPath -Encoding utf8 -Append
+"    Generated at $($Date) by Martin Walther" | out-File -FilePath $ExportPath -Encoding utf8 -Append
+"    using module ..\$($ModuleName)\$($ModuleName).psm1" | out-File -FilePath $ExportPath -Encoding utf8 -Append
+"#>" | out-File -FilePath $ExportPath -Encoding utf8 -Append
 
 Write-Host "[BUILD][Code] Loading Class, public and private functions" -ForegroundColor RED -BackgroundColor White
 
@@ -30,7 +33,7 @@ $MainPSM1Contents += $PrivateFunctions
 $MainPSM1Contents += $PublicFunctions
 
 #Creating PSM1
-Write-Host "[BUILD][START][MAIN PSM1] Building main PSM1" -ForegroundColor RED -BackgroundColor White
+Write-Host "[BUILD][START][PSM1] Building Module PSM1" -ForegroundColor RED -BackgroundColor White
 Foreach($file in $MainPSM1Contents){
     Get-Content $File.FullName | out-File -FilePath $ExportPath -Encoding utf8 -Append
 }
@@ -41,25 +44,25 @@ if(Test-Path $PostContentPath){
     $file = Get-item $PostContentPath
     Get-Content $File.FullName | out-File -FilePath $ExportPath -Encoding utf8 -Append
 }
+Write-Host "[BUILD][END][PSM1] building Module PSM1 " -ForegroundColor RED -BackgroundColor White
 
-Write-Host "[BUILD][START][PSD1] Adding functions to export" -ForegroundColor RED -BackgroundColor White
-
+Write-Host "[BUILD][START][PSD1] Manifest PSD1" -ForegroundColor RED -BackgroundColor White
+Write-Host "[BUILD][PSD1] Adding functions to export" -ForegroundColor RED -BackgroundColor White
 $FunctionsToExport = $PublicFunctions.BaseName
 $Manifest = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
 Update-ModuleManifest -Path $Manifest -FunctionsToExport $FunctionsToExport
-
-Write-Host "[BUILD][END][MAIN PSM1] building main PSM1 " -ForegroundColor RED -BackgroundColor White
+Write-Host "[BUILD][END][PSD1] building Manifest" -ForegroundColor RED -BackgroundColor White
 
 Write-Host "[BUILD][END] End of Build Process" -ForegroundColor RED -BackgroundColor White
 
 $Test = ((Get-Item $Root)).FullName
-$TestFolderPath = Join-Path -Path $Root -ChildPath 'Tests'
+$TestFolderPath = Join-Path -Path $Test -ChildPath 'Tests'
 
 if(Test-Path $TestFolderPath){
-    Write-Host "[TESTING][START] Launching of Testing Process" -ForegroundColor RED -BackgroundColor White
+    Write-Host "[TESTS][START] Launching of Testing Process" -ForegroundColor RED -BackgroundColor White
     $Result = Invoke-Pester $TestFolderPath -Show All -PassThru
     if($Result.FailedCount -gt 0){
         $Result.TestResult
     }
-    Write-Host "[TESTING][END] End of Testing Process" -ForegroundColor RED -BackgroundColor White
+    Write-Host "[TESTS][END] End of Testing Process" -ForegroundColor RED -BackgroundColor White
 }

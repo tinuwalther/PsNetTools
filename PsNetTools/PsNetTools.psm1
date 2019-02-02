@@ -1,19 +1,10 @@
-﻿#Generated at 02/02/2019 16:04:17 by Martin Walther
 <#
+    Generated at 02/02/2019 21:25:29 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
+#>
 
-    [PsNetTools]::dig('sbb.ch')
-
-    [PsNetTools]::tping('sbb.ch', 80, 100)
-
-    [PsNetTools]::uping('sbb.ch', 53, 100)
-
-    [PsNetTools]::wping('https://sbb.ch', 1000, $true) 
-
-    [PsNetTools]::GetNetAdapters
-
-    [PsNetTools]::GetNetadapterConfiguration
-
+<#
+    Enumerators
 #>
 
 enum OSType {
@@ -23,6 +14,13 @@ enum OSType {
 }
 
 Class PsNetTools {
+
+    <#
+        [PsNetTools]::dig('sbb.ch')
+        [PsNetTools]::tping('sbb.ch', 80, 100)
+        [PsNetTools]::uping('sbb.ch', 53, 100)
+        [PsNetTools]::wping('https://sbb.ch', 1000, $true) 
+    #>
 
     #region Properties with default values
     [String]$Message = $null
@@ -449,7 +447,14 @@ Class PsNetTools {
         }    
         return $resultset
     }
+    #endregion
 
+    <#
+        [PsNetTools]::GetNetAdapters
+        [PsNetTools]::GetNetadapterConfiguration
+    #>
+    
+    #region methods
     [object] static GetNetadapters(){
 
         #https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinterface.getipproperties?view=netframework-4.7.2#System_Net_NetworkInformation_NetworkInterface_GetIPProperties
