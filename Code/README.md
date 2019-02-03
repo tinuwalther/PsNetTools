@@ -6,6 +6,7 @@
   - [Functions](#functions)
     - [Private](#private)
     - [Public](#public)
+- [Tests](#tests)
 - [CI](#ci)
   - [Build](#build)
 
@@ -13,7 +14,7 @@
 
 ## Classes
 
-Write Class-files, and load it to the memory to debug/test.
+Write one Class-file for each Method, and load it to the memory to debug/test.
 
 ````powershell
 [PsNetTools]::dig('sbb.ch')
@@ -21,7 +22,7 @@ Write Class-files, and load it to the memory to debug/test.
 
 ## Functions
 
-Write Function-files, and load it to the memory to debug/test.
+Write one Function-file for each Function, and load it to the memory to debug/test.
 
 ````powershell
 Test-PsNetDig -Destination sbb.ch
@@ -35,25 +36,32 @@ Private Functions, not exported in the Manifest.
 
 Public Functions, exported in the Manifest.
 
+# Tests
+
+Write one Pester-Test for each Function.
+
 # CI
+
+Start the Buildscript, if all Tests are passed, add, commit, push and merge it.
 
 ## Build
 
 Build.ps1 create a new Module-file (psm1), update the Manifest-file (psd1) and run the Pester Tests.
 
 ````text
-[BUILD][START] Launching Build Process
-[BUILD][PSM1] PSM1 file detected. Deleting...
-[BUILD][Code] Loading Class, public and private functions
-[BUILD][START][PSM1] Building Module PSM1
-[BUILD][END][PSM1] building Module PSM1
-[BUILD][START][PSD1] Manifest PSD1
-[BUILD][PSD1] Adding functions to export
-[BUILD][END][PSD1] building Manifest
-[BUILD][END] End of Build Process
-[TESTS][START] Launching of Testing Process
-[TESTS][END]   End of Testing Process
-[BUILD][END]   End of Build Process
+PS > .\03_Build.ps1
+[BUILD] [START] Launching Build Process
+[BUILD] [PSM1 ] PSM1 file detected. Deleting...
+[BUILD] [Code ] Loading Class, public and private functions
+[BUILD] [START] [PSM1] Building Module PSM1
+[BUILD] [END  ] [PSM1] building Module PSM1
+[BUILD] [START] [PSD1] Manifest PSD1
+[BUILD] [PSD1 ] Adding functions to export
+[BUILD] [END  ] [PSD1] building Manifest
+[TESTS] [START] Launching of Testing Process
+Executing all tests in 'D:\PsNetTools\Tests'
+[TESTS] [END ] End of Testing Process
+[BUILD] [END  ] [OK] All Tests are passed, ready to merge
 ````
 
 [ [Top] ](#table-of-content)

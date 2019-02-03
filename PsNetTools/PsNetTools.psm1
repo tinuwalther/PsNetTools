@@ -1,7 +1,8 @@
-<#
-    Generated at 02/03/2019 08:24:27 by Martin Walther
+﻿<#
+    Generated at 02/03/2019 17:38:15 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
+#region namespace PsNetTools
 Class PsNetAdapter {
 
     <#
@@ -670,35 +671,36 @@ Class PsNetPing {
 }
 
 function Get-PsNetAdapterConfiguration{
-    <#
+   <#
 
-    .SYNOPSIS
-       Get-PsNetAdapterConfiguration - List network adapter configuraion
+   .SYNOPSIS
+      Get-PsNetAdapterConfiguration - List network adapter configuraion
 
-    .DESCRIPTION
-       List network adapter configuraion for all adapters
+   .DESCRIPTION
+      List network adapter configuraion for all adapters
 
-    .NOTES
-       Author: Martin Walther
- 
-    .EXAMPLE
-       Get-PsNetAdapterConfiguration
+   .NOTES
+      Author: Martin Walther
 
-    #>
+   .EXAMPLE
+      Get-PsNetAdapterConfiguration
 
-    [CmdletBinding()]
-    param()   
-    begin {
-    }
- 
-    process {
-        return [PsNetAdapter]::GetNetadapterConfiguration()
-    }
+   #>
 
-    end {
-    }
+   [CmdletBinding()]
+   param()   
+   begin {
+   }
+
+   process {
+       return [PsNetAdapter]::GetNetadapterConfiguration()
+   }
+
+   end {
+   }
 
 }
+
 function Get-PsNetAdapters{
 
     <#
@@ -926,3 +928,4 @@ function Test-PsNetWping{
     }
 
 }
+#endregion
