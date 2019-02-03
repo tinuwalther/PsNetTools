@@ -1,10 +1,20 @@
-Class PsNetTools {
+Class PsNetAdapter {
 
     <#
-        [PsNetTools]::GetNetAdapters
-        [PsNetTools]::GetNetadapterConfiguration
+        [PsNetAdapter]::GetNetAdapters
+        [PsNetAdapter]::GetNetadapterConfiguration
     #>
-    
+
+    #region Properties with default values
+    [String]$Message = $null
+    #endregion
+
+    #region Constructor
+    PsNetAdapter(){
+        $this.Message = "Loading PsNetAdapter"
+    }
+    #endregion
+
     #region methods
     [object] static GetNetadapters(){
 
@@ -188,3 +198,4 @@ Class PsNetTools {
     }
     #endregion
 }
+

@@ -32,7 +32,7 @@ function Test-PsNetDig{
     }
     
     process {
-        return [PsNetTools]::dig($Destination)
+        return [PsNetDig]::dig($Destination)
     }
     
     end {

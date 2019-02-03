@@ -40,7 +40,7 @@ function Test-PsNetTping{
     }
 
     process {
-        return [PsNetTools]::tping($Destination, $TcpPort, $Timeout)
+        return [PsNetPing]::tping($Destination, $TcpPort, $Timeout)
     }
 
     end {

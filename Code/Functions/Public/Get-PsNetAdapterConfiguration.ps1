@@ -21,7 +21,7 @@ function Get-PsNetAdapterConfiguration{
     }
  
     process {
-        return [PsNetTools]::GetNetadapterConfiguration()
+        return [PsNetAdapter]::GetNetadapterConfiguration()
     }
 
     end {

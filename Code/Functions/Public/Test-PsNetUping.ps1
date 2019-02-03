@@ -40,7 +40,7 @@ function Test-PsNetUping{
     }
 
     process {
-        return [PsNetTools]::uping($Destination, $UdpPort, $Timeout)
+        return [PsNetPing]::uping($Destination, $UdpPort, $Timeout)
     }
 
     end {

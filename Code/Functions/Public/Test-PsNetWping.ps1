@@ -44,10 +44,10 @@ function Test-PsNetWping{
 
     process {
         if($NoProxy) {
-            return [PsNetTools]::wping($Destination, $Timeout, $true)
+            return [PsNetPing]::wping($Destination, $Timeout, $true)
         }
         else{
-            return [PsNetTools]::wping($Destination, $Timeout)
+            return [PsNetPing]::wping($Destination, $Timeout)
         }
     }
 
