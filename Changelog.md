@@ -2,7 +2,7 @@
 
 Version | Change
 -|-
-v0.3.0 | Adding Routing Table Methods
+v0.3.0 | Adding Routing Table and hosts-file Methods
 v0.2.4 | Change Build process for Class- and Manifest-file
 v0.2.3 | Bugfix Test-PsNetUping: UdpSucceeded is empty, should be Timed Out #18
 v0.2.2 | Bugfix PesterTests: Tests Passed: 0, Failed: 0 #16

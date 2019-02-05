@@ -26,7 +26,6 @@ Class PsNetRoutingTable{
 
         $function   = 'GetNetRoutingTable()'
         $ostypespec = $null
-        $command    = $null
         $routeprint = $null
         $resultset  = @()
 
@@ -197,8 +196,77 @@ Class PsNetRoutingTable{
         }                
         return $resultset
     }
+    #endregion
+}
 
+Class PsNetHostsTable {
+
+    #region Properties with default values
+    [String]$Message = $null
     #endregion
 
+    #region Constructor
+    PsNetHostsTable(){
+        $this.Message = "Loading PsNetHostsTable"
+    }
+    #endregion
+    
+    #region methods
+    [object] static GetPsNetHostsTable([OSType]$CurrentOS, [String]$Path) {
+
+        $function    = 'GetPsNetHostsTable()'
+        $filecontent = @()
+        $resultset   = @()
+
+        try{
+            if(Test-Path -Path $Path){
+                $ipv4pattern = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+                $filecontent = Get-Content -Path $Path
+                if($filecontent -match $ipv4pattern){
+                    $string = ($filecontent | Select-String -Pattern $ipv4pattern).Line
+                    for ($i = 0; $i -lt $string.Length; $i++){
+                        $line = ($string[$i]) -Split '\s+'
+                        $obj = [PSCustomObject]@{
+                            Succeeded          = $true
+                            IpAddress          = $line[0]
+                            Compuername        = $line[1]
+                            FullyQualifiedName = $line[2]
+                        }
+                        $resultset += $obj
+                    }
+                }
+                else{
+                    $obj = [PSCustomObject]@{
+                        Succeeded          = $true
+                        IpAddress          = '{}'
+                        Compuername        = '{}'
+                        FullyQualifiedName = '{}'
+                    }
+                    $resultset += $obj
+                }
+            }
+            else{
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Message    = "$Path not found"
+                }
+                $resultset += $obj
+            }
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded  = $false
+                Activity   = $($_.CategoryInfo).Activity
+                Message    = $($_.Exception.Message)
+                Category   = $($_.CategoryInfo).Category
+                Exception  = $($_.Exception.GetType().FullName)
+                TargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
+            $error.Clear()
+        }
+        return $resultset
+    }
+    #endregion
 }
 
