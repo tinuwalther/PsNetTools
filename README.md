@@ -9,6 +9,7 @@
 - [Get-PsNetAdapters](#get-psnetadapters)
 - [Get-PsNetAdapterConfiguration](#get-psnetadapterconfiguration)
 - [Get-PsNetRoutingTable](#get-psnetroutingtable)
+- [Get-PsNetHostsTable](#get-psnethoststable)
 
 # PsNetTools
 
@@ -193,6 +194,23 @@ Succeeded AddressFamily Destination     Netmask         Gateway     Interface   
      True IPv4          224.0.0.0       240.0.0.0       On-link     10.29.191.zzz 301
      True IPv4          255.255.255.255 255.255.255.255 On-link     127.0.0.1     331
      True IPv4          255.255.255.255 255.255.255.255 On-link     10.29.191.zzz 301
+````
+
+# Get-PsNetHostsTable
+
+Get-PsNetHostsTable - Get hostsfile
+Format the hostsfile to an object.
+
+Get-PsNetHostsTable
+
+````powershell
+Get-PsNetHostsTable
+
+Succeeded IpAddress    Compuername FullyQualifiedName
+--------- ---------    ----------- ------------------
+     True 192.168.1.27 computer1   computername1.fqdn
+     True 192.168.1.28 computer2
+     True 192.168.1.29 computer3   computername3.fqdn
 ````
 
 [ [Top] ](#table-of-contents)
