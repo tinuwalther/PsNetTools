@@ -1,5 +1,5 @@
 ﻿<#
-    Generated at 02/03/2019 17:38:15 by Martin Walther
+    Generated at 02/05/2019 10:39:12 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -306,17 +306,6 @@ Class PsNetDig {
         return $resultset
     }
     #endregion
-}
-
-
-<#
-    Enumerators
-#>
-
-enum OSType {
-    Linux
-    Mac
-    Windows
 }
 
 Class PsNetPing {
@@ -670,6 +659,210 @@ Class PsNetPing {
     #endregion
 }
 
+enum OSType {
+    Linux
+    Mac
+    Windows
+}
+
+Class PsNetRoutingTable{
+
+    <#
+        [PsNetRoutingTable]::GetNetRoutingTable()
+        https://msdn.microsoft.com/en-us/library/hh872448(v=vs.85).aspx
+    #>
+
+    #region Properties with default values
+    [String]$Message = $null
+    #endregion
+
+    #region Constructor
+    PsNetRoutingTable(){
+        $this.Message = "Loading PsNetRoutingTable"
+    }
+    #endregion
+    
+    #region methods
+    [object] static GetNetRoutingTable([OSType]$CurrentOS, [Int]$interfaceindex, [String]$IpVersion) {
+
+        $function   = 'GetNetRoutingTable()'
+        $ostypespec = $null
+        $command    = $null
+        $routeprint = $null
+        $resultset  = @()
+
+        try{
+            if($CurrentOS -eq [OSType]::Linux){
+                $ostypespec = 'Pinguin'
+            }
+            if($CurrentOS -eq [OSType]::Mac){
+                $ostypespec = 'Apfel'
+            }
+            if($CurrentOS -eq [OSType]::Windows){
+                $routeprint = netstat -rn
+            }
+            if($IpVersion -eq 'IPv4'){
+                $resultset += [PsNetRoutingTable]::FormatIPv4RoutingTable($routeprint)
+            }
+            if($IpVersion -eq 'IPv6'){
+                $resultset += [PsNetRoutingTable]::FormatIPv6RoutingTable($routeprint)
+            }
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded  = $false
+                CurrentOS  = $CurrentOS
+                Activity   = $($_.CategoryInfo).Activity
+                Message    = $($_.Exception.Message)
+                Category   = $($_.CategoryInfo).Category
+                Exception  = $($_.Exception.GetType().FullName)
+                TargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
+            $error.Clear()
+        }                
+        return $resultset
+    }
+
+    [object] static FormatIPv4RoutingTable([Object]$routeprint){
+
+        $function   = 'FormatIPv4RoutingTable()'
+        $resultset  = @()
+
+        try{
+            $InterfaceList = $routeprint -match 'Interface List'
+            $InterfaceListIndex = $routeprint.IndexOf($InterfaceList)
+
+            $IPv4RouteTable = $routeprint -match 'IPv4 Route Table'
+            $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+
+            $IPv6RouteTable = $routeprint -match 'IPv6 Route Table'
+            $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
+
+            $Interfaces = @()
+            $IPv4Table  = @()
+
+            for ($i = 0; $i -lt $routeprint.Length; $i++){
+                
+                if($i -eq $InterfaceListIndex){
+                    for ($i = $InterfaceListIndex; $i -lt $IPv4RouteTableIndex -1; $i++){
+                        $Interfaces += $routeprint[$i]
+                    }
+                }
+
+                if($i -eq $IPv4RouteTableIndex){
+                    for ($i = $IPv4RouteTableIndex; $i -lt $IPv6RouteTableIndex -1; $i++){
+                        $IPv4Table += $routeprint[$i]
+                    }
+                }
+
+            }
+
+            $IPv4Table -replace '=' | ForEach-Object{
+                $string = $_ -split '\s+'
+                if($string){
+                    if($string[5] -match '^\d'){
+                        $obj = [PSCustomObject]@{
+                            Succeeded     = $true
+                            AddressFamily = 'IPv4'
+                            Destination   = $string[1]
+                            Netmask       = $string[2]
+                            Gateway       = $string[3]
+                            Interface     = $string[4]
+                            Metric        = $string[5]
+                        }
+                        $resultset += $obj
+                    }
+                }
+            }
+
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded  = $false
+                Activity   = $($_.CategoryInfo).Activity
+                Message    = $($_.Exception.Message)
+                Category   = $($_.CategoryInfo).Category
+                Exception  = $($_.Exception.GetType().FullName)
+                TargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
+            $error.Clear()
+        }                
+        return $resultset
+    }
+
+    [object] static FormatIPv6RoutingTable([Object]$routeprint){
+
+        $function   = 'FormatIPv6RoutingTable()'
+        $resultset  = @()
+
+        try{
+            $InterfaceList = $routeprint -match 'Interface List'
+            $InterfaceListIndex = $routeprint.IndexOf($InterfaceList)
+
+            $IPv4RouteTable = $routeprint -match 'IPv4 Route Table'
+            $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+
+            $IPv6RouteTable = $routeprint -match 'IPv6 Route Table'
+            $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
+
+            $Interfaces = @()
+            $IPv6Table  = @()
+
+            for ($i = 0; $i -lt $routeprint.Length; $i++){
+                
+                if($i -eq $InterfaceListIndex){
+                    for ($i = $InterfaceListIndex; $i -lt $IPv4RouteTableIndex -1; $i++){
+                        $Interfaces += $routeprint[$i]
+                    }
+                }
+
+                if($i -eq $IPv6RouteTableIndex){
+                    for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
+                        $IPv6Table += $routeprint[$i]
+                    }
+                }
+
+            }
+
+            $IPv6Table -replace '=' | ForEach-Object{
+                $string = $_ -split '\s+'
+                if($string){
+                    if($string[1] -match '^\d'){
+                        $obj = [PSCustomObject]@{
+                            Succeeded     = $true 
+                            AddressFamily = 'IPv6'
+                            Index         = $string[1]
+                            Metric        = $string[2]
+                            Destination   = $string[3]
+                            Gateway       = $string[4]
+                        }
+                        $resultset += $obj
+                    }
+                }
+            }
+
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded  = $false
+                Activity   = $($_.CategoryInfo).Activity
+                Message    = $($_.Exception.Message)
+                Category   = $($_.CategoryInfo).Category
+                Exception  = $($_.Exception.GetType().FullName)
+                TargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
+            $error.Clear()
+        }                
+        return $resultset
+    }
+
+    #endregion
+
+}
+
 function Get-PsNetAdapterConfiguration{
    <#
 
@@ -726,12 +919,61 @@ function Get-PsNetAdapters{
     }
     
     process {
-        return [PsNetAdapter]::GetNetadapters() | Where-Object OperationalStatus -eq Up
+        return [PsNetAdapter]::GetNetadapters()
     }
     
     end {
     }
 
+}
+function Get-PsNetRoutingTable {
+
+    <#
+
+    .SYNOPSIS
+       Get-PsNetRoutingTable - Get Routing Table
+
+    .DESCRIPTION
+       Format the Routing Table to an object
+
+    .PARAMETER IpVersion
+       IPv4 or IPv6
+
+    .NOTES
+       Author: Martin Walther
+ 
+    .EXAMPLE
+       Get-PsNetRoutingTable
+
+    #>
+
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$false)]
+        [Int] $InterfaceIndex,
+
+        [ValidateSet('IPv4','IPv6')]        
+        [Parameter(Mandatory=$true)]
+        [String] $IpVersion
+    )  
+    
+    begin {
+    }
+    
+    process {
+        if($PSVersionTable.PSVersion.Major -lt 6){
+            $CurrentOS = [OSType]::Windows
+        }
+        else{
+            if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
+            if($IsLinux)  {$CurrentOS = [OSType]::Linux}
+            if($IsWindows){$CurrentOS = [OSType]::Windows}
+        }
+        return [PsNetRoutingTable]::GetNetRoutingTable($CurrentOS, $InterfaceIndex, $IpVersion)
+    }
+    
+    end {
+    }
 }
 function Test-PsNetDig{
 
