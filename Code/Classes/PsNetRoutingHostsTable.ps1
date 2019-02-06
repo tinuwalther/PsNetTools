@@ -61,10 +61,12 @@ Class PsNetRoutingTable{
 
         try{
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
+
                 $InterfaceList       = $routeprint -match 'Routing tables'
                 $IPv4RouteTable      = $routeprint -match 'Internet:'
                 $IPv6RouteTable      = $routeprint -match 'Internet6:'
-                $InterfaceListIndex  = $routeprint.IndexOf($InterfaceList) + 1
+
+                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList) + 1
                 $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
                 $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
 
@@ -101,10 +103,12 @@ Class PsNetRoutingTable{
 
             }
             if($CurrentOS -eq [OSType]::Windows){
+
                 $InterfaceList       = $routeprint -match 'Interface List'
                 $IPv4RouteTable      = $routeprint -match 'IPv4 Route Table'
                 $IPv6RouteTable      = $routeprint -match 'IPv6 Route Table'
-                $InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
+
+                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
                 $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
                 $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
 
@@ -137,7 +141,6 @@ Class PsNetRoutingTable{
                     }
                 }
             }
-
         }
         catch{
             $obj = [PSCustomObject]@{
@@ -158,54 +161,88 @@ Class PsNetRoutingTable{
     [object] static FormatIPv6RoutingTable([OSType]$CurrentOS,[Object]$routeprint){
 
         $function   = 'FormatIPv6RoutingTable()'
+        $IPv6Table  = @()
         $resultset  = @()
 
         try{
-            $InterfaceList = $routeprint -match 'Interface List'
-            $InterfaceListIndex = $routeprint.IndexOf($InterfaceList)
+            if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
 
-            $IPv4RouteTable = $routeprint -match 'IPv4 Route Table'
-            $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+                $InterfaceList       = $routeprint -match 'Routing tables'
+                $IPv4RouteTable      = $routeprint -match 'Internet:'
+                $IPv6RouteTable      = $routeprint -match 'Internet6:'
 
-            $IPv6RouteTable = $routeprint -match 'IPv6 Route Table'
-            $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
+                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList) + 1
+                #$IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
 
-            $Interfaces = @()
-            $IPv6Table  = @()
-
-            for ($i = 0; $i -lt $routeprint.Length; $i++){
-                
-                if($i -eq $InterfaceListIndex){
-                    for ($i = $InterfaceListIndex; $i -lt $IPv4RouteTableIndex -1; $i++){
-                        $Interfaces += $routeprint[$i]
-                    }
-                }
-
-                if($i -eq $IPv6RouteTableIndex){
-                    for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
-                        $IPv6Table += $routeprint[$i]
-                    }
-                }
-
-            }
-
-            $IPv6Table -replace '=' | ForEach-Object{
-                $string = $_ -split '\s+'
-                if($string){
-                    if($string[1] -match '^\d'){
-                        $obj = [PSCustomObject]@{
-                            Succeeded     = $true 
-                            AddressFamily = 'IPv6'
-                            Index         = $string[1]
-                            Metric        = $string[2]
-                            Destination   = $string[3]
-                            Gateway       = $string[4]
+                for ($i = 0; $i -lt $routeprint.Length; $i++){
+                    if($i -eq $IPv6RouteTableIndex){
+                        for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
+                            $IPv6Table += $routeprint[$i]
                         }
-                        $resultset += $obj
                     }
                 }
-            }
 
+                if($IPv6Table -contains $IPv6RouteTable){
+                    $IPv6Table = $IPv6Table -replace $IPv6RouteTable 
+                }
+                $IPv6Table | ForEach-Object{
+                    $string = $_ -split '\s+'
+                    if($string){
+                        if($string[0] -notmatch '^\Destination'){
+                            $obj = [PSCustomObject]@{
+                                Succeeded     = $true 
+                                AddressFamily = 'IPv6'
+                                Destination   = $string[0]
+                                Gateway       = $string[1]
+                                Flags         = $string[2]
+                                Netif         = $string[3]
+                                Expire        = $string[4]
+                            }
+                            $resultset += $obj
+                        }
+                    }
+                }
+
+            }
+            if($CurrentOS -eq [OSType]::Windows){
+
+                $InterfaceList       = $routeprint -match 'Interface List'
+                $IPv4RouteTable      = $routeprint -match 'IPv4 Route Table'
+                $IPv6RouteTable      = $routeprint -match 'IPv6 Route Table'
+
+                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
+                #$IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
+
+                for ($i = 0; $i -lt $routeprint.Length; $i++){
+                    if($i -eq $IPv6RouteTableIndex){
+                        for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
+                            $IPv6Table += $routeprint[$i]
+                        }
+                    }
+                }
+
+                if($IPv6Table -contains '='){
+                    $IPv6Table = $IPv6Table -replace '=' 
+                }
+                $IPv6Table | ForEach-Object{
+                    $string = $_ -split '\s+'
+                    if($string){
+                        if($string[1] -match '^\d'){
+                            $obj = [PSCustomObject]@{
+                                Succeeded     = $true 
+                                AddressFamily = 'IPv6'
+                                Index         = $string[1]
+                                Metric        = $string[2]
+                                Destination   = $string[3]
+                                Gateway       = $string[4]
+                            }
+                            $resultset += $obj
+                        }
+                    }
+                }
+            } 
         }
         catch{
             $obj = [PSCustomObject]@{

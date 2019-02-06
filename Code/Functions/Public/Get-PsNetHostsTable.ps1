@@ -43,8 +43,13 @@ function Get-PsNetHostsTable {
                 $CurrentOS = [OSType]::Windows
             }
         }
-        if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
-            $Path = "$($env:windir)\system32\drivers\etc\hosts"
+        if([String]::IsNullOrEmpty($Path)){
+            if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
+                $Path = "$($env:windir)\system32\drivers\etc\hosts"
+            }
+            else{
+                $Path = "/etc/hosts"
+            }
         }
         return [PsNetHostsTable]::GetPsNetHostsTable($CurrentOS, $Path)
     }
