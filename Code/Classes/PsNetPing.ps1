@@ -60,6 +60,7 @@ Class PsNetPing {
             } catch {
                 $obj = [PSCustomObject]@{
                     Succeeded  = $false
+                    Function   = $function
                     Activity   = $($_.CategoryInfo).Activity
                     Message    = $($_.Exception.Message)
                     Category   = $($_.CategoryInfo).Category
@@ -132,6 +133,7 @@ Class PsNetPing {
             } catch {
                 $obj = [PSCustomObject]@{
                     Succeeded  = $false
+                    Function   = $function
                     Activity   = $($_.CategoryInfo).Activity
                     Message    = $($_.Exception.Message)
                     Category   = $($_.CategoryInfo).Category
@@ -184,6 +186,7 @@ Class PsNetPing {
                 } catch [Exception]{
                     $obj = [PSCustomObject]@{
                         Succeeded  = $false
+                        Function   = $function
                         Activity   = $($_.CategoryInfo).Activity
                         Message    = $($_.Exception.Message)
                         Category   = $($_.CategoryInfo).Category
@@ -197,6 +200,7 @@ Class PsNetPing {
             } catch {
                 $obj = [PSCustomObject]@{
                     Succeeded  = $false
+                    Function   = $function
                     Activity   = $($_.CategoryInfo).Activity
                     Message    = $($_.Exception.Message)
                     Category   = $($_.CategoryInfo).Category
@@ -252,6 +256,7 @@ Class PsNetPing {
                 } catch {
                     $obj = [PSCustomObject]@{
                         Succeeded  = $false
+                        Function   = $function
                         Activity   = $($_.CategoryInfo).Activity
                         Message    = $($_.Exception.Message)
                         Category   = $($_.CategoryInfo).Category
@@ -265,6 +270,7 @@ Class PsNetPing {
             } catch {
                 $obj = [PSCustomObject]@{
                     Succeeded  = $false
+                    Function   = $function
                     Activity   = $($_.CategoryInfo).Activity
                     Message    = $($_.Exception.Message)
                     Category   = $($_.CategoryInfo).Category
@@ -321,6 +327,7 @@ Class PsNetPing {
                 } catch {
                     $obj = [PSCustomObject]@{
                         Succeeded  = $false
+                        Function   = $function
                         Activity   = $($_.CategoryInfo).Activity
                         Message    = $($_.Exception.Message)
                         Category   = $($_.CategoryInfo).Category
@@ -334,6 +341,7 @@ Class PsNetPing {
             } catch {
                 $obj = [PSCustomObject]@{
                     Succeeded  = $false
+                    Function   = $function
                     Activity   = $($_.CategoryInfo).Activity
                     Message    = $($_.Exception.Message)
                     Category   = $($_.CategoryInfo).Category

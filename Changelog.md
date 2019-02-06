@@ -2,6 +2,10 @@
 
 Version | Change
 -|-
+v0.3.3 | Adding Support for hosts-file Methods for MacOS
+v0.3.2 | Adding IPv6 Routing Table Methods for MacOS
+v0.3.1 | Adding IPv4 Routing Table Methods for MacOS
+v0.3.0 | Adding Routing Table and hosts-file Methods
 v0.2.4 | Change Build process for Class- and Manifest-file
 v0.2.3 | Bugfix Test-PsNetUping: UdpSucceeded is empty, should be Timed Out #18
 v0.2.2 | Bugfix PesterTests: Tests Passed: 0, Failed: 0 #16

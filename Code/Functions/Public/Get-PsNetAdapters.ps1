@@ -23,7 +23,7 @@ function Get-PsNetAdapters{
     }
     
     process {
-        return [PsNetAdapter]::GetNetadapters() | Where-Object OperationalStatus -eq Up
+        return [PsNetAdapter]::GetNetadapters()
     }
     
     end {
