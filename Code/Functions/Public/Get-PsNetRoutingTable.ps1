@@ -21,9 +21,6 @@ function Get-PsNetRoutingTable {
 
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$false)]
-        [Int] $InterfaceIndex,
-
         [ValidateSet('IPv4','IPv6')]        
         [Parameter(Mandatory=$true)]
         [String] $IpVersion
@@ -41,7 +38,7 @@ function Get-PsNetRoutingTable {
             if($IsLinux)  {$CurrentOS = [OSType]::Linux}
             if($IsWindows){$CurrentOS = [OSType]::Windows}
         }
-        return [PsNetRoutingTable]::GetNetRoutingTable($CurrentOS, $InterfaceIndex, $IpVersion)
+        return [PsNetRoutingTable]::GetNetRoutingTable($CurrentOS, $IpVersion)
     }
     
     end {

@@ -75,6 +75,7 @@ Class PsNetAdapter {
         catch{
             $obj = [PSCustomObject]@{
                 Succeeded  = $false
+                Function   = $function
                 Activity   = $($_.CategoryInfo).Activity
                 Message    = $($_.Exception.Message)
                 Category   = $($_.CategoryInfo).Category
@@ -185,6 +186,7 @@ Class PsNetAdapter {
         catch{
             $obj = [PSCustomObject]@{
                 Succeeded  = $false
+                Function   = $function
                 Activity   = $($_.CategoryInfo).Activity
                 Message    = $($_.Exception.Message)
                 Category   = $($_.CategoryInfo).Category
