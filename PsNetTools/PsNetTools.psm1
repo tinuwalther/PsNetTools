@@ -1,5 +1,5 @@
 <#
-    Generated at 02/06/2019 20:32:49 by Martin Walther
+    Generated at 02/08/2019 18:37:14 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -330,7 +330,7 @@ Class PsNetPing {
     #endregion
     
     #region methods
-    [object]static tping([String] $TargetName, [int] $TcpPort, [int] $Timeout) {
+    [object]static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
 
         $function  = 'tping()'
         $resultset = @()
@@ -348,7 +348,8 @@ Class PsNetPing {
                 $start     = Get-Date
                 $tcpclient = New-Object System.Net.Sockets.TcpClient
                 $connect   = $TcpClient.BeginConnect($TargetName,$TcpPort,$null,$null)
-                $patience  = $connect.AsyncWaitHandle.WaitOne($Timeout,$false) 
+                Start-Sleep -Milliseconds (20 + $mintimeout)
+                $patience  = $connect.AsyncWaitHandle.WaitOne($maxtimeout,$false) 
                 if(!($patience)){
                     $tcpsucceeded = $false
                 }
@@ -358,7 +359,7 @@ Class PsNetPing {
                 }
                 $tcpclient.Close()
                 $tcpclient.Dispose()
-                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
                 
                 $obj = [PSCustomObject]@{
                     Succeeded     = $true
@@ -366,7 +367,8 @@ Class PsNetPing {
                     TcpPort       = $TcpPort
                     TcpSucceeded  = $tcpsucceeded
                     Duration      = "$($duration)ms"
-                    MaxTimeout    = "$($Timeout)ms"
+                    MinTimeout    = "$($mintimeout)ms"
+                    MaxTimeout    = "$($maxtimeout)ms"
                 }
                 $resultset += $obj
         
@@ -387,7 +389,7 @@ Class PsNetPing {
         return $resultset    
     }
 
-    [object]static uping([String] $TargetName, [int] $UdpPort, [int] $Timeout) {
+    [object]static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
 
         $function  = 'uping()'
         $resultset = @()
@@ -409,13 +411,14 @@ Class PsNetPing {
                 $start     = Get-Date
                 $udpclient = New-Object System.Net.Sockets.UdpClient
                 $connect   = $udpclient.Connect($TargetName,$UdpPort)
-                $patience  = $udpclient.Client.ReceiveTimeout = $Timeout
+                $patience  = $udpclient.Client.ReceiveTimeout = $maxtimeout
                 
                 $dgram = new-object system.text.asciiencoding
                 $byte  = $dgram.GetBytes("TEST")
                 [void]$udpclient.Send($byte,$byte.length)
                 $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
-            
+                Start-Sleep -Milliseconds (20 + $mintimeout)
+
                 try{
                     $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
                 }
@@ -431,7 +434,7 @@ Class PsNetPing {
             
                 $udpclient.Close()
                 $udpclient.Dispose()
-                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
                 
                 $obj = [PSCustomObject]@{
                     Succeeded     = $true
@@ -439,7 +442,8 @@ Class PsNetPing {
                     UdpPort       = $UdpPort
                     UdpSucceeded  = $udpsucceeded
                     Duration      = "$($duration)ms"
-                    MaxTimeout    = "$($Timeout)ms"
+                    MinTimeout    = "$($mintimeout)ms"
+                    MaxTimeout    = "$($maxtimeout)ms"
                 }
                 $resultset += $obj
                     
@@ -460,7 +464,7 @@ Class PsNetPing {
         return $resultset    
     }
 
-    [object]static wping([String]$url,[int]$timeout) {
+    [object]static wping([String]$url, [int] $mintimeout, [int] $maxtimeout) {
 
         $function  = 'wping()'
         $resultset = @()
@@ -477,14 +481,15 @@ Class PsNetPing {
             try {
                 $start     = Get-Date
                 $webreqest = [system.Net.HttpWebRequest]::Create($url)
-                $webreqest.Timeout = $timeout
+                $webreqest.Timeout = $maxtimeout
+                Start-Sleep -Milliseconds (20 + $mintimeout)
 
                 try{
                     $response    = $webreqest.GetResponse()
                     $responseuri = $response.ResponseUri
                     $statuscode  = $response.StatusCode
                     $response.Close()
-                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
                     
                     $obj = [PSCustomObject]@{
                         Succeeded     = $true
@@ -492,7 +497,8 @@ Class PsNetPing {
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
                         Duration      = "$($duration)ms"
-                        MaxTimeout    = "$($Timeout)ms"
+                        MinTimeout    = "$($mintimeout)ms"
+                        MaxTimeout    = "$($maxtimeout)ms"
                     }
                     $resultset += $obj
 
@@ -527,7 +533,7 @@ Class PsNetPing {
         return $resultset    
     }
     
-    [object]static wping([String]$url,[int]$timeout,[bool]$noproxy) {
+    [object]static wping([String]$url, [int] $mintimeout, [int] $maxtimeout,[bool]$noproxy) {
 
         $function  = 'wping()'
         $resultset = @()
@@ -544,17 +550,18 @@ Class PsNetPing {
             try {
                 $start     = Get-Date
                 $webreqest = [system.Net.HttpWebRequest]::Create($url)
-                $webreqest.Timeout = $timeout
+                $webreqest.Timeout = $maxtimeout
                 if($noproxy){
                     $webreqest.Proxy = [System.Net.GlobalProxySelection]::GetEmptyWebProxy()
                 }
+                Start-Sleep -Milliseconds (20 + $mintimeout)
 
                 try{
                     $response    = $webreqest.GetResponse()
                     $responseuri = $response.ResponseUri
                     $statuscode  = $response.StatusCode
                     $response.Close()
-                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
                     
                     $obj = [PSCustomObject]@{
                         Succeeded     = $true
@@ -562,7 +569,8 @@ Class PsNetPing {
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
                         Duration      = "$($duration)ms"
-                        MaxTimeout    = "$($Timeout)ms"
+                        MinTimeout    = "$($mintimeout)ms"
+                        MaxTimeout    = "$($maxtimeout)ms"
                     }
                     $resultset += $obj
 
@@ -1232,10 +1240,13 @@ function Test-PsNetTping{
     .PARAMETER TcpPort
        Tcp Port to test
 
-    .PARAMETER Timeout
-       Max. Timeout in ms
+    .PARAMETER MinTimeout
+       Min. Timeout in ms, default is 0
 
-    .NOTES
+    .PARAMETER MaxTimeout
+       Max. Timeout in ms, default is 1000
+
+       .NOTES
        Author: Martin Walther
 
     .EXAMPLE
@@ -1251,14 +1262,17 @@ function Test-PsNetTping{
         [Parameter(Mandatory=$true)]
         [Int] $TcpPort,
 
-        [Parameter(Mandatory=$true)]
-        [Int] $Timeout
-    )    
+        [Parameter(Mandatory=$false)]
+        [Int] $MinTimeout = 0,
+
+        [Parameter(Mandatory=$false)]
+        [Int] $MaxTimeout = 1000
+   )    
     begin {
     }
 
     process {
-        return [PsNetPing]::tping($Destination, $TcpPort, $Timeout)
+        return [PsNetPing]::tping($Destination, $TcpPort, $MinTimeout, $MaxTimeout)
     }
 
     end {
@@ -1280,8 +1294,11 @@ function Test-PsNetUping{
     .PARAMETER UdpPort
        Udp Port to test
 
-    .PARAMETER Timeout
-       Max. Timeout in ms
+    .PARAMETER MinTimeout
+       Min. Timeout in ms, default is 0
+
+    .PARAMETER MaxTimeout
+       Max. Timeout in ms, default is 1000
 
     .NOTES
        Author: Martin Walther
@@ -1299,14 +1316,17 @@ function Test-PsNetUping{
          [Parameter(Mandatory=$true)]
          [Int] $UdpPort,
  
-         [Parameter(Mandatory=$true)]
-         [Int] $Timeout
+         [Parameter(Mandatory=$false)]
+         [Int] $MinTimeout = 0,
+
+         [Parameter(Mandatory=$false)]
+         [Int] $MaxTimeout = 1000
     )    
     begin {
     }
 
     process {
-        return [PsNetPing]::uping($Destination, $UdpPort, $Timeout)
+        return [PsNetPing]::uping($Destination, $UdpPort, $MinTimeout, $MaxTimeout)
     }
 
     end {
@@ -1326,10 +1346,13 @@ function Test-PsNetWping{
     .PARAMETER Destination
        Url to test
 
-    .PARAMETER Timeout
-       Max. Timeout in ms
+    .PARAMETER MinTimeout
+       Min. Timeout in ms, default is 0
 
-    .PARAMETER NoProxy
+    .PARAMETER MaxTimeout
+       Max. Timeout in ms, default is 1000
+
+       .PARAMETER NoProxy
        Test web request without a proxy
 
     .NOTES
@@ -1348,8 +1371,11 @@ function Test-PsNetWping{
          [Parameter(Mandatory=$true)]
          [String] $Destination,
 
-         [Parameter(Mandatory=$true)]
-         [Int] $Timeout,
+         [Parameter(Mandatory=$false)]
+         [Int] $MinTimeout = 0,
+
+         [Parameter(Mandatory=$false)]
+         [Int] $MaxTimeout = 1000,
  
          [Parameter(Mandatory=$false)]
          [Switch] $NoProxy
@@ -1358,12 +1384,15 @@ function Test-PsNetWping{
     }
 
     process {
-        if($NoProxy) {
-            return [PsNetPing]::wping($Destination, $Timeout, $true)
-        }
-        else{
-            return [PsNetPing]::wping($Destination, $Timeout)
-        }
+      if($Destination -notmatch '^http'){
+         $Destination = "http://$($Destination)"
+      }
+      if($NoProxy) {
+         return [PsNetPing]::wping($Destination, $MinTimeout, $MaxTimeout, $true)
+      }
+      else{
+         return [PsNetPing]::wping($Destination, $MinTimeout, $MaxTimeout)
+      }
     }
 
     end {

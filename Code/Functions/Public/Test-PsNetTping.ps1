@@ -14,10 +14,13 @@ function Test-PsNetTping{
     .PARAMETER TcpPort
        Tcp Port to test
 
-    .PARAMETER Timeout
-       Max. Timeout in ms
+    .PARAMETER MinTimeout
+       Min. Timeout in ms, default is 0
 
-    .NOTES
+    .PARAMETER MaxTimeout
+       Max. Timeout in ms, default is 1000
+
+       .NOTES
        Author: Martin Walther
 
     .EXAMPLE
@@ -33,14 +36,17 @@ function Test-PsNetTping{
         [Parameter(Mandatory=$true)]
         [Int] $TcpPort,
 
-        [Parameter(Mandatory=$true)]
-        [Int] $Timeout
-    )    
+        [Parameter(Mandatory=$false)]
+        [Int] $MinTimeout = 0,
+
+        [Parameter(Mandatory=$false)]
+        [Int] $MaxTimeout = 1000
+   )    
     begin {
     }
 
     process {
-        return [PsNetPing]::tping($Destination, $TcpPort, $Timeout)
+        return [PsNetPing]::tping($Destination, $TcpPort, $MinTimeout, $MaxTimeout)
     }
 
     end {

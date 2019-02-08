@@ -2,6 +2,7 @@
 
 Version | Change
 -|-
+v0.3.4 | Adding MinTimeout to PsNetPing Methods
 v0.3.3 | Adding Support for hosts-file Methods for MacOS
 v0.3.2 | Adding IPv6 Routing Table Methods for MacOS
 v0.3.1 | Adding IPv4 Routing Table Methods for MacOS

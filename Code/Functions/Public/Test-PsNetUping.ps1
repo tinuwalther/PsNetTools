@@ -14,8 +14,11 @@ function Test-PsNetUping{
     .PARAMETER UdpPort
        Udp Port to test
 
-    .PARAMETER Timeout
-       Max. Timeout in ms
+    .PARAMETER MinTimeout
+       Min. Timeout in ms, default is 0
+
+    .PARAMETER MaxTimeout
+       Max. Timeout in ms, default is 1000
 
     .NOTES
        Author: Martin Walther
@@ -33,14 +36,17 @@ function Test-PsNetUping{
          [Parameter(Mandatory=$true)]
          [Int] $UdpPort,
  
-         [Parameter(Mandatory=$true)]
-         [Int] $Timeout
+         [Parameter(Mandatory=$false)]
+         [Int] $MinTimeout = 0,
+
+         [Parameter(Mandatory=$false)]
+         [Int] $MaxTimeout = 1000
     )    
     begin {
     }
 
     process {
-        return [PsNetPing]::uping($Destination, $UdpPort, $Timeout)
+        return [PsNetPing]::uping($Destination, $UdpPort, $MinTimeout, $MaxTimeout)
     }
 
     end {
