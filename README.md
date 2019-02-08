@@ -10,6 +10,8 @@
 - [Get-PsNetAdapterConfiguration](#get-psnetadapterconfiguration)
 - [Get-PsNetRoutingTable](#get-psnetroutingtable)
 - [Get-PsNetHostsTable](#get-psnethoststable)
+- [How to Export settings](#how-to-export-settings)
+- [Who is behind a URI](#who-is-behind-a-uri)
 
 # PsNetTools
 
@@ -26,11 +28,18 @@ Import-Module .\PsNetTools.psd1 -Force
 List all ExportedCommands:  
 
 ````powershell
-Get-Module PsNetTools
+Get-Command -Module PsNetTools
 
-ModuleType Version Name       ExportedCommands
----------- ------- ----       ----------------
-Script     0.1.2   PsNetTools {PsNetDig, PsNetTping, PsNetUping, PsNetWping}
+CommandType     Name                                               Version    Source
+-----------     ----                                               -------    ------
+Function        Get-PsNetAdapterConfiguration                      0.3.3      PsNetTools
+Function        Get-PsNetAdapters                                  0.3.3      PsNetTools
+Function        Get-PsNetHostsTable                                0.3.3      PsNetTools
+Function        Get-PsNetRoutingTable                              0.3.3      PsNetTools
+Function        Test-PsNetDig                                      0.3.3      PsNetTools
+Function        Test-PsNetTping                                    0.3.3      PsNetTools
+Function        Test-PsNetUping                                    0.3.3      PsNetTools
+Function        Test-PsNetWping                                    0.3.3      PsNetTools
 ````
 
 # Test-PsNetDig
@@ -56,20 +65,22 @@ Duration    : 4ms
 Test-PsNetTping - tcp port scanner.  
 It's like the cmdlet Test-NetConnection, but with the ability to specify a timeout in ms.  
 
-Test-PsNetTping -Destination -TcpPort -Timeout
+Test-PsNetTping -Destination -TcpPort [-MinTimeout] [-MaxTimeout]
 
 - Destination: Hostname or IP Address or Alias or WebUrl
 - TcpPort:     Tcp Port to use
-- Timeout:     Timeout in ms
+- MinTimeout:  Timeout in ms (optional, default is 0ms)
+- MaxTimeout:  Timeout in ms (optional, default is 1000ms)
 
 ````powershell
-Test-PsNetTping -Destination 'sbb.ch' -TcpPort 443 -Timeout 100
+Test-PsNetTping -Destination 'sbb.ch' -TcpPort 443
 
 TargetName   : sbb.ch
 TcpPort      : 443
 TcpSucceeded : True
 Duration     : 22ms
-MaxTimeout   : 100ms
+MinTimeout   : 0ms
+MaxTimeout   : 1000ms
 ````
 
 # Test-PsNetUping
@@ -77,20 +88,22 @@ MaxTimeout   : 100ms
 Test-PsNetUping - udp port scanner.  
 It's like the cmdlet Test-NetConnection, but with the ability to specify a timeout in ms and query for udp.  
 
-Test-PsNetTping -Destination -UdpPort -Timeout
+Test-PsNetTping -Destination -UdpPort [-MinTimeout] [-MaxTimeout]
 
 - Destination: Hostname or IP Address or Alias or WebUrl
 - UdpPort:     Udp Port to use
-- Timeout:     Timeout in ms
+- MinTimeout:  Timeout in ms (optional, default is 0ms)
+- MaxTimeout:  Timeout in ms (optional, default is 1000ms)
 
 ````powershell
-Test-PsNetUping -Destination 'sbb.ch' -UdpPort 53 -Timeout 100
+Test-PsNetUping -Destination 'sbb.ch' -UdpPort 53
 
 TargetName   : sbb.ch
 UdpPort      : 53
 UdpSucceeded : False
 Duration     : 103ms
-MaxTimeout   : 100ms
+MinTimeout   : 0ms
+MaxTimeout   : 1000ms
 ````
 
 # Test-PsNetWping
@@ -98,20 +111,22 @@ MaxTimeout   : 100ms
 Test-PsNetWping - http web request scanner.  
 It's like the cmdlet Invoke-WebRequest, but with the ability to specify 'noproxy' with PowerShell 5.1.  
 
-Test-PsNetWping -Destination -Timeout [-NoProxy]
+Test-PsNetWping -Destination [-MinTimeout] [-MaxTimeout] [-NoProxy]
 
 - Destination: WebUri
-- Timeout:     Timeout in ms
-- NoProxy:     Switch
+- MinTimeout:  Timeout in ms (optional, default is 0ms)
+- MaxTimeout:  Timeout in ms (optional, default is 1000ms)
+- NoProxy:     Switch (optional)
 
 ````powershell
-Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000 -NoProxy
+Test-PsNetWping -Destination 'https://sbb.ch' -NoProxy
 
 TargetName  : https://sbb.ch
 ResponseUri : https://www.sbb.ch/de/
 StatusCode  : OK
 Duration    : 231ms
-MaxTimeout  : 1000ms
+MinTimeout   : 0ms
+MaxTimeout   : 1000ms
 ````
 
 # Get-PsNetAdapters
@@ -211,6 +226,60 @@ Succeeded IpAddress    Compuername FullyQualifiedName
      True 192.168.1.27 computer1   computername1.fqdn
      True 192.168.1.28 computer2
      True 192.168.1.29 computer3   computername3.fqdn
+````
+
+# How to Export settings
+
+You can easy export all the output of the commands as a JSON-file with the following CmdLets:
+
+- ConvertTo-JSON
+- Set-Content
+
+As an example run Test-PsNetDig:
+
+````powershell
+Test-PsNetDig sbb.ch
+
+Succeeded   : True
+TargetName  : sbb.ch
+IpV4Address : 194.150.245.142
+IpV6Address :
+Duration    : 61ms
+````
+
+Convert the result from Test-PsNetDig to a JSON-Object:
+
+````powershell
+Test-PsNetDig sbb.ch | ConvertTo-Json
+
+{
+    "Succeeded":  true,
+    "TargetName":  "sbb.ch",
+    "IpV4Address":  "194.150.245.142",
+    "IpV6Address":  null,
+    "Duration":  "0ms"
+}
+````
+
+Export the JSON-Object from Test-PsNetDig to a file:
+
+````powershell
+Test-PsNetDig sbb.ch | ConvertTo-Json | Set-Content D:\PsNetDig.json
+````
+
+# Who is behind a URI
+
+Test the correct URI for http://google.com
+
+````powershell
+Test-PsNetWping -Destination http://google.com -Timeout 1000
+
+Succeeded   : True
+TargetName  : http://google.com
+ResponseUri : http://www.google.com/
+StatusCode  : OK
+Duration    : 204ms
+MaxTimeout  : 1000ms
 ````
 
 [ [Top] ](#table-of-contents)

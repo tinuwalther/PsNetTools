@@ -21,15 +21,15 @@ else{
 Describe "Testing Test-PsNetWping on $($CurrentOS) OS" {
         
     it "[NEG] [$($CurrentOS)] Testing Test-PsNetWping with false Uri as parameter(s)"{
-        (Test-PsNetWping -Destination 'https:sbb.ch' -Timeout 2500).Succeeded | should BeFalse
+        (Test-PsNetWping -Destination 'https:sbb.ch' -MinTimeout 1000 -MaxTimeout 2500).Succeeded | should BeFalse
     }
 
     it "[POS] [$($CurrentOS)] Testing Test-PsNetWping without noproxy parameter(s)"{
-        (Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 2500).Succeeded | should BeTrue
+        (Test-PsNetWping -Destination 'https://sbb.ch' -MinTimeout 1000 -MaxTimeout 2500).Succeeded | should BeTrue
     }
 
     it "[POS] [$($CurrentOS)] Testing Test-PsNetWping with all parameter(s)"{
-        (Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 2500 -NoProxy).Succeeded | should BeTrue
+        (Test-PsNetWping -Destination 'https://sbb.ch' -MinTimeout 1000 -MaxTimeout 2500 -NoProxy).Succeeded | should BeTrue
     }
 
 }

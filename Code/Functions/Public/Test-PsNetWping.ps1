@@ -11,10 +11,13 @@ function Test-PsNetWping{
     .PARAMETER Destination
        Url to test
 
-    .PARAMETER Timeout
-       Max. Timeout in ms
+    .PARAMETER MinTimeout
+       Min. Timeout in ms, default is 0
 
-    .PARAMETER NoProxy
+    .PARAMETER MaxTimeout
+       Max. Timeout in ms, default is 1000
+
+       .PARAMETER NoProxy
        Test web request without a proxy
 
     .NOTES
@@ -33,8 +36,11 @@ function Test-PsNetWping{
          [Parameter(Mandatory=$true)]
          [String] $Destination,
 
-         [Parameter(Mandatory=$true)]
-         [Int] $Timeout,
+         [Parameter(Mandatory=$false)]
+         [Int] $MinTimeout = 0,
+
+         [Parameter(Mandatory=$false)]
+         [Int] $MaxTimeout = 1000,
  
          [Parameter(Mandatory=$false)]
          [Switch] $NoProxy
@@ -43,12 +49,15 @@ function Test-PsNetWping{
     }
 
     process {
-        if($NoProxy) {
-            return [PsNetPing]::wping($Destination, $Timeout, $true)
-        }
-        else{
-            return [PsNetPing]::wping($Destination, $Timeout)
-        }
+      if($Destination -notmatch '^http'){
+         $Destination = "http://$($Destination)"
+      }
+      if($NoProxy) {
+         return [PsNetPing]::wping($Destination, $MinTimeout, $MaxTimeout, $true)
+      }
+      else{
+         return [PsNetPing]::wping($Destination, $MinTimeout, $MaxTimeout)
+      }
     }
 
     end {
