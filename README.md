@@ -19,7 +19,7 @@
 
 PsNetTools is a cross platform PowerShell module to test some network features on Windows and Mac.  
 
-![PsNetTools](./Images/PsNetTools.png)
+![PsNetTools](./Images/NewPsNetTools.png)
 
 Image generated with [PSWordCloud](https://github.com/vexx32/PSWordCloud) by Joel Sallow.
 
