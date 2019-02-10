@@ -23,9 +23,15 @@ Describe "Testing Remove-PsNetHostsEntry on $($CurrentOS) OS" {
     it "[NEG] [$($CurrentOS)] Testing Remove-PsNetHostsEntry"{
         (Remove-PsNetHostsEntry -path 'C:\Temp\hosts' -IPAddress '127.0.0.1').Succeeded | should BeFalse
     }
-
-    it "[POS] [$($CurrentOS)] Testing Remove-PsNetHostsEntry"{
-        (Remove-PsNetHostsEntry -IPAddress '127.0.0.1').Succeeded | should BeTrue
+    if($CurrentOS -eq 'Win'){
+        it "[POS] [$($CurrentOS)] Testing Remove-PsNetHostsEntry"{
+            (Remove-PsNetHostsEntry -IPAddress '127.0.0.1').Succeeded | should BeTrue
+        }
+    }
+    else {
+        it "[POS] [$($CurrentOS)] Testing Remove-PsNetHostsEntry"{
+            (Remove-PsNetHostsEntry -IPAddress '127.0.0.1').Succeeded | should BeFalse
+        }
     }
 
 }

@@ -23,9 +23,15 @@ Describe "Testing Add-PsNetHostsEntry on $($CurrentOS) OS" {
     it "[NEG] [$($CurrentOS)] Testing Add-PsNetHostsEntry"{
         (Add-PsNetHostsEntry -path 'C:\Temp\hosts' -IPAddress '127.0.0.1' -Hostname tinu -FullyQualifiedName tinu.walther.ch).Succeeded | should BeFalse
     }
-
-    it "[POS] [$($CurrentOS)] Testing Add-PsNetHostsEntry"{
-        (Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname tinu -FullyQualifiedName tinu.walther.ch).Succeeded | should BeTrue
+    if($CurrentOS -eq 'Win'){
+        it "[POS] [$($CurrentOS)] Testing Add-PsNetHostsEntry"{
+            (Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname tinu -FullyQualifiedName tinu.walther.ch).Succeeded | should BeTrue
+        }
+    }
+    else{
+        it "[POS] [$($CurrentOS)] Testing Add-PsNetHostsEntry"{
+            (Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname tinu -FullyQualifiedName tinu.walther.ch).Succeeded | should BeFalse
+        }
     }
 
 }
