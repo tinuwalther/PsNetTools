@@ -10,14 +10,18 @@
 - [Get-PsNetAdapterConfiguration](#get-psnetadapterconfiguration)
 - [Get-PsNetRoutingTable](#get-psnetroutingtable)
 - [Get-PsNetHostsTable](#get-psnethoststable)
+- [Add-PsNetHostsEntry](#add-psnethostsentry)
+- [Remove-PsNetHostsEntry](#remove-psnethostsentry)
 - [How to Export settings](#how-to-export-settings)
-- [Who is behind a URI](#who-is-behind-a-uri)
+- [Who is behind an URI](#who-is-behind-an-uri)
 
 # PsNetTools
 
 PsNetTools is a cross platform PowerShell module to test some network features on Windows and Mac.  
 
-![PsNetTools](./Images/PsNetTools.png)
+![PsNetTools](./Images/NewPsNetTools.png)
+
+Image generated with [PSWordCloud](https://github.com/vexx32/PSWordCloud) by Joel Sallow.
 
 Import Module:  
 
@@ -32,14 +36,16 @@ Get-Command -Module PsNetTools
 
 CommandType     Name                                               Version    Source
 -----------     ----                                               -------    ------
-Function        Get-PsNetAdapterConfiguration                      0.3.3      PsNetTools
-Function        Get-PsNetAdapters                                  0.3.3      PsNetTools
-Function        Get-PsNetHostsTable                                0.3.3      PsNetTools
-Function        Get-PsNetRoutingTable                              0.3.3      PsNetTools
-Function        Test-PsNetDig                                      0.3.3      PsNetTools
-Function        Test-PsNetTping                                    0.3.3      PsNetTools
-Function        Test-PsNetUping                                    0.3.3      PsNetTools
-Function        Test-PsNetWping                                    0.3.3      PsNetTools
+Function        Add-PsNetHostsEntry                                0.3.5      PsNetTools
+Function        Get-PsNetAdapterConfiguration                      0.3.5      PsNetTools
+Function        Get-PsNetAdapters                                  0.3.5      PsNetTools
+Function        Get-PsNetHostsTable                                0.3.5      PsNetTools
+Function        Get-PsNetRoutingTable                              0.3.5      PsNetTools
+Function        Remove-PsNetHostsEntry                             0.3.5      PsNetTools
+Function        Test-PsNetDig                                      0.3.5      PsNetTools
+Function        Test-PsNetTping                                    0.3.5      PsNetTools
+Function        Test-PsNetUping                                    0.3.5      PsNetTools
+Function        Test-PsNetWping                                    0.3.5      PsNetTools
 ````
 
 # Test-PsNetDig
@@ -228,6 +234,48 @@ Succeeded IpAddress    Compuername FullyQualifiedName
      True 192.168.1.29 computer3   computername3.fqdn
 ````
 
+# Add-PsNetHostsEntry
+
+**WARNING:** Running this command with elevated privilege.
+
+Add-PsNetHostsEntry - Add an entry in the hosts-file  
+This Function create a backup for the hostsfile before overrite it. If the content is empty, the backup-file will be restored automatically.
+
+Add-PsNetHostsEntry -IPAddress -Hostname -FullyQualifiedName
+
+- IPAddress:          IP Address to add  
+- Hostname:           Hostname to add  
+- FullyQualifiedName: FullyQualifiedName to add  
+
+````powershell
+Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname tinu -FullyQualifiedName tinu.walther.ch
+
+Succeeded     : True
+Message       : Entry added
+Entry         : 127.0.0.1 tinu tinu.walther.ch
+BackupSavedAt : C:\Users\YourAccount\AppData\Local\Temp\hosts_20190210-150950.txt
+````
+
+# Remove-PsNetHostsEntry
+
+**WARNING:** Running this command with elevated privilege.
+
+Remove-PsNetHostsEntry - Remove an entry in the hosts-file  
+This Function create a backup for the hostsfile before overrite it. If the content is empty, the backup-file will be restored automatically.
+
+Remove-PsNetHostsEntry -IPAddress
+
+- IPAddress: IP Address to remove  
+
+````powershell
+Remove-PsNetHostsEntry -IPAddress 127.0.0.1
+
+Succeeded     : True
+Message       : Entry removed
+Entry         : 127.0.0.1 tinu tinu.walther.ch
+BackupSavedAt : C:\Users\YourAccount\AppData\Local\Temp\hosts_20190210-151244.txt
+````
+
 # How to Export settings
 
 You can easy export all the output of the commands as a JSON-file with the following CmdLets:
@@ -267,7 +315,7 @@ Export the JSON-Object from Test-PsNetDig to a file:
 Test-PsNetDig sbb.ch | ConvertTo-Json | Set-Content D:\PsNetDig.json
 ````
 
-# Who is behind a URI
+# Who is behind an URI
 
 Test the correct URI for http://google.com
 
