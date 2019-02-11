@@ -3,7 +3,7 @@ function Test-PsNetUping{
     <#
 
     .SYNOPSIS
-       Test-PsNetUping - Test Udp connectivity
+       Test-PsNetUping
 
     .DESCRIPTION
        Test connectivity to an endpoint over the specified Udp port
@@ -19,12 +19,12 @@ function Test-PsNetUping{
 
     .PARAMETER MaxTimeout
        Max. Timeout in ms, default is 1000
-
-    .NOTES
-       Author: Martin Walther
  
     .EXAMPLE
        Test-PsNetUping -Destination sbb.ch -UdpPort 53 -Timeout 100
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 

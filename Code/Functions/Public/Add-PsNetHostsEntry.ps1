@@ -19,12 +19,12 @@ function Add-PsNetHostsEntry {
 
     .PARAMETER FullyQualifiedName
        FullyQualifiedName to add
-
-    .NOTES
-       Author: Martin Walther
  
     .EXAMPLE
        Add-PsNetHostsEntry -IPAddress 127.0.0.1 -Hostname tinu -FullyQualifiedName tinu.walther.ch
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 

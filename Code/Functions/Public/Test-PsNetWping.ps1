@@ -3,7 +3,7 @@ function Test-PsNetWping{
     <#
 
     .SYNOPSIS
-       Test-PsNetWping - Test web request
+       Test-PsNetWping
 
     .DESCRIPTION
        Test web request to an Url
@@ -17,17 +17,17 @@ function Test-PsNetWping{
     .PARAMETER MaxTimeout
        Max. Timeout in ms, default is 1000
 
-       .PARAMETER NoProxy
-       Test web request without a proxy
-
-    .NOTES
-       Author: Martin Walther
+    .PARAMETER NoProxy
+      Test web request without a proxy
  
     .EXAMPLE
        Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000
 
     .EXAMPLE
        Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000 -NoProxy
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 

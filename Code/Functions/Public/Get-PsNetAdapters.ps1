@@ -3,16 +3,18 @@ function Get-PsNetAdapters{
     <#
 
     .SYNOPSIS
-       Get-PsNetAdapters - List network adapters
+       Get-PsNetAdapters
 
     .DESCRIPTION
        List all network adapters
 
-    .NOTES
-       Author: Martin Walther
+    .PARAMETER
  
     .EXAMPLE
        Get-PsNetAdapters
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 

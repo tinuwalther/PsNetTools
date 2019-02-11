@@ -48,6 +48,8 @@ Function        Test-PsNetUping                                    0.3.5      Ps
 Function        Test-PsNetWping                                    0.3.5      PsNetTools
 ````
 
+[PsNetTools](./Docs/PsNetTools.md)
+
 # Test-PsNetDig
 
 Test-PsNetDig - domain information groper.  

@@ -3,19 +3,19 @@ function Get-PsNetRoutingTable {
     <#
 
     .SYNOPSIS
-       Get-PsNetRoutingTable - Get Routing Table
+       Get-PsNetRoutingTable
 
     .DESCRIPTION
        Format the Routing Table to an object
 
     .PARAMETER IpVersion
        IPv4 or IPv6
+ 
+    .EXAMPLE
+       Get-PsNetRoutingTable -IpVersion IPv4
 
     .NOTES
        Author: Martin Walther
- 
-    .EXAMPLE
-       Get-PsNetRoutingTable
 
     #>
 

@@ -3,22 +3,22 @@ function Test-PsNetDig{
     <#
 
     .SYNOPSIS
-       Test-PsNetDig - PowerShell domain information groper
+       Test-PsNetDig
 
     .DESCRIPTION
        Resolves a hostname or an ip address
 
     .PARAMETER Destination
        Name or IP Address to resolve
-
-    .NOTES
-       Author: Martin Walther
  
     .EXAMPLE
        Test-PsNetDig -Destination sbb.ch
 
     .EXAMPLE
        'sbb.ch','ubs.ch' | Test-PsNetDig
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 
