@@ -339,25 +339,94 @@ Class PsNetHostsTable {
         $index     = -1
         $ok        = $null
 
+        $hostsfile = $Path
+
         if(Test-Path -Path $Path){
+
+            # For Mac and Linux
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "For $($CurrentOS): not implemented yet"
+                
+                $savefile  = "$($env:HOME)/hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+                
+                try{
+                    $BackupSavedAt = $null
+                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+
+                    $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                    if($newfilecontent){
+                        $index = $filecontent.IndexOf($newfilecontent)
+                    } 
+
+                    if($index -gt 0){
+                        $Succeeded     = $true
+                        $OkMessage     = 'Entry already exists'
+                        $Entry         = $newfilecontent
+                    }
+
+                    $addcontent = "$($IPAddress) $($Hostname) $($FullyQualifiedName)"
+                    if(-not(Test-Path $savefile)){ 
+                        $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
+                    }
+                    if($ok){
+                        $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru -ErrorAction Stop
+                        if($content.length -gt 0){
+                            $Succeeded     = $true
+                            $OkMessage     = 'Entry added'
+                            $Entry         = $addcontent
+                            $BackupSavedAt = $ok.FullName
+                        }
+                        else{
+                            Copy-Item -Path $savefile -Destination $hostsfile -Force
+                            throw "Add-Content: it's an empty string, restored $savefile"
+                        }
+                    }  
+                    else {
+                        throw "Add-Content: Could not save $($savefile)"
+                    }
+                    $obj = [PSCustomObject]@{
+                        Succeeded     = $Succeeded
+                        Message       = $OkMessage
+                        Entry         = $Entry
+                        BackupSavedAt = $BackupSavedAt
+                    }
+                    $resultset += $obj
                 }
-                $resultset += $obj
+                catch [UnauthorizedAccessException]{
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Function   = $function
+                        Message    = "Running this command with elevated privileges"
+                    }
+                    $resultset += $obj
+                    $error.Clear()
+                    Remove-Item $savefile -Force
+                }
+                catch {
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Function   = $function
+                        Activity   = $($_.CategoryInfo).Activity
+                        Message    = $($_.Exception.Message)
+                        Category   = $($_.CategoryInfo).Category
+                        Exception  = $($_.Exception.GetType().FullName)
+                        TargetName = $($_.CategoryInfo).TargetName
+                    }
+                    $resultset += $obj
+                    $error.Clear()
+                }
             }
+
+            # For Windows only
             if($CurrentOS -eq [OSType]::Windows){
+                
                 $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
                 $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-                $hostsfile = $Path
-                $savefile  = "$($env:TEMP)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+                $savefile  = "$($env:HOME)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
 
                 if($IsAdmin){
                     try{
                         $BackupSavedAt = $null
-                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+                        [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
                         $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
                         if($newfilecontent){
@@ -422,14 +491,14 @@ Class PsNetHostsTable {
                     $resultset += $obj
                 }
             }
-            else{
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "$Path not found"
-                }
-                $resultset += $obj
+        }
+        else{
+            $obj = [PSCustomObject]@{
+                Succeeded  = $false
+                Function   = $function
+                Message    = "$Path not found"
             }
+            $resultset += $obj
         }
         return $resultset
     }
@@ -440,21 +509,98 @@ Class PsNetHostsTable {
         $resultset = @()
         $index     = -1
         $ok        = $null
-        
+
+        $hostsfile = $Path
+
         if(Test-Path -Path $Path){
+
+            # For Mac and Linux
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "For $($CurrentOS): not implemented yet"
+                
+                $savefile  = "$($env:HOME)/hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+                
+                try{
+                    $BackupSavedAt = $null
+                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+
+                    $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                    if($newfilecontent){
+                        $index = $filecontent.IndexOf($newfilecontent)
+                    } 
+                    if($index -gt 0){
+                        $filecontent.RemoveAt($index)
+                        if([String]::IsNullOrEmpty($filecontent)){
+                            throw "RemoveAt: raised an error"
+                        }
+                        else{
+                            if(-not(Test-Path $savefile)){ 
+                                $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
+                            }
+                            if($ok){
+                                if([String]::IsNullOrEmpty($filecontent)){
+                                    throw "Set-Content: Value is an empty String"
+                                }
+                                $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force -ErrorAction Stop
+                                if($hostsfile.length -gt 0){
+                                    $Succeeded     = $true
+                                    $OkMessage     = 'Entry removed'
+                                    $Entry         = $newfilecontent
+                                    $BackupSavedAt = $ok.FullName
+                                }
+                                else{
+                                    Copy-Item -Path $savefile -Destination $hostsfile -Force
+                                    throw "Set-Content: File is empty, restored $savefile"
+                                }
+                            }
+                            else{
+                                throw "Set-Content: Could not save $($savefile)"
+                            }
+                        }
+                    }
+                    else{
+                        $Succeeded = $true
+                        $OkMessage = "Entry not available"
+                        $Entry     = $IPAddress
+                    }
+                    $obj = [PSCustomObject]@{
+                        Succeeded     = $Succeeded
+                        Message       = $OkMessage
+                        Entry         = $Entry
+                        BackupSavedAt = $BackupSavedAt
+                    }
+                    $resultset += $obj    
                 }
-                $resultset += $obj
+                catch [UnauthorizedAccessException]{
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Function   = $function
+                        Message    = "Running this command with elevated privileges"
+                    }
+                    $resultset += $obj
+                    $error.Clear()
+                    Remove-Item $savefile -Force
+                }
+                catch {
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Function   = $function
+                        Activity   = $($_.CategoryInfo).Activity
+                        Message    = $($_.Exception.Message)
+                        Category   = $($_.CategoryInfo).Category
+                        Exception  = $($_.Exception.GetType().FullName)
+                        TargetName = $($_.CategoryInfo).TargetName
+                    }
+                    $resultset += $obj
+                    $error.Clear()
+                }
             }
+            
+            # For Windows only
             if($CurrentOS -eq [OSType]::Windows){
+                
                 $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
                 $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-                $hostsfile = $Path
-                $savefile  = "$($env:TEMP)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+                $savefile  = "$($env:HOME)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
 
                 if($IsAdmin){
                     try{
@@ -541,7 +687,7 @@ Class PsNetHostsTable {
             }
             $resultset += $obj
         }
-    return $resultset
+        return $resultset
     }
 
     #endregion

@@ -2,6 +2,7 @@
 
 Version | Change
 -|-
+v0.3.6 | Adding Methods to add and remove hosts-entries for MacOS
 v0.3.5 | Adding Methods to add and remove hosts-entries for Windows
 v0.3.4 | Adding MinTimeout to PsNetPing Methods
 v0.3.3 | Adding Support for hosts-file Methods for MacOS
