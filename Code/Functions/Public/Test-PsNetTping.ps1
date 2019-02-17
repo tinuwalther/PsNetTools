@@ -3,7 +3,7 @@ function Test-PsNetTping{
     <#
 
     .SYNOPSIS
-       Test-PsNetUping - Test Tcp connectivity
+       Test-PsNetUping
 
     .DESCRIPTION
        Test connectivity to an endpoint over the specified Tcp port
@@ -20,11 +20,11 @@ function Test-PsNetTping{
     .PARAMETER MaxTimeout
        Max. Timeout in ms, default is 1000
 
-       .NOTES
-       Author: Martin Walther
-
     .EXAMPLE
        Test-PsNetTping -Destination sbb.ch -TcpPort 443 -Timeout 100
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 

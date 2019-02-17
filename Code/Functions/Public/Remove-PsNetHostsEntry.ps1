@@ -13,12 +13,12 @@ function Remove-PsNetHostsEntry {
 
     .PARAMETER IPAddress
        IP Address to remove
-
-    .NOTES
-       Author: Martin Walther
  
     .EXAMPLE
        Remove-PsNetHostsEntry -IPAddress 127.0.0.1
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 

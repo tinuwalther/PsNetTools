@@ -20,8 +20,8 @@ else{
 
 Describe "Testing Test-PsNetUping on $($CurrentOS) OS" {
     
-    it "[NEG] [$($CurrentOS)] Testing Test-PsNetTping with false Hostname as parameter(s)"{
-        (Test-PsNetTping -Destination 'sbb.powershell' -TcpPort 443 -MaxTimeout 1000).Succeeded | should BeFalse
+    it "[NEG] [$($CurrentOS)] Testing Test-PsNetUping with false Hostname as parameter(s)"{
+        (Test-PsNetUping -Destination 'sbb.powershell' -UdpPort 443 -MaxTimeout 1000).Succeeded | should BeFalse
     }
 
     it "[NEG] [$($CurrentOS)] Testing Test-PsNetUping with false Port as parameter(s)"{

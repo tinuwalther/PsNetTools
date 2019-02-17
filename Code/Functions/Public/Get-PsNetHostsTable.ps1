@@ -3,19 +3,19 @@ function Get-PsNetHostsTable {
     <#
 
     .SYNOPSIS
-       Get-PsNetHostsTable - Get hostsfile
+       Get-PsNetHostsTable
 
     .DESCRIPTION
        Format the hostsfile to an object
 
     .PARAMETER Path
        Path to the hostsfile, can be empty
+ 
+    .EXAMPLE
+       Get-PsNetHostsTable -Path "$($env:windir)\system32\drivers\etc\hosts"
 
     .NOTES
        Author: Martin Walther
- 
-    .EXAMPLE
-       Get-PsNetHostsTable
 
     #>
 

@@ -2,16 +2,18 @@ function Get-PsNetAdapterConfiguration{
    <#
 
    .SYNOPSIS
-      Get-PsNetAdapterConfiguration - List network adapter configuraion
+      Get-PsNetAdapterConfiguration
 
    .DESCRIPTION
       List network adapter configuraion for all adapters
 
-   .NOTES
-      Author: Martin Walther
+   .PARAMETER
 
    .EXAMPLE
       Get-PsNetAdapterConfiguration
+
+    .NOTES
+      Author: Martin Walther
 
    #>
 

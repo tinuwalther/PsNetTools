@@ -1,5 +1,5 @@
 <#
-    Generated at 02/10/2019 15:24:07 by Martin Walther
+    Generated at 02/17/2019 11:56:37 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -355,7 +355,9 @@ Class PsNetPing {
                 }
                 else{
                     $tcpsucceeded = $tcpclient.Connected
-                    $tcpclient.EndConnect($connect)
+                    if($tcpsucceeded){
+                        $tcpclient.EndConnect($connect)
+                    }
                 }
                 $tcpclient.Close()
                 $tcpclient.Dispose()
@@ -1019,25 +1021,94 @@ Class PsNetHostsTable {
         $index     = -1
         $ok        = $null
 
+        $hostsfile = $Path
+
         if(Test-Path -Path $Path){
+
+            # For Mac and Linux
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "For $($CurrentOS): not implemented yet"
+                
+                $savefile  = "$($env:HOME)/hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+                
+                try{
+                    $BackupSavedAt = $null
+                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+
+                    $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                    if($newfilecontent){
+                        $index = $filecontent.IndexOf($newfilecontent)
+                    } 
+
+                    if($index -gt 0){
+                        $Succeeded     = $true
+                        $OkMessage     = 'Entry already exists'
+                        $Entry         = $newfilecontent
+                    }
+
+                    $addcontent = "$($IPAddress) $($Hostname) $($FullyQualifiedName)"
+                    if(-not(Test-Path $savefile)){ 
+                        $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
+                    }
+                    if($ok){
+                        $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru -ErrorAction Stop
+                        if($content.length -gt 0){
+                            $Succeeded     = $true
+                            $OkMessage     = 'Entry added'
+                            $Entry         = $addcontent
+                            $BackupSavedAt = $ok.FullName
+                        }
+                        else{
+                            Copy-Item -Path $savefile -Destination $hostsfile -Force
+                            throw "Add-Content: it's an empty string, restored $savefile"
+                        }
+                    }  
+                    else {
+                        throw "Add-Content: Could not save $($savefile)"
+                    }
+                    $obj = [PSCustomObject]@{
+                        Succeeded     = $Succeeded
+                        Message       = $OkMessage
+                        Entry         = $Entry
+                        BackupSavedAt = $BackupSavedAt
+                    }
+                    $resultset += $obj
                 }
-                $resultset += $obj
+                catch [UnauthorizedAccessException]{
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Function   = $function
+                        Message    = "Running this command with elevated privileges"
+                    }
+                    $resultset += $obj
+                    $error.Clear()
+                    Remove-Item $savefile -Force
+                }
+                catch {
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Function   = $function
+                        Activity   = $($_.CategoryInfo).Activity
+                        Message    = $($_.Exception.Message)
+                        Category   = $($_.CategoryInfo).Category
+                        Exception  = $($_.Exception.GetType().FullName)
+                        TargetName = $($_.CategoryInfo).TargetName
+                    }
+                    $resultset += $obj
+                    $error.Clear()
+                }
             }
+
+            # For Windows only
             if($CurrentOS -eq [OSType]::Windows){
+                
                 $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
                 $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-                $hostsfile = $Path
-                $savefile  = "$($env:TEMP)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+                $savefile  = "$($env:HOME)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
 
                 if($IsAdmin){
                     try{
                         $BackupSavedAt = $null
-                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+                        [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
                         $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
                         if($newfilecontent){
@@ -1102,14 +1173,14 @@ Class PsNetHostsTable {
                     $resultset += $obj
                 }
             }
-            else{
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "$Path not found"
-                }
-                $resultset += $obj
+        }
+        else{
+            $obj = [PSCustomObject]@{
+                Succeeded  = $false
+                Function   = $function
+                Message    = "$Path not found"
             }
+            $resultset += $obj
         }
         return $resultset
     }
@@ -1120,21 +1191,98 @@ Class PsNetHostsTable {
         $resultset = @()
         $index     = -1
         $ok        = $null
-        
+
+        $hostsfile = $Path
+
         if(Test-Path -Path $Path){
+
+            # For Mac and Linux
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "For $($CurrentOS): not implemented yet"
+                
+                $savefile  = "$($env:HOME)/hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+                
+                try{
+                    $BackupSavedAt = $null
+                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+
+                    $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                    if($newfilecontent){
+                        $index = $filecontent.IndexOf($newfilecontent)
+                    } 
+                    if($index -gt 0){
+                        $filecontent.RemoveAt($index)
+                        if([String]::IsNullOrEmpty($filecontent)){
+                            throw "RemoveAt: raised an error"
+                        }
+                        else{
+                            if(-not(Test-Path $savefile)){ 
+                                $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
+                            }
+                            if($ok){
+                                if([String]::IsNullOrEmpty($filecontent)){
+                                    throw "Set-Content: Value is an empty String"
+                                }
+                                $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force -ErrorAction Stop
+                                if($hostsfile.length -gt 0){
+                                    $Succeeded     = $true
+                                    $OkMessage     = 'Entry removed'
+                                    $Entry         = $newfilecontent
+                                    $BackupSavedAt = $ok.FullName
+                                }
+                                else{
+                                    Copy-Item -Path $savefile -Destination $hostsfile -Force
+                                    throw "Set-Content: File is empty, restored $savefile"
+                                }
+                            }
+                            else{
+                                throw "Set-Content: Could not save $($savefile)"
+                            }
+                        }
+                    }
+                    else{
+                        $Succeeded = $true
+                        $OkMessage = "Entry not available"
+                        $Entry     = $IPAddress
+                    }
+                    $obj = [PSCustomObject]@{
+                        Succeeded     = $Succeeded
+                        Message       = $OkMessage
+                        Entry         = $Entry
+                        BackupSavedAt = $BackupSavedAt
+                    }
+                    $resultset += $obj    
                 }
-                $resultset += $obj
+                catch [UnauthorizedAccessException]{
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Function   = $function
+                        Message    = "Running this command with elevated privileges"
+                    }
+                    $resultset += $obj
+                    $error.Clear()
+                    Remove-Item $savefile -Force
+                }
+                catch {
+                    $obj = [PSCustomObject]@{
+                        Succeeded  = $false
+                        Function   = $function
+                        Activity   = $($_.CategoryInfo).Activity
+                        Message    = $($_.Exception.Message)
+                        Category   = $($_.CategoryInfo).Category
+                        Exception  = $($_.Exception.GetType().FullName)
+                        TargetName = $($_.CategoryInfo).TargetName
+                    }
+                    $resultset += $obj
+                    $error.Clear()
+                }
             }
+            
+            # For Windows only
             if($CurrentOS -eq [OSType]::Windows){
+                
                 $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
                 $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-                $hostsfile = $Path
-                $savefile  = "$($env:TEMP)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+                $savefile  = "$($env:HOME)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
 
                 if($IsAdmin){
                     try{
@@ -1221,7 +1369,7 @@ Class PsNetHostsTable {
             }
             $resultset += $obj
         }
-    return $resultset
+        return $resultset
     }
 
     #endregion
@@ -1248,12 +1396,12 @@ function Add-PsNetHostsEntry {
 
     .PARAMETER FullyQualifiedName
        FullyQualifiedName to add
-
-    .NOTES
-       Author: Martin Walther
  
     .EXAMPLE
        Add-PsNetHostsEntry -IPAddress 127.0.0.1 -Hostname tinu -FullyQualifiedName tinu.walther.ch
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 
@@ -1309,16 +1457,18 @@ function Get-PsNetAdapterConfiguration{
    <#
 
    .SYNOPSIS
-      Get-PsNetAdapterConfiguration - List network adapter configuraion
+      Get-PsNetAdapterConfiguration
 
    .DESCRIPTION
       List network adapter configuraion for all adapters
 
-   .NOTES
-      Author: Martin Walther
+   .PARAMETER
 
    .EXAMPLE
       Get-PsNetAdapterConfiguration
+
+    .NOTES
+      Author: Martin Walther
 
    #>
 
@@ -1341,16 +1491,18 @@ function Get-PsNetAdapters{
     <#
 
     .SYNOPSIS
-       Get-PsNetAdapters - List network adapters
+       Get-PsNetAdapters
 
     .DESCRIPTION
        List all network adapters
 
-    .NOTES
-       Author: Martin Walther
+    .PARAMETER
  
     .EXAMPLE
        Get-PsNetAdapters
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 
@@ -1373,19 +1525,19 @@ function Get-PsNetHostsTable {
     <#
 
     .SYNOPSIS
-       Get-PsNetHostsTable - Get hostsfile
+       Get-PsNetHostsTable
 
     .DESCRIPTION
        Format the hostsfile to an object
 
     .PARAMETER Path
        Path to the hostsfile, can be empty
+ 
+    .EXAMPLE
+       Get-PsNetHostsTable -Path "$($env:windir)\system32\drivers\etc\hosts"
 
     .NOTES
        Author: Martin Walther
- 
-    .EXAMPLE
-       Get-PsNetHostsTable
 
     #>
 
@@ -1433,19 +1585,19 @@ function Get-PsNetRoutingTable {
     <#
 
     .SYNOPSIS
-       Get-PsNetRoutingTable - Get Routing Table
+       Get-PsNetRoutingTable
 
     .DESCRIPTION
        Format the Routing Table to an object
 
     .PARAMETER IpVersion
        IPv4 or IPv6
+ 
+    .EXAMPLE
+       Get-PsNetRoutingTable -IpVersion IPv4
 
     .NOTES
        Author: Martin Walther
- 
-    .EXAMPLE
-       Get-PsNetRoutingTable
 
     #>
 
@@ -1489,12 +1641,12 @@ function Remove-PsNetHostsEntry {
 
     .PARAMETER IPAddress
        IP Address to remove
-
-    .NOTES
-       Author: Martin Walther
  
     .EXAMPLE
        Remove-PsNetHostsEntry -IPAddress 127.0.0.1
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 
@@ -1545,22 +1697,22 @@ function Test-PsNetDig{
     <#
 
     .SYNOPSIS
-       Test-PsNetDig - PowerShell domain information groper
+       Test-PsNetDig
 
     .DESCRIPTION
        Resolves a hostname or an ip address
 
     .PARAMETER Destination
        Name or IP Address to resolve
-
-    .NOTES
-       Author: Martin Walther
  
     .EXAMPLE
        Test-PsNetDig -Destination sbb.ch
 
     .EXAMPLE
        'sbb.ch','ubs.ch' | Test-PsNetDig
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 
@@ -1586,7 +1738,7 @@ function Test-PsNetTping{
     <#
 
     .SYNOPSIS
-       Test-PsNetUping - Test Tcp connectivity
+       Test-PsNetUping
 
     .DESCRIPTION
        Test connectivity to an endpoint over the specified Tcp port
@@ -1603,11 +1755,11 @@ function Test-PsNetTping{
     .PARAMETER MaxTimeout
        Max. Timeout in ms, default is 1000
 
-       .NOTES
-       Author: Martin Walther
-
     .EXAMPLE
        Test-PsNetTping -Destination sbb.ch -TcpPort 443 -Timeout 100
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 
@@ -1640,7 +1792,7 @@ function Test-PsNetUping{
     <#
 
     .SYNOPSIS
-       Test-PsNetUping - Test Udp connectivity
+       Test-PsNetUping
 
     .DESCRIPTION
        Test connectivity to an endpoint over the specified Udp port
@@ -1656,12 +1808,12 @@ function Test-PsNetUping{
 
     .PARAMETER MaxTimeout
        Max. Timeout in ms, default is 1000
-
-    .NOTES
-       Author: Martin Walther
  
     .EXAMPLE
        Test-PsNetUping -Destination sbb.ch -UdpPort 53 -Timeout 100
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 
@@ -1695,7 +1847,7 @@ function Test-PsNetWping{
     <#
 
     .SYNOPSIS
-       Test-PsNetWping - Test web request
+       Test-PsNetWping
 
     .DESCRIPTION
        Test web request to an Url
@@ -1709,17 +1861,17 @@ function Test-PsNetWping{
     .PARAMETER MaxTimeout
        Max. Timeout in ms, default is 1000
 
-       .PARAMETER NoProxy
-       Test web request without a proxy
-
-    .NOTES
-       Author: Martin Walther
+    .PARAMETER NoProxy
+      Test web request without a proxy
  
     .EXAMPLE
        Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000
 
     .EXAMPLE
        Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000 -NoProxy
+
+    .NOTES
+       Author: Martin Walther
 
     #>
 
