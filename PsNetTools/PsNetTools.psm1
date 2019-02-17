@@ -1,5 +1,5 @@
 <#
-    Generated at 02/16/2019 18:25:51 by Martin Walther
+    Generated at 02/17/2019 11:56:37 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -355,7 +355,9 @@ Class PsNetPing {
                 }
                 else{
                     $tcpsucceeded = $tcpclient.Connected
-                    $tcpclient.EndConnect($connect)
+                    if($tcpsucceeded){
+                        $tcpclient.EndConnect($connect)
+                    }
                 }
                 $tcpclient.Close()
                 $tcpclient.Dispose()

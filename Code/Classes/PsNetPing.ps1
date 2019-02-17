@@ -42,7 +42,9 @@ Class PsNetPing {
                 }
                 else{
                     $tcpsucceeded = $tcpclient.Connected
-                    $tcpclient.EndConnect($connect)
+                    if($tcpsucceeded){
+                        $tcpclient.EndConnect($connect)
+                    }
                 }
                 $tcpclient.Close()
                 $tcpclient.Dispose()
