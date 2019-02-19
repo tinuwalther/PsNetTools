@@ -9,7 +9,7 @@ function Test-PsNetUping{
        Test connectivity to an endpoint over the specified Udp port
 
     .PARAMETER Destination
-       Name or IP Address to test
+       A String or an Array of Strings with Names or IP Addresses to test
 
     .PARAMETER UdpPort
        Udp Port to test
@@ -21,7 +21,7 @@ function Test-PsNetUping{
        Max. Timeout in ms, default is 1000
  
     .EXAMPLE
-       Test-PsNetUping -Destination sbb.ch -UdpPort 53 -Timeout 100
+       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
 
     .NOTES
        Author: Martin Walther
@@ -31,7 +31,7 @@ function Test-PsNetUping{
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
-         [String] $Destination,
+         [String[]] $Destination,
 
          [Parameter(Mandatory=$true)]
          [Int] $UdpPort,
@@ -43,13 +43,17 @@ function Test-PsNetUping{
          [Int] $MaxTimeout = 1000
     )    
     begin {
-    }
+      $resultset = @()
+   }
 
     process {
-        return [PsNetPing]::uping($Destination, $UdpPort, $MinTimeout, $MaxTimeout)
+      foreach($item in $Destination){
+         $resultset += [PsNetPing]::uping($item, $UdpPort, $MinTimeout, $MaxTimeout)
+      }
     }
 
     end {
+      return $resultset
     }
 
 }

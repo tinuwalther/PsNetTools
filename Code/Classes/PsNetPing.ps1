@@ -55,6 +55,7 @@ Class PsNetPing {
                     TargetName    = $TargetName
                     TcpPort       = $TcpPort
                     TcpSucceeded  = $tcpsucceeded
+
                     Duration      = "$($duration)ms"
                     MinTimeout    = "$($mintimeout)ms"
                     MaxTimeout    = "$($maxtimeout)ms"
@@ -63,13 +64,17 @@ Class PsNetPing {
         
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $TargetName
+                    TcpPort       = $TcpPort
+                    TcpSucceeded  = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -130,6 +135,7 @@ Class PsNetPing {
                     TargetName    = $TargetName
                     UdpPort       = $UdpPort
                     UdpSucceeded  = $udpsucceeded
+
                     Duration      = "$($duration)ms"
                     MinTimeout    = "$($mintimeout)ms"
                     MaxTimeout    = "$($maxtimeout)ms"
@@ -138,13 +144,17 @@ Class PsNetPing {
                     
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $TargetName
+                    UdpPort       = $UdpPort
+                    UdpSucceeded  = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -185,6 +195,7 @@ Class PsNetPing {
                         TargetName    = $Url
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
+
                         Duration      = "$($duration)ms"
                         MinTimeout    = "$($mintimeout)ms"
                         MaxTimeout    = "$($maxtimeout)ms"
@@ -193,13 +204,16 @@ Class PsNetPing {
 
                 } catch [Exception]{
                     $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Activity   = $($_.CategoryInfo).Activity
-                        Message    = $($_.Exception.Message)
-                        Category   = $($_.CategoryInfo).Category
-                        Exception  = $($_.Exception.GetType().FullName)
-                        TargetName = $($_.CategoryInfo).TargetName
+                        Succeeded     = $false
+                        TargetName    = $Url
+                        StatusCode    = $false
+
+                        Function           = $function
+                        Message            = $($_.Exception.Message)
+                        Category           = $($_.CategoryInfo).Category
+                        Exception          = $($_.Exception.GetType().FullName)
+                        CategoryActivity   = $($_.CategoryInfo).Activity
+                        CategoryTargetName = $($_.CategoryInfo).TargetName
                     }
                     $resultset += $obj
                     $error.Clear()
@@ -207,13 +221,16 @@ Class PsNetPing {
 
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $Url
+                    StatusCode    = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -257,6 +274,7 @@ Class PsNetPing {
                         TargetName    = $Url
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
+
                         Duration      = "$($duration)ms"
                         MinTimeout    = "$($mintimeout)ms"
                         MaxTimeout    = "$($maxtimeout)ms"
@@ -265,13 +283,16 @@ Class PsNetPing {
 
                 } catch {
                     $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Activity   = $($_.CategoryInfo).Activity
-                        Message    = $($_.Exception.Message)
-                        Category   = $($_.CategoryInfo).Category
-                        Exception  = $($_.Exception.GetType().FullName)
-                        TargetName = $($_.CategoryInfo).TargetName
+                        Succeeded     = $false
+                        TargetName    = $Url
+                        StatusCode    = $false
+
+                        Function           = $function
+                        Message            = $($_.Exception.Message)
+                        Category           = $($_.CategoryInfo).Category
+                        Exception          = $($_.Exception.GetType().FullName)
+                        CategoryActivity   = $($_.CategoryInfo).Activity
+                        CategoryTargetName = $($_.CategoryInfo).TargetName
                     }
                     $resultset += $obj
                     $error.Clear()
@@ -279,13 +300,16 @@ Class PsNetPing {
 
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $Url
+                    StatusCode    = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -336,13 +360,16 @@ Class PsNetPing {
 
                 } catch {
                     $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Activity   = $($_.CategoryInfo).Activity
-                        Message    = $($_.Exception.Message)
-                        Category   = $($_.CategoryInfo).Category
-                        Exception  = $($_.Exception.GetType().FullName)
-                        TargetName = $($_.CategoryInfo).TargetName
+                        Succeeded     = $false
+                        TargetName    = $Uri
+                        StatusCode    = $false
+
+                        Function           = $function
+                        Message            = $($_.Exception.Message)
+                        Category           = $($_.CategoryInfo).Category
+                        Exception          = $($_.Exception.GetType().FullName)
+                        CategoryActivity   = $($_.CategoryInfo).Activity
+                        CategoryTargetName = $($_.CategoryInfo).TargetName
                     }
                     $resultset += $obj
                     $Error.Clear()
@@ -350,13 +377,16 @@ Class PsNetPing {
 
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $Uri
+                    StatusCode    = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()

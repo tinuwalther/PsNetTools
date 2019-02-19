@@ -74,13 +74,13 @@ Class PsNetAdapter {
         }
         catch{
             $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Activity   = $($_.CategoryInfo).Activity
-                Message    = $($_.Exception.Message)
-                Category   = $($_.CategoryInfo).Category
-                Exception  = $($_.Exception.GetType().FullName)
-                TargetName = $($_.CategoryInfo).TargetName
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
             $error.Clear()
@@ -185,13 +185,13 @@ Class PsNetAdapter {
         }
         catch{
             $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Activity   = $($_.CategoryInfo).Activity
-                Message    = $($_.Exception.Message)
-                Category   = $($_.CategoryInfo).Category
-                Exception  = $($_.Exception.GetType().FullName)
-                TargetName = $($_.CategoryInfo).TargetName
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
             $error.Clear()
