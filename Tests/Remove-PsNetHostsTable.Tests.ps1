@@ -30,7 +30,7 @@ Describe "Testing Remove-PsNetHostsEntry on $($CurrentOS) OS" {
     }
     else {
         it "[POS] [$($CurrentOS)] Testing Remove-PsNetHostsEntry"{
-            (Remove-PsNetHostsEntry -IPAddress '127.0.0.1').Succeeded | should BeFalse
+            (Remove-PsNetHostsEntry -IPAddress '127.0.0.1').Succeeded | should BeTrue
         }
     }
 

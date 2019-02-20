@@ -30,7 +30,7 @@ Describe "Testing Add-PsNetHostsEntry on $($CurrentOS) OS" {
     }
     else{
         it "[POS] [$($CurrentOS)] Testing Add-PsNetHostsEntry"{
-            (Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname tinu -FullyQualifiedName tinu.walther.ch).Succeeded | should BeFalse
+            (Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname tinu -FullyQualifiedName tinu.walther.ch).Succeeded | should BeTrue
         }
     }
 
