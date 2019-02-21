@@ -14,7 +14,7 @@
 - [Remove-PsNetHostsEntry](#remove-psnethostsentry)
 - [How to Export settings](#how-to-export-settings)
 - [Who is behind an URI](#who-is-behind-an-uri)
-- [Start-PsNetPortListener](#Start-PsNetPortListener)
+- [Start-PsNetPortListener](#start-psnetportlistener)
 
 # PsNetTools
 
@@ -395,8 +395,13 @@ Temporarily listen on a given TCP port for connections dumps connections to the 
 ````powershell
 Start-PsNetPortListener -TcpPort 443
 
-Listening on port 443, press CTRL+C to cancel
+Listening on TCP port 443, press CTRL+C to cancel
 
+DateTime            AddressFamily Address    Port
+--------            ------------- -------    ----
+21.02.2019 19:55:39  InterNetwork 127.0.0.1 53613
+21.02.2019 19:55:54  InterNetwork 127.0.0.1 53631
+21.02.2019 19:56:07  InterNetwork 127.0.0.1 53666
 Listener Closed Safely
 ````
 
