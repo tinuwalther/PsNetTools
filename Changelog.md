@@ -2,6 +2,7 @@
 
 Version | Change
 -|-
+v0.4.0 | Adding a TcpPortListener
 v0.3.9 | Change Test for elevated privileges on Mac or Linux
 v0.3.8 | Adding support for string-array to the parameter 'Destination'
 v0.3.7 | Fix Issue in PsNetTping, if the connection is refused

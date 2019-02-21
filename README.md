@@ -14,6 +14,7 @@
 - [Remove-PsNetHostsEntry](#remove-psnethostsentry)
 - [How to Export settings](#how-to-export-settings)
 - [Who is behind an URI](#who-is-behind-an-uri)
+- [Start-PsNetPortListener](#Start-PsNetPortListener)
 
 # PsNetTools
 
@@ -382,6 +383,21 @@ ResponseUri : http://www.google.com/
 StatusCode  : OK
 Duration    : 204ms
 MaxTimeout  : 1000ms
+````
+
+# Start-PsNetPortListener
+
+Temporarily listen on a given TCP port for connections dumps connections to the screen
+
+- TcpPort: The TCP port that the listener should attach to
+- MaxTimeout: MaxTimeout in milliseconds to wait, default is 5000
+
+````powershell
+Start-PsNetPortListener -TcpPort 443
+
+Listening on port 443, press CTRL+C to cancel
+
+Listener Closed Safely
 ````
 
 [ [Top] ](#table-of-contents)
