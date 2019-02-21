@@ -159,9 +159,12 @@ function Get-ExampleString {
         if($stringSearch.Count -gt 1){
             # Multiple Comment found
             foreach($item in $stringSearch){
-                $indexSearch = $content.IndexOf($item) + 1
+                $indexSearch = $content.IndexOf($item)
                 for ($i = 0; $i -lt $content.count; $i++){
                     if($indexSearch -eq $i){
+                        "$($content[$i].Trim())`n" | Out-File -FilePath $Path -Append
+                    }
+                    if($indexSearch + 1 -eq $i){
                         "- $($content[$i].Trim())`n" | Out-File -FilePath $Path -Append
                     }
                 }
@@ -169,10 +172,13 @@ function Get-ExampleString {
         }
         else{
             # Single Comment found
-            $indexSearch  = $content.IndexOf($stringSearch) + 1
+            $indexSearch  = $content.IndexOf($stringSearch)
             for ($i = 0; $i -lt $content.count; $i++){
                 if($indexSearch -eq $i){
-                    "$($content[$i].Trim())" | Out-File -FilePath $Path -Append
+                    "$($content[$i].Trim())`n" | Out-File -FilePath $Path -Append
+                }
+                if($indexSearch + 1 -eq $i){
+                    "- $($content[$i].Trim())`n" | Out-File -FilePath $Path -Append
                 }
             }
         }

@@ -9,13 +9,13 @@ function Test-PsNetDig{
        Resolves a hostname or an ip address
 
     .PARAMETER Destination
-       Name or IP Address to resolve
+       A String or an Array of Strings with Names or IP Addresses to resolve
  
     .EXAMPLE
-       Test-PsNetDig -Destination sbb.ch
+       Test-PsNetDig -Destination sbb.ch, google.com
 
     .EXAMPLE
-       'sbb.ch','ubs.ch' | Test-PsNetDig
+       sbb.ch, google.com | Test-PsNetDig
 
     .NOTES
        Author: Martin Walther
@@ -25,17 +25,21 @@ function Test-PsNetDig{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory= $true,ValueFromPipeline = $true)]
-        [String] $Destination
+        [String[]] $Destination
     ) 
        
     begin {
-    }
+      $resultset = @()
+   }
     
     process {
-        return [PsNetDig]::dig($Destination)
+      foreach($item in $Destination){
+         $resultset += [PsNetDig]::dig($item)
+      }
     }
     
     end {
+      return $resultset
     }
 
 }

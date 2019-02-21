@@ -36,6 +36,13 @@ Describe "Testing Test-PsNetDig on $($CurrentOS) OS" {
         (Test-PsNetDig -Destination '127.0.0.1').Succeeded | should BeTrue
     }
 
+    it "[POS] [$($CurrentOS)] Testing Test-PsNetDig with two Hostnames as parameter(s)"{
+        $ret = Test-PsNetDig -Destination sbb.ch, google.com
+        foreach($item in $ret){
+            $item.Succeeded  | should BeTrue
+        }
+    }
+
 }
 
 Pop-Location

@@ -9,7 +9,7 @@ function Test-PsNetWping{
        Test web request to an Url
 
     .PARAMETER Destination
-       Url to test
+       A String or an Array of Strings with Url's to test
 
     .PARAMETER MinTimeout
        Min. Timeout in ms, default is 0
@@ -21,10 +21,10 @@ function Test-PsNetWping{
       Test web request without a proxy
  
     .EXAMPLE
-       Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000
+       Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
 
     .EXAMPLE
-       Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000 -NoProxy
+       Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
 
     .NOTES
        Author: Martin Walther
@@ -34,7 +34,7 @@ function Test-PsNetWping{
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
-         [String] $Destination,
+         [String[]] $Destination,
 
          [Parameter(Mandatory=$false)]
          [Int] $MinTimeout = 0,
@@ -46,21 +46,30 @@ function Test-PsNetWping{
          [Switch] $NoProxy
     )  
     begin {
+      $resultset = @()
     }
 
     process {
-      if($Destination -notmatch '^http'){
-         $Destination = "http://$($Destination)"
-      }
       if($NoProxy) {
-         return [PsNetPing]::wping($Destination, $MinTimeout, $MaxTimeout, $true)
+         foreach($item in $Destination){
+            if($item -notmatch '^http'){
+               $item = "http://$($item)"
+            }
+            $resultset += [PsNetPing]::wping($item, $MinTimeout, $MaxTimeout, $true)
+         }
       }
       else{
-         return [PsNetPing]::wping($Destination, $MinTimeout, $MaxTimeout)
+         foreach($item in $Destination){
+            if($item -notmatch '^http'){
+               $item = "http://$($item)"
+            }
+            $resultset += [PsNetPing]::wping($item, $MinTimeout, $MaxTimeout)
+         }
       }
     }
 
     end {
+      return $resultset
     }
 
 }

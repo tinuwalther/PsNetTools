@@ -36,16 +36,16 @@ Get-Command -Module PsNetTools
 
 CommandType     Name                                               Version    Source
 -----------     ----                                               -------    ------
-Function        Add-PsNetHostsEntry                                0.3.5      PsNetTools
-Function        Get-PsNetAdapterConfiguration                      0.3.5      PsNetTools
-Function        Get-PsNetAdapters                                  0.3.5      PsNetTools
-Function        Get-PsNetHostsTable                                0.3.5      PsNetTools
-Function        Get-PsNetRoutingTable                              0.3.5      PsNetTools
-Function        Remove-PsNetHostsEntry                             0.3.5      PsNetTools
-Function        Test-PsNetDig                                      0.3.5      PsNetTools
-Function        Test-PsNetTping                                    0.3.5      PsNetTools
-Function        Test-PsNetUping                                    0.3.5      PsNetTools
-Function        Test-PsNetWping                                    0.3.5      PsNetTools
+Function        Add-PsNetHostsEntry                                0.3.8      PsNetTools
+Function        Get-PsNetAdapterConfiguration                      0.3.8      PsNetTools
+Function        Get-PsNetAdapters                                  0.3.8      PsNetTools
+Function        Get-PsNetHostsTable                                0.3.8      PsNetTools
+Function        Get-PsNetRoutingTable                              0.3.8      PsNetTools
+Function        Remove-PsNetHostsEntry                             0.3.8      PsNetTools
+Function        Test-PsNetDig                                      0.3.8      PsNetTools
+Function        Test-PsNetTping                                    0.3.8      PsNetTools
+Function        Test-PsNetUping                                    0.3.8      PsNetTools
+Function        Test-PsNetWping                                    0.3.8      PsNetTools
 ````
 
 [PsNetTools](./Docs/PsNetTools.md)
@@ -57,15 +57,28 @@ Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
 Test-PsNetDig -Destination
 
-- Destination: Hostname or IP Address or Alias or WebUrl
+- Destination: Hostname or IP Address or Alias or WebUrl as String or String-Array
+
+**Example 1:**
 
 ````powershell
-Test-PsNetDig -Destination 'sbb.ch' | Format-List
+Test-PsNetDig -Destination sbb.ch | Format-List
 
 TargetName  : sbb.ch
 IpV4Address : 194.150.245.142
 IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e
 Duration    : 4ms
+````
+
+**Example 2:**
+
+````powershell
+Test-PsNetDig -Destination sbb.ch,google.com | Format-Table
+
+Succeeded TargetName IpV4Address     IpV6Address Duration
+--------- ---------- -----------     ----------- --------
+     True sbb.ch     194.150.245.142             0ms
+     True google.com 172.217.168.46              1ms
 ````
 
 # Test-PsNetTping
@@ -75,13 +88,15 @@ It's like the cmdlet Test-NetConnection, but with the ability to specify a timeo
 
 Test-PsNetTping -Destination -TcpPort [-MinTimeout] [-MaxTimeout]
 
-- Destination: Hostname or IP Address or Alias or WebUrl
+- Destination: Hostname or IP Address or Alias or WebUrl as String or String-Array
 - TcpPort:     Tcp Port to use
 - MinTimeout:  Timeout in ms (optional, default is 0ms)
 - MaxTimeout:  Timeout in ms (optional, default is 1000ms)
 
+**Example 1:**
+
 ````powershell
-Test-PsNetTping -Destination 'sbb.ch' -TcpPort 443
+Test-PsNetTping -Destination sbb.ch -TcpPort 443
 
 TargetName   : sbb.ch
 TcpPort      : 443
@@ -91,6 +106,17 @@ MinTimeout   : 0ms
 MaxTimeout   : 1000ms
 ````
 
+**Example 2:**
+
+````powershell
+Test-PsNetTping -Destination sbb.ch,google.com -TcpPort 443 | Format-Table
+
+Succeeded TargetName TcpPort TcpSucceeded Duration MinTimeout MaxTimeout
+--------- ---------- ------- ------------ -------- ---------- ----------
+     True sbb.ch         443         True 20ms     0ms        1000ms
+     True google.com     443         True 5ms      0ms        1000ms
+````
+
 # Test-PsNetUping
 
 Test-PsNetUping - udp port scanner.  
@@ -98,13 +124,15 @@ It's like the cmdlet Test-NetConnection, but with the ability to specify a timeo
 
 Test-PsNetTping -Destination -UdpPort [-MinTimeout] [-MaxTimeout]
 
-- Destination: Hostname or IP Address or Alias or WebUrl
+- Destination: Hostname or IP Address or Alias or WebUrl as String or String-Array
 - UdpPort:     Udp Port to use
 - MinTimeout:  Timeout in ms (optional, default is 0ms)
 - MaxTimeout:  Timeout in ms (optional, default is 1000ms)
 
+**Example 1:**
+
 ````powershell
-Test-PsNetUping -Destination 'sbb.ch' -UdpPort 53
+Test-PsNetUping -Destination sbb.ch -UdpPort 53
 
 TargetName   : sbb.ch
 UdpPort      : 53
@@ -114,6 +142,17 @@ MinTimeout   : 0ms
 MaxTimeout   : 1000ms
 ````
 
+**Example 2:**
+
+````powershell
+Test-PsNetUping -Destination sbb.ch,google.com -UdpPort 53 | Format-Table
+
+Succeeded TargetName UdpPort UdpSucceeded Duration MinTimeout MaxTimeout
+--------- ---------- ------- ------------ -------- ---------- ----------
+     True sbb.ch          53        False 1022ms   0ms        1000ms
+     True google.com      53        False 1020ms   0ms        1000ms
+````
+
 # Test-PsNetWping
 
 Test-PsNetWping - http web request scanner.  
@@ -121,13 +160,15 @@ It's like the cmdlet Invoke-WebRequest, but with the ability to specify 'noproxy
 
 Test-PsNetWping -Destination [-MinTimeout] [-MaxTimeout] [-NoProxy]
 
-- Destination: WebUri
+- Destination: WebUri as String or String-Array
 - MinTimeout:  Timeout in ms (optional, default is 0ms)
 - MaxTimeout:  Timeout in ms (optional, default is 1000ms)
 - NoProxy:     Switch (optional)
 
+**Example 1:**
+
 ````powershell
-Test-PsNetWping -Destination 'https://sbb.ch' -NoProxy
+Test-PsNetWping -Destination https://sbb.ch -NoProxy
 
 TargetName  : https://sbb.ch
 ResponseUri : https://www.sbb.ch/de/
@@ -135,6 +176,17 @@ StatusCode  : OK
 Duration    : 231ms
 MinTimeout   : 0ms
 MaxTimeout   : 1000ms
+````
+
+**Example 2:**
+
+````powershell
+Test-PsNetWping -Destination https://sbb.ch, http://google.com | Format-Table
+
+Succeeded TargetName        ResponseUri            StatusCode Duration MinTimeout MaxTimeout
+--------- ----------        -----------            ---------- -------- ---------- ----------
+     True https://sbb.ch    https://www.sbb.ch/de/         OK 139ms    0ms        1000ms
+     True http://google.com http://www.google.com/         OK 146ms    0ms        1000ms
 ````
 
 # Get-PsNetAdapters
@@ -265,12 +317,12 @@ BackupSavedAt : C:\Users\YourAccount\AppData\Local\Temp\hosts_20190210-150950.tx
 Remove-PsNetHostsEntry - Remove an entry in the hosts-file  
 This Function create a backup for the hostsfile before overrite it. If the content is empty, the backup-file will be restored automatically.
 
-Remove-PsNetHostsEntry -IPAddress
+Remove-PsNetHostsEntry -Hostsentry
 
-- IPAddress: IP Address to remove  
+- Hostsentry: IP Address followed by the hostname to remove  
 
 ````powershell
-Remove-PsNetHostsEntry -IPAddress 127.0.0.1
+Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 tinu'
 
 Succeeded     : True
 Message       : Entry removed

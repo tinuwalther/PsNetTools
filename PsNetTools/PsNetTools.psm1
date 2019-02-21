@@ -1,5 +1,5 @@
 <#
-    Generated at 02/17/2019 11:56:37 by Martin Walther
+    Generated at 02/21/2019 17:56:18 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -79,13 +79,13 @@ Class PsNetAdapter {
         }
         catch{
             $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Activity   = $($_.CategoryInfo).Activity
-                Message    = $($_.Exception.Message)
-                Category   = $($_.CategoryInfo).Category
-                Exception  = $($_.Exception.GetType().FullName)
-                TargetName = $($_.CategoryInfo).TargetName
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
             $error.Clear()
@@ -190,13 +190,13 @@ Class PsNetAdapter {
         }
         catch{
             $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Activity   = $($_.CategoryInfo).Activity
-                Message    = $($_.Exception.Message)
-                Category   = $($_.CategoryInfo).Category
-                Exception  = $($_.Exception.GetType().FullName)
-                TargetName = $($_.CategoryInfo).TargetName
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
             $error.Clear()
@@ -294,13 +294,13 @@ Class PsNetDig {
             } 
             catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded          = $false
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -368,6 +368,7 @@ Class PsNetPing {
                     TargetName    = $TargetName
                     TcpPort       = $TcpPort
                     TcpSucceeded  = $tcpsucceeded
+
                     Duration      = "$($duration)ms"
                     MinTimeout    = "$($mintimeout)ms"
                     MaxTimeout    = "$($maxtimeout)ms"
@@ -376,13 +377,17 @@ Class PsNetPing {
         
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $TargetName
+                    TcpPort       = $TcpPort
+                    TcpSucceeded  = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -443,6 +448,7 @@ Class PsNetPing {
                     TargetName    = $TargetName
                     UdpPort       = $UdpPort
                     UdpSucceeded  = $udpsucceeded
+
                     Duration      = "$($duration)ms"
                     MinTimeout    = "$($mintimeout)ms"
                     MaxTimeout    = "$($maxtimeout)ms"
@@ -451,13 +457,17 @@ Class PsNetPing {
                     
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $TargetName
+                    UdpPort       = $UdpPort
+                    UdpSucceeded  = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -498,6 +508,7 @@ Class PsNetPing {
                         TargetName    = $Url
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
+
                         Duration      = "$($duration)ms"
                         MinTimeout    = "$($mintimeout)ms"
                         MaxTimeout    = "$($maxtimeout)ms"
@@ -506,13 +517,16 @@ Class PsNetPing {
 
                 } catch [Exception]{
                     $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Activity   = $($_.CategoryInfo).Activity
-                        Message    = $($_.Exception.Message)
-                        Category   = $($_.CategoryInfo).Category
-                        Exception  = $($_.Exception.GetType().FullName)
-                        TargetName = $($_.CategoryInfo).TargetName
+                        Succeeded     = $false
+                        TargetName    = $Url
+                        StatusCode    = $false
+
+                        Function           = $function
+                        Message            = $($_.Exception.Message)
+                        Category           = $($_.CategoryInfo).Category
+                        Exception          = $($_.Exception.GetType().FullName)
+                        CategoryActivity   = $($_.CategoryInfo).Activity
+                        CategoryTargetName = $($_.CategoryInfo).TargetName
                     }
                     $resultset += $obj
                     $error.Clear()
@@ -520,13 +534,16 @@ Class PsNetPing {
 
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $Url
+                    StatusCode    = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -570,6 +587,7 @@ Class PsNetPing {
                         TargetName    = $Url
                         ResponseUri   = $responseuri
                         StatusCode    = $statuscode
+
                         Duration      = "$($duration)ms"
                         MinTimeout    = "$($mintimeout)ms"
                         MaxTimeout    = "$($maxtimeout)ms"
@@ -578,13 +596,16 @@ Class PsNetPing {
 
                 } catch {
                     $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Activity   = $($_.CategoryInfo).Activity
-                        Message    = $($_.Exception.Message)
-                        Category   = $($_.CategoryInfo).Category
-                        Exception  = $($_.Exception.GetType().FullName)
-                        TargetName = $($_.CategoryInfo).TargetName
+                        Succeeded     = $false
+                        TargetName    = $Url
+                        StatusCode    = $false
+
+                        Function           = $function
+                        Message            = $($_.Exception.Message)
+                        Category           = $($_.CategoryInfo).Category
+                        Exception          = $($_.Exception.GetType().FullName)
+                        CategoryActivity   = $($_.CategoryInfo).Activity
+                        CategoryTargetName = $($_.CategoryInfo).TargetName
                     }
                     $resultset += $obj
                     $error.Clear()
@@ -592,13 +613,16 @@ Class PsNetPing {
 
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $Url
+                    StatusCode    = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -649,13 +673,16 @@ Class PsNetPing {
 
                 } catch {
                     $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Activity   = $($_.CategoryInfo).Activity
-                        Message    = $($_.Exception.Message)
-                        Category   = $($_.CategoryInfo).Category
-                        Exception  = $($_.Exception.GetType().FullName)
-                        TargetName = $($_.CategoryInfo).TargetName
+                        Succeeded     = $false
+                        TargetName    = $Uri
+                        StatusCode    = $false
+
+                        Function           = $function
+                        Message            = $($_.Exception.Message)
+                        Category           = $($_.CategoryInfo).Category
+                        Exception          = $($_.Exception.GetType().FullName)
+                        CategoryActivity   = $($_.CategoryInfo).Activity
+                        CategoryTargetName = $($_.CategoryInfo).TargetName
                     }
                     $resultset += $obj
                     $Error.Clear()
@@ -663,13 +690,16 @@ Class PsNetPing {
 
             } catch {
                 $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Activity   = $($_.CategoryInfo).Activity
-                    Message    = $($_.Exception.Message)
-                    Category   = $($_.CategoryInfo).Category
-                    Exception  = $($_.Exception.GetType().FullName)
-                    TargetName = $($_.CategoryInfo).TargetName
+                    Succeeded     = $false
+                    TargetName    = $Uri
+                    StatusCode    = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
                 }
                 $resultset += $obj
                 $error.Clear()
@@ -721,13 +751,13 @@ Class PsNetRoutingTable{
         }
         catch{
             $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Activity   = $($_.CategoryInfo).Activity
-                Message    = $($_.Exception.Message)
-                Category   = $($_.CategoryInfo).Category
-                Exception  = $($_.Exception.GetType().FullName)
-                TargetName = $($_.CategoryInfo).TargetName
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
             $error.Clear()
@@ -826,13 +856,13 @@ Class PsNetRoutingTable{
         }
         catch{
             $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Activity   = $($_.CategoryInfo).Activity
-                Message    = $($_.Exception.Message)
-                Category   = $($_.CategoryInfo).Category
-                Exception  = $($_.Exception.GetType().FullName)
-                TargetName = $($_.CategoryInfo).TargetName
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
             $error.Clear()
@@ -928,13 +958,13 @@ Class PsNetRoutingTable{
         }
         catch{
             $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Activity   = $($_.CategoryInfo).Activity
-                Message    = $($_.Exception.Message)
-                Category   = $($_.CategoryInfo).Category
-                Exception  = $($_.Exception.GetType().FullName)
-                TargetName = $($_.CategoryInfo).TargetName
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
             $error.Clear()
@@ -1000,13 +1030,13 @@ Class PsNetHostsTable {
         }
         catch{
             $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Activity   = $($_.CategoryInfo).Activity
-                Message    = $($_.Exception.Message)
-                Category   = $($_.CategoryInfo).Category
-                Exception  = $($_.Exception.GetType().FullName)
-                TargetName = $($_.CategoryInfo).TargetName
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
             }
             $resultset += $obj
             $error.Clear()
@@ -1028,73 +1058,75 @@ Class PsNetHostsTable {
             # For Mac and Linux
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
                 
+                $current   = (id -u)
+                $IsAdmin   = ($current -eq 0)
                 $savefile  = "$($env:HOME)/hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
                 
-                try{
-                    $BackupSavedAt = $null
-                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+                if($IsAdmin){
+                    try{
+                        $BackupSavedAt = $null
+                        [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                    $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
-                    if($newfilecontent){
-                        $index = $filecontent.IndexOf($newfilecontent)
-                    } 
+                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                        if($newfilecontent){
+                            $index = $filecontent.IndexOf($newfilecontent)
+                        } 
 
-                    if($index -gt 0){
-                        $Succeeded     = $true
-                        $OkMessage     = 'Entry already exists'
-                        $Entry         = $newfilecontent
-                    }
-
-                    $addcontent = "$($IPAddress) $($Hostname) $($FullyQualifiedName)"
-                    if(-not(Test-Path $savefile)){ 
-                        $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
-                    }
-                    if($ok){
-                        $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru -ErrorAction Stop
-                        if($content.length -gt 0){
+                        if($index -gt 0){
                             $Succeeded     = $true
-                            $OkMessage     = 'Entry added'
-                            $Entry         = $addcontent
-                            $BackupSavedAt = $ok.FullName
+                            $OkMessage     = 'Entry already exists'
+                            $Entry         = $newfilecontent
                         }
-                        else{
-                            Copy-Item -Path $savefile -Destination $hostsfile -Force
-                            throw "Add-Content: it's an empty string, restored $savefile"
+
+                        $addcontent = "$($IPAddress) $($Hostname) $($FullyQualifiedName)"
+                        if(-not(Test-Path $savefile)){ 
+                            $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
                         }
-                    }  
-                    else {
-                        throw "Add-Content: Could not save $($savefile)"
+                        if($ok){
+                            $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru -ErrorAction Stop
+                            if($content.length -gt 0){
+                                $Succeeded     = $true
+                                $OkMessage     = 'Entry added'
+                                $Entry         = $addcontent
+                                $BackupSavedAt = $ok.FullName
+                            }
+                            else{
+                                Copy-Item -Path $savefile -Destination $hostsfile -Force
+                                throw "Add-Content: it's an empty string, restored $savefile"
+                            }
+                        }  
+                        else {
+                            throw "Add-Content: Could not save $($savefile)"
+                        }
+                        $obj = [PSCustomObject]@{
+                            Succeeded     = $Succeeded
+                            Message       = $OkMessage
+                            Entry         = $Entry
+                            BackupSavedAt = $BackupSavedAt
+                        }
+                        $resultset += $obj
                     }
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $Succeeded
-                        Message       = $OkMessage
-                        Entry         = $Entry
-                        BackupSavedAt = $BackupSavedAt
+                    catch {
+                        $obj = [PSCustomObject]@{
+                            Succeeded          = $false
+                            Function           = $function
+                            Message            = $($_.Exception.Message)
+                            Category           = $($_.CategoryInfo).Category
+                            Exception          = $($_.Exception.GetType().FullName)
+                            CategoryActivity   = $($_.CategoryInfo).Activity
+                            CategoryTargetName = $($_.CategoryInfo).TargetName
+                        }
+                        $resultset += $obj
+                        $error.Clear()
                     }
-                    $resultset += $obj
                 }
-                catch [UnauthorizedAccessException]{
+                else{
                     $obj = [PSCustomObject]@{
                         Succeeded  = $false
                         Function   = $function
                         Message    = "Running this command with elevated privileges"
                     }
                     $resultset += $obj
-                    $error.Clear()
-                    Remove-Item $savefile -Force
-                }
-                catch {
-                    $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Activity   = $($_.CategoryInfo).Activity
-                        Message    = $($_.Exception.Message)
-                        Category   = $($_.CategoryInfo).Category
-                        Exception  = $($_.Exception.GetType().FullName)
-                        TargetName = $($_.CategoryInfo).TargetName
-                    }
-                    $resultset += $obj
-                    $error.Clear()
                 }
             }
 
@@ -1152,13 +1184,13 @@ Class PsNetHostsTable {
                     }
                     catch {
                         $obj = [PSCustomObject]@{
-                            Succeeded  = $false
-                            Function   = $function
-                            Activity   = $($_.CategoryInfo).Activity
-                            Message    = $($_.Exception.Message)
-                            Category   = $($_.CategoryInfo).Category
-                            Exception  = $($_.Exception.GetType().FullName)
-                            TargetName = $($_.CategoryInfo).TargetName
+                            Succeeded          = $false
+                            Function           = $function
+                            Message            = $($_.Exception.Message)
+                            Category           = $($_.CategoryInfo).Category
+                            Exception          = $($_.Exception.GetType().FullName)
+                            CategoryActivity   = $($_.CategoryInfo).Activity
+                            CategoryTargetName = $($_.CategoryInfo).TargetName
                         }
                         $resultset += $obj
                         $error.Clear()
@@ -1185,7 +1217,7 @@ Class PsNetHostsTable {
         return $resultset
     }
 
-    [object] static RemovePsNetHostEntry([OSType]$CurrentOS, [String]$Path, [String]$IPAddress) {
+    [object] static RemovePsNetHostEntry([OSType]$CurrentOS, [String]$Path, [String]$Hostsentry) {
 
         $function  = 'RemovePsNetHostEntry'
         $resultset = @()
@@ -1199,84 +1231,86 @@ Class PsNetHostsTable {
             # For Mac and Linux
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
                 
+                $current   = (id -u)
+                $IsAdmin   = ($current -eq 0)
                 $savefile  = "$($env:HOME)/hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
                 
-                try{
-                    $BackupSavedAt = $null
-                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+                if($IsAdmin){
+                    try{
+                        $BackupSavedAt = $null
+                        [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                    $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
-                    if($newfilecontent){
-                        $index = $filecontent.IndexOf($newfilecontent)
-                    } 
-                    if($index -gt 0){
-                        $filecontent.RemoveAt($index)
-                        if([String]::IsNullOrEmpty($filecontent)){
-                            throw "RemoveAt: raised an error"
-                        }
-                        else{
-                            if(-not(Test-Path $savefile)){ 
-                                $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
-                            }
-                            if($ok){
-                                if([String]::IsNullOrEmpty($filecontent)){
-                                    throw "Set-Content: Value is an empty String"
-                                }
-                                $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force -ErrorAction Stop
-                                if($hostsfile.length -gt 0){
-                                    $Succeeded     = $true
-                                    $OkMessage     = 'Entry removed'
-                                    $Entry         = $newfilecontent
-                                    $BackupSavedAt = $ok.FullName
-                                }
-                                else{
-                                    Copy-Item -Path $savefile -Destination $hostsfile -Force
-                                    throw "Set-Content: File is empty, restored $savefile"
-                                }
+                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
+                        if($newfilecontent){
+                            $index = $filecontent.IndexOf($newfilecontent)
+                        } 
+                        if($index -gt 0){
+                            $filecontent.RemoveAt($index)
+                            if([String]::IsNullOrEmpty($filecontent)){
+                                throw "RemoveAt: raised an error"
                             }
                             else{
-                                throw "Set-Content: Could not save $($savefile)"
+                                if(-not(Test-Path $savefile)){ 
+                                    $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
+                                }
+                                if($ok){
+                                    if([String]::IsNullOrEmpty($filecontent)){
+                                        throw "Set-Content: Value is an empty String"
+                                    }
+                                    $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force -ErrorAction Stop
+                                    if($hostsfile.length -gt 0){
+                                        $Succeeded     = $true
+                                        $OkMessage     = 'Entry removed'
+                                        $Entry         = $newfilecontent
+                                        $BackupSavedAt = $ok.FullName
+                                    }
+                                    else{
+                                        Copy-Item -Path $savefile -Destination $hostsfile -Force
+                                        throw "Set-Content: File is empty, restored $savefile"
+                                    }
+                                }
+                                else{
+                                    throw "Set-Content: Could not save $($savefile)"
+                                }
                             }
                         }
+                        else{
+                            $Succeeded = $true
+                            $OkMessage = "Entry not available"
+                            $Entry     = $Hostsentry
+                        }
+                        $obj = [PSCustomObject]@{
+                            Succeeded     = $Succeeded
+                            Message       = $OkMessage
+                            Entry         = $Entry
+                            BackupSavedAt = $BackupSavedAt
+                        }
+                        $resultset += $obj    
                     }
-                    else{
-                        $Succeeded = $true
-                        $OkMessage = "Entry not available"
-                        $Entry     = $IPAddress
+                    catch {
+                        $obj = [PSCustomObject]@{
+                            Succeeded          = $false
+                            Function           = $function
+                            Message            = $($_.Exception.Message)
+                            Category           = $($_.CategoryInfo).Category
+                            Exception          = $($_.Exception.GetType().FullName)
+                            CategoryActivity   = $($_.CategoryInfo).Activity
+                            CategoryTargetName = $($_.CategoryInfo).TargetName
+                        }
+                        $resultset += $obj
+                        $error.Clear()
                     }
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $Succeeded
-                        Message       = $OkMessage
-                        Entry         = $Entry
-                        BackupSavedAt = $BackupSavedAt
-                    }
-                    $resultset += $obj    
                 }
-                catch [UnauthorizedAccessException]{
+                else{
                     $obj = [PSCustomObject]@{
                         Succeeded  = $false
                         Function   = $function
                         Message    = "Running this command with elevated privileges"
                     }
                     $resultset += $obj
-                    $error.Clear()
-                    Remove-Item $savefile -Force
-                }
-                catch {
-                    $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Activity   = $($_.CategoryInfo).Activity
-                        Message    = $($_.Exception.Message)
-                        Category   = $($_.CategoryInfo).Category
-                        Exception  = $($_.Exception.GetType().FullName)
-                        TargetName = $($_.CategoryInfo).TargetName
-                    }
-                    $resultset += $obj
-                    $error.Clear()
                 }
             }
-            
+        
             # For Windows only
             if($CurrentOS -eq [OSType]::Windows){
                 
@@ -1289,7 +1323,7 @@ Class PsNetHostsTable {
                         $BackupSavedAt = $null
                         [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
                         if($newfilecontent){
                             $index = $filecontent.IndexOf($newfilecontent)
                         } 
@@ -1327,7 +1361,7 @@ Class PsNetHostsTable {
                         else{
                             $Succeeded = $true
                             $OkMessage = "Entry not available"
-                            $Entry     = $IPAddress
+                            $Entry     = $Hostsentry
                         }
                         $obj = [PSCustomObject]@{
                             Succeeded     = $Succeeded
@@ -1339,13 +1373,13 @@ Class PsNetHostsTable {
                     }
                     catch {
                         $obj = [PSCustomObject]@{
-                            Succeeded  = $false
-                            Function   = $function
-                            Activity   = $($_.CategoryInfo).Activity
-                            Message    = $($_.Exception.Message)
-                            Category   = $($_.CategoryInfo).Category
-                            Exception  = $($_.Exception.GetType().FullName)
-                            TargetName = $($_.CategoryInfo).TargetName
+                            Succeeded          = $false
+                            Function           = $function
+                            Message            = $($_.Exception.Message)
+                            Category           = $($_.CategoryInfo).Category
+                            Exception          = $($_.Exception.GetType().FullName)
+                            CategoryActivity   = $($_.CategoryInfo).Activity
+                            CategoryTargetName = $($_.CategoryInfo).TargetName
                         }
                         $resultset += $obj
                         $error.Clear()
@@ -1639,11 +1673,11 @@ function Remove-PsNetHostsEntry {
     .PARAMETER Path
        Path to the hostsfile, can be empty
 
-    .PARAMETER IPAddress
+    .PARAMETER Hostsentry
        IP Address to remove
  
     .EXAMPLE
-       Remove-PsNetHostsEntry -IPAddress 127.0.0.1
+       Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 tinu'
 
     .NOTES
        Author: Martin Walther
@@ -1656,7 +1690,7 @@ function Remove-PsNetHostsEntry {
         [String]$Path,
 
         [Parameter(Mandatory = $true)]
-        [String]$IPAddress
+        [String]$Hostsentry
     )
 
     begin {
@@ -1685,7 +1719,7 @@ function Remove-PsNetHostsEntry {
                 $Path = "/etc/hosts"
             }
         }
-        return [PsNetHostsTable]::RemovePsNetHostEntry($CurrentOS, $Path, $IPAddress)
+        return [PsNetHostsTable]::RemovePsNetHostEntry($CurrentOS, $Path, $Hostsentry)
     }
     
     end {
@@ -1703,13 +1737,13 @@ function Test-PsNetDig{
        Resolves a hostname or an ip address
 
     .PARAMETER Destination
-       Name or IP Address to resolve
+       A String or an Array of Strings with Names or IP Addresses to resolve
  
     .EXAMPLE
-       Test-PsNetDig -Destination sbb.ch
+       Test-PsNetDig -Destination sbb.ch, google.com
 
     .EXAMPLE
-       'sbb.ch','ubs.ch' | Test-PsNetDig
+       sbb.ch, google.com | Test-PsNetDig
 
     .NOTES
        Author: Martin Walther
@@ -1719,17 +1753,21 @@ function Test-PsNetDig{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory= $true,ValueFromPipeline = $true)]
-        [String] $Destination
+        [String[]] $Destination
     ) 
        
     begin {
-    }
+      $resultset = @()
+   }
     
     process {
-        return [PsNetDig]::dig($Destination)
+      foreach($item in $Destination){
+         $resultset += [PsNetDig]::dig($item)
+      }
     }
     
     end {
+      return $resultset
     }
 
 }
@@ -1744,7 +1782,7 @@ function Test-PsNetTping{
        Test connectivity to an endpoint over the specified Tcp port
 
     .PARAMETER Destination
-       Name or IP Address to test
+       A String or an Array of Strings with Names or IP Addresses to test
 
     .PARAMETER TcpPort
        Tcp Port to test
@@ -1756,7 +1794,7 @@ function Test-PsNetTping{
        Max. Timeout in ms, default is 1000
 
     .EXAMPLE
-       Test-PsNetTping -Destination sbb.ch -TcpPort 443 -Timeout 100
+       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80 -MaxTimeout 100
 
     .NOTES
        Author: Martin Walther
@@ -1766,7 +1804,7 @@ function Test-PsNetTping{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
-        [String] $Destination,
+        [String[]] $Destination,
 
         [Parameter(Mandatory=$true)]
         [Int] $TcpPort,
@@ -1778,14 +1816,18 @@ function Test-PsNetTping{
         [Int] $MaxTimeout = 1000
    )    
     begin {
+       $resultset = @()
     }
 
     process {
-        return [PsNetPing]::tping($Destination, $TcpPort, $MinTimeout, $MaxTimeout)
+       foreach($item in $Destination){
+         $resultset += [PsNetPing]::tping($item, $TcpPort, $MinTimeout, $MaxTimeout)
+      }
     }
 
     end {
-    }
+      return $resultset
+   }
 }
 function Test-PsNetUping{
 
@@ -1798,7 +1840,7 @@ function Test-PsNetUping{
        Test connectivity to an endpoint over the specified Udp port
 
     .PARAMETER Destination
-       Name or IP Address to test
+       A String or an Array of Strings with Names or IP Addresses to test
 
     .PARAMETER UdpPort
        Udp Port to test
@@ -1810,7 +1852,7 @@ function Test-PsNetUping{
        Max. Timeout in ms, default is 1000
  
     .EXAMPLE
-       Test-PsNetUping -Destination sbb.ch -UdpPort 53 -Timeout 100
+       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
 
     .NOTES
        Author: Martin Walther
@@ -1820,7 +1862,7 @@ function Test-PsNetUping{
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
-         [String] $Destination,
+         [String[]] $Destination,
 
          [Parameter(Mandatory=$true)]
          [Int] $UdpPort,
@@ -1832,13 +1874,17 @@ function Test-PsNetUping{
          [Int] $MaxTimeout = 1000
     )    
     begin {
-    }
+      $resultset = @()
+   }
 
     process {
-        return [PsNetPing]::uping($Destination, $UdpPort, $MinTimeout, $MaxTimeout)
+      foreach($item in $Destination){
+         $resultset += [PsNetPing]::uping($item, $UdpPort, $MinTimeout, $MaxTimeout)
+      }
     }
 
     end {
+      return $resultset
     }
 
 }
@@ -1853,7 +1899,7 @@ function Test-PsNetWping{
        Test web request to an Url
 
     .PARAMETER Destination
-       Url to test
+       A String or an Array of Strings with Url's to test
 
     .PARAMETER MinTimeout
        Min. Timeout in ms, default is 0
@@ -1865,10 +1911,10 @@ function Test-PsNetWping{
       Test web request without a proxy
  
     .EXAMPLE
-       Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000
+       Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
 
     .EXAMPLE
-       Test-PsNetWping -Destination 'https://sbb.ch' -Timeout 1000 -NoProxy
+       Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
 
     .NOTES
        Author: Martin Walther
@@ -1878,7 +1924,7 @@ function Test-PsNetWping{
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
-         [String] $Destination,
+         [String[]] $Destination,
 
          [Parameter(Mandatory=$false)]
          [Int] $MinTimeout = 0,
@@ -1890,21 +1936,30 @@ function Test-PsNetWping{
          [Switch] $NoProxy
     )  
     begin {
+      $resultset = @()
     }
 
     process {
-      if($Destination -notmatch '^http'){
-         $Destination = "http://$($Destination)"
-      }
       if($NoProxy) {
-         return [PsNetPing]::wping($Destination, $MinTimeout, $MaxTimeout, $true)
+         foreach($item in $Destination){
+            if($item -notmatch '^http'){
+               $item = "http://$($item)"
+            }
+            $resultset += [PsNetPing]::wping($item, $MinTimeout, $MaxTimeout, $true)
+         }
       }
       else{
-         return [PsNetPing]::wping($Destination, $MinTimeout, $MaxTimeout)
+         foreach($item in $Destination){
+            if($item -notmatch '^http'){
+               $item = "http://$($item)"
+            }
+            $resultset += [PsNetPing]::wping($item, $MinTimeout, $MaxTimeout)
+         }
       }
     }
 
     end {
+      return $resultset
     }
 
 }

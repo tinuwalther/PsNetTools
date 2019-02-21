@@ -40,6 +40,13 @@ Describe "Testing Test-PsNetUping on $($CurrentOS) OS" {
         (Test-PsNetUping -Destination '194.150.245.142' -UdpPort 53 -MaxTimeout 1000).Succeeded | should BeTrue
     }
 
+    it "[POS] [$($CurrentOS)] Testing Test-PsNetUping with two Hostnames as parameter(s)"{
+        $ret = Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 1000
+        foreach($item in $ret){
+            $item.Succeeded  | should BeTrue
+        }
+    }
+
 }
 
 Pop-Location

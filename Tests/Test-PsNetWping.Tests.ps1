@@ -32,6 +32,13 @@ Describe "Testing Test-PsNetWping on $($CurrentOS) OS" {
         (Test-PsNetWping -Destination 'https://sbb.ch' -MinTimeout 1000 -MaxTimeout 2500 -NoProxy).Succeeded | should BeTrue
     }
 
+    it "[POS] [$($CurrentOS)] Testing Test-PsNetWping with two Uri's as parameter(s)"{
+        $ret = Test-PsNetWping -Destination sbb.ch, google.com -MaxTimeout 2500
+        foreach($item in $ret){
+            $item.Succeeded  | should BeTrue
+        }
+    }
+
 }
 
 Pop-Location
