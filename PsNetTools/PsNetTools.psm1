@@ -1,5 +1,5 @@
 <#
-    Generated at 02/20/2019 18:44:30 by Martin Walther
+    Generated at 02/21/2019 17:56:18 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -1217,7 +1217,7 @@ Class PsNetHostsTable {
         return $resultset
     }
 
-    [object] static RemovePsNetHostEntry([OSType]$CurrentOS, [String]$Path, [String]$IPAddress) {
+    [object] static RemovePsNetHostEntry([OSType]$CurrentOS, [String]$Path, [String]$Hostsentry) {
 
         $function  = 'RemovePsNetHostEntry'
         $resultset = @()
@@ -1240,7 +1240,7 @@ Class PsNetHostsTable {
                         $BackupSavedAt = $null
                         [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
                         if($newfilecontent){
                             $index = $filecontent.IndexOf($newfilecontent)
                         } 
@@ -1277,7 +1277,7 @@ Class PsNetHostsTable {
                         else{
                             $Succeeded = $true
                             $OkMessage = "Entry not available"
-                            $Entry     = $IPAddress
+                            $Entry     = $Hostsentry
                         }
                         $obj = [PSCustomObject]@{
                             Succeeded     = $Succeeded
@@ -1323,7 +1323,7 @@ Class PsNetHostsTable {
                         $BackupSavedAt = $null
                         [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
                         if($newfilecontent){
                             $index = $filecontent.IndexOf($newfilecontent)
                         } 
@@ -1361,7 +1361,7 @@ Class PsNetHostsTable {
                         else{
                             $Succeeded = $true
                             $OkMessage = "Entry not available"
-                            $Entry     = $IPAddress
+                            $Entry     = $Hostsentry
                         }
                         $obj = [PSCustomObject]@{
                             Succeeded     = $Succeeded
@@ -1673,11 +1673,11 @@ function Remove-PsNetHostsEntry {
     .PARAMETER Path
        Path to the hostsfile, can be empty
 
-    .PARAMETER IPAddress
+    .PARAMETER Hostsentry
        IP Address to remove
  
     .EXAMPLE
-       Remove-PsNetHostsEntry -IPAddress 127.0.0.1
+       Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 tinu'
 
     .NOTES
        Author: Martin Walther
@@ -1690,7 +1690,7 @@ function Remove-PsNetHostsEntry {
         [String]$Path,
 
         [Parameter(Mandatory = $true)]
-        [String]$IPAddress
+        [String]$Hostsentry
     )
 
     begin {
@@ -1719,7 +1719,7 @@ function Remove-PsNetHostsEntry {
                 $Path = "/etc/hosts"
             }
         }
-        return [PsNetHostsTable]::RemovePsNetHostEntry($CurrentOS, $Path, $IPAddress)
+        return [PsNetHostsTable]::RemovePsNetHostEntry($CurrentOS, $Path, $Hostsentry)
     }
     
     end {

@@ -505,7 +505,7 @@ Class PsNetHostsTable {
         return $resultset
     }
 
-    [object] static RemovePsNetHostEntry([OSType]$CurrentOS, [String]$Path, [String]$IPAddress) {
+    [object] static RemovePsNetHostEntry([OSType]$CurrentOS, [String]$Path, [String]$Hostsentry) {
 
         $function  = 'RemovePsNetHostEntry'
         $resultset = @()
@@ -528,7 +528,7 @@ Class PsNetHostsTable {
                         $BackupSavedAt = $null
                         [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
                         if($newfilecontent){
                             $index = $filecontent.IndexOf($newfilecontent)
                         } 
@@ -565,7 +565,7 @@ Class PsNetHostsTable {
                         else{
                             $Succeeded = $true
                             $OkMessage = "Entry not available"
-                            $Entry     = $IPAddress
+                            $Entry     = $Hostsentry
                         }
                         $obj = [PSCustomObject]@{
                             Succeeded     = $Succeeded
@@ -611,7 +611,7 @@ Class PsNetHostsTable {
                         $BackupSavedAt = $null
                         [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
                         if($newfilecontent){
                             $index = $filecontent.IndexOf($newfilecontent)
                         } 
@@ -649,7 +649,7 @@ Class PsNetHostsTable {
                         else{
                             $Succeeded = $true
                             $OkMessage = "Entry not available"
-                            $Entry     = $IPAddress
+                            $Entry     = $Hostsentry
                         }
                         $obj = [PSCustomObject]@{
                             Succeeded     = $Succeeded

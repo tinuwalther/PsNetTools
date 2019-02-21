@@ -11,11 +11,11 @@ function Remove-PsNetHostsEntry {
     .PARAMETER Path
        Path to the hostsfile, can be empty
 
-    .PARAMETER IPAddress
+    .PARAMETER Hostsentry
        IP Address to remove
  
     .EXAMPLE
-       Remove-PsNetHostsEntry -IPAddress 127.0.0.1
+       Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 tinu'
 
     .NOTES
        Author: Martin Walther
@@ -28,7 +28,7 @@ function Remove-PsNetHostsEntry {
         [String]$Path,
 
         [Parameter(Mandatory = $true)]
-        [String]$IPAddress
+        [String]$Hostsentry
     )
 
     begin {
@@ -57,7 +57,7 @@ function Remove-PsNetHostsEntry {
                 $Path = "/etc/hosts"
             }
         }
-        return [PsNetHostsTable]::RemovePsNetHostEntry($CurrentOS, $Path, $IPAddress)
+        return [PsNetHostsTable]::RemovePsNetHostEntry($CurrentOS, $Path, $Hostsentry)
     }
     
     end {
