@@ -317,12 +317,12 @@ BackupSavedAt : C:\Users\YourAccount\AppData\Local\Temp\hosts_20190210-150950.tx
 Remove-PsNetHostsEntry - Remove an entry in the hosts-file  
 This Function create a backup for the hostsfile before overrite it. If the content is empty, the backup-file will be restored automatically.
 
-Remove-PsNetHostsEntry -IPAddress
+Remove-PsNetHostsEntry -Hostsentry
 
-- IPAddress: IP Address to remove  
+- Hostsentry: IP Address followed by the hostname to remove  
 
 ````powershell
-Remove-PsNetHostsEntry -IPAddress 127.0.0.1
+Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 tinu'
 
 Succeeded     : True
 Message       : Entry removed
