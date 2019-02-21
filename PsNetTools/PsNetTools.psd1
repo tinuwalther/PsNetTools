@@ -12,7 +12,7 @@
 RootModule = 'PsNetTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.3.9'
+ModuleVersion = '0.4.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -71,8 +71,8 @@ PowerShellVersion = '5.1'
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Add-PsNetHostsEntry', 'Get-PsNetAdapterConfiguration', 
                'Get-PsNetAdapters', 'Get-PsNetHostsTable', 'Get-PsNetRoutingTable', 
-               'Remove-PsNetHostsEntry', 'Test-PsNetDig', 'Test-PsNetTping', 
-               'Test-PsNetUping', 'Test-PsNetWping'
+               'Remove-PsNetHostsEntry', 'Start-PsNetPortListener', 'Test-PsNetDig', 
+               'Test-PsNetTping', 'Test-PsNetUping', 'Test-PsNetWping'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
