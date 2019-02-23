@@ -9,10 +9,10 @@ function Test-PsNetTping{
        Test connectivity to an endpoint over the specified Tcp port
 
     .PARAMETER Destination
-       A String or an Array of Strings with Names or IP Addresses to test
+       A String or an Array of Strings with Names or IP Addresses to test <string>
 
     .PARAMETER TcpPort
-       Tcp Port to test
+       An Integer or an Array of Integers with Tcp Ports to test <int>
 
     .PARAMETER MinTimeout
        Min. Timeout in ms, default is 0
@@ -21,7 +21,7 @@ function Test-PsNetTping{
        Max. Timeout in ms, default is 1000
 
     .EXAMPLE
-       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80 -MaxTimeout 100
+       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
 
     .NOTES
        Author: Martin Walther
@@ -34,7 +34,7 @@ function Test-PsNetTping{
         [String[]] $Destination,
 
         [Parameter(Mandatory=$true)]
-        [Int] $TcpPort,
+        [Int[]] $TcpPort,
 
         [Parameter(Mandatory=$false)]
         [Int] $MinTimeout = 0,
@@ -48,7 +48,9 @@ function Test-PsNetTping{
 
     process {
        foreach($item in $Destination){
-         $resultset += [PsNetPing]::tping($item, $TcpPort, $MinTimeout, $MaxTimeout)
+          foreach($port in $TcpPort){
+            $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
+         }
       }
     }
 

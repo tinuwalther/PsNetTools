@@ -1,5 +1,5 @@
-<#
-    Generated at 02/21/2019 18:35:54 by Martin Walther
+﻿<#
+    Generated at 02/23/2019 15:08:44 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -1853,10 +1853,10 @@ function Test-PsNetTping{
        Test connectivity to an endpoint over the specified Tcp port
 
     .PARAMETER Destination
-       A String or an Array of Strings with Names or IP Addresses to test
+       A String or an Array of Strings with Names or IP Addresses to test <string>
 
     .PARAMETER TcpPort
-       Tcp Port to test
+       An Integer or an Array of Integers with Tcp Ports to test <int>
 
     .PARAMETER MinTimeout
        Min. Timeout in ms, default is 0
@@ -1865,7 +1865,7 @@ function Test-PsNetTping{
        Max. Timeout in ms, default is 1000
 
     .EXAMPLE
-       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80 -MaxTimeout 100
+       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
 
     .NOTES
        Author: Martin Walther
@@ -1878,7 +1878,7 @@ function Test-PsNetTping{
         [String[]] $Destination,
 
         [Parameter(Mandatory=$true)]
-        [Int] $TcpPort,
+        [Int[]] $TcpPort,
 
         [Parameter(Mandatory=$false)]
         [Int] $MinTimeout = 0,
@@ -1892,7 +1892,9 @@ function Test-PsNetTping{
 
     process {
        foreach($item in $Destination){
-         $resultset += [PsNetPing]::tping($item, $TcpPort, $MinTimeout, $MaxTimeout)
+          foreach($port in $TcpPort){
+            $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
+         }
       }
     }
 
@@ -1911,10 +1913,10 @@ function Test-PsNetUping{
        Test connectivity to an endpoint over the specified Udp port
 
     .PARAMETER Destination
-       A String or an Array of Strings with Names or IP Addresses to test
+       A String or an Array of Strings with Names or IP Addresses to test <string>
 
     .PARAMETER UdpPort
-       Udp Port to test
+       An Integer or an Array of Integers with Udp Ports to test <int>
 
     .PARAMETER MinTimeout
        Min. Timeout in ms, default is 0
@@ -1923,7 +1925,7 @@ function Test-PsNetUping{
        Max. Timeout in ms, default is 1000
  
     .EXAMPLE
-       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
+       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
 
     .NOTES
        Author: Martin Walther
@@ -1936,7 +1938,7 @@ function Test-PsNetUping{
          [String[]] $Destination,
 
          [Parameter(Mandatory=$true)]
-         [Int] $UdpPort,
+         [Int[]] $UdpPort,
  
          [Parameter(Mandatory=$false)]
          [Int] $MinTimeout = 0,
@@ -1950,7 +1952,9 @@ function Test-PsNetUping{
 
     process {
       foreach($item in $Destination){
-         $resultset += [PsNetPing]::uping($item, $UdpPort, $MinTimeout, $MaxTimeout)
+         foreach($port in $UdpPort){
+            $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
+         }
       }
     }
 
