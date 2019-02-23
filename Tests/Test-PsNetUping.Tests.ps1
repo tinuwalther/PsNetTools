@@ -47,6 +47,13 @@ Describe "Testing Test-PsNetUping on $($CurrentOS) OS" {
         }
     }
 
+    it "[POS] [$($CurrentOS)] Testing Test-PsNetUping with two Hostnames and UdpPorts as parameter(s)"{
+        $ret = Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53,139 -MaxTimeout 1000
+        foreach($item in $ret){
+            $item.Succeeded  | should BeTrue
+        }
+    }
+
 }
 
 Pop-Location

@@ -47,6 +47,13 @@ Describe "Testing Test-PsNetTping on $($CurrentOS) OS" {
         }
     }
 
+    it "[POS] [$($CurrentOS)] Testing Test-PsNetTping with two Hostnames and TcpPorts as parameter(s)"{
+        $ret = Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80,443 -MaxTimeout 1000
+        foreach($item in $ret){
+            $item.TcpSucceeded  | should BeTrue
+        }
+    }
+
 }
 
 Pop-Location

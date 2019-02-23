@@ -37,16 +37,16 @@ Get-Command -Module PsNetTools
 
 CommandType     Name                                               Version    Source
 -----------     ----                                               -------    ------
-Function        Add-PsNetHostsEntry                                0.3.8      PsNetTools
-Function        Get-PsNetAdapterConfiguration                      0.3.8      PsNetTools
-Function        Get-PsNetAdapters                                  0.3.8      PsNetTools
-Function        Get-PsNetHostsTable                                0.3.8      PsNetTools
-Function        Get-PsNetRoutingTable                              0.3.8      PsNetTools
-Function        Remove-PsNetHostsEntry                             0.3.8      PsNetTools
-Function        Test-PsNetDig                                      0.3.8      PsNetTools
-Function        Test-PsNetTping                                    0.3.8      PsNetTools
-Function        Test-PsNetUping                                    0.3.8      PsNetTools
-Function        Test-PsNetWping                                    0.3.8      PsNetTools
+Function        Add-PsNetHostsEntry                                0.4.1      PsNetTools
+Function        Get-PsNetAdapterConfiguration                      0.4.1      PsNetTools
+Function        Get-PsNetAdapters                                  0.4.1      PsNetTools
+Function        Get-PsNetHostsTable                                0.4.1      PsNetTools
+Function        Get-PsNetRoutingTable                              0.4.1      PsNetTools
+Function        Remove-PsNetHostsEntry                             0.4.1      PsNetTools
+Function        Test-PsNetDig                                      0.4.1      PsNetTools
+Function        Test-PsNetTping                                    0.4.1      PsNetTools
+Function        Test-PsNetUping                                    0.4.1      PsNetTools
+Function        Test-PsNetWping                                    0.4.1      PsNetTools
 ````
 
 [PsNetTools](./Docs/PsNetTools.md)
@@ -87,10 +87,10 @@ Succeeded TargetName IpV4Address     IpV6Address Duration
 Test-PsNetTping - tcp port scanner.  
 It's like the cmdlet Test-NetConnection, but with the ability to specify a timeout in ms.  
 
-Test-PsNetTping -Destination -TcpPort [-MinTimeout] [-MaxTimeout]
+Test-PsNetTping [-Destination] <String[]> [-TcpPort] <Int32[]> [[-MinTimeout] <Int32>] [[-MaxTimeout] <Int32>]
 
 - Destination: Hostname or IP Address or Alias or WebUrl as String or String-Array
-- TcpPort:     Tcp Port to use
+- TcpPort:     Tcp Port to use as Interger or Integer-Array
 - MinTimeout:  Timeout in ms (optional, default is 0ms)
 - MaxTimeout:  Timeout in ms (optional, default is 1000ms)
 
@@ -118,15 +118,28 @@ Succeeded TargetName TcpPort TcpSucceeded Duration MinTimeout MaxTimeout
      True google.com     443         True 5ms      0ms        1000ms
 ````
 
+**Example 3:**
+
+````powershell
+Test-PsNetTping -Destination sbb.ch,google.com -TcpPort 80,443 | Format-Table
+
+Succeeded TargetName TcpPort TcpSucceeded Duration MinTimeout MaxTimeout
+--------- ---------- ------- ------------ -------- ---------- ----------
+     True sbb.ch          80         True 6ms      0ms        1000ms
+     True sbb.ch         443         True 7ms      0ms        1000ms
+     True google.com      80         True 27ms     0ms        1000ms
+     True google.com     443         True 6ms      0ms        1000ms
+````
+
 # Test-PsNetUping
 
 Test-PsNetUping - udp port scanner.  
 It's like the cmdlet Test-NetConnection, but with the ability to specify a timeout in ms and query for udp.  
 
-Test-PsNetTping -Destination -UdpPort [-MinTimeout] [-MaxTimeout]
+Test-PsNetUping [-Destination] <String[]> [-UdpPort] <Int32[]> [[-MinTimeout] <Int32>] [[-MaxTimeout] <Int32>]
 
 - Destination: Hostname or IP Address or Alias or WebUrl as String or String-Array
-- UdpPort:     Udp Port to use
+- UdpPort:     Udp Port to use as Interger or Integer-Array
 - MinTimeout:  Timeout in ms (optional, default is 0ms)
 - MaxTimeout:  Timeout in ms (optional, default is 1000ms)
 
@@ -152,6 +165,19 @@ Succeeded TargetName UdpPort UdpSucceeded Duration MinTimeout MaxTimeout
 --------- ---------- ------- ------------ -------- ---------- ----------
      True sbb.ch          53        False 1022ms   0ms        1000ms
      True google.com      53        False 1020ms   0ms        1000ms
+````
+
+**Example 3:**
+
+````powershell
+Test-PsNetUping -Destination sbb.ch,google.com -UdpPort 53,139 | Format-Table
+
+Succeeded TargetName UdpPort UdpSucceeded Duration MinTimeout MaxTimeout
+--------- ---------- ------- ------------ -------- ---------- ----------
+     True sbb.ch          53        False 1160ms   0ms        1000ms
+     True sbb.ch         139        False 1016ms   0ms        1000ms
+     True google.com      53        False 1104ms   0ms        1000ms
+     True google.com     139        False 1025ms   0ms        1000ms
 ````
 
 # Test-PsNetWping
