@@ -41,6 +41,7 @@ else{
     Write-Host "[BUILD] [CREATE] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
     New-MarkdownHelp -Module $ModuleName -OutputFolder $DocsSourcePath -Force
 }
+New-ExternalHelp $DocsSourcePath -OutputPath "$($root)/PsNetTools-help.xml"
 Write-Host "[BUILD] [END  ] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
 
 Set-HeaderLines -Path "$($ModuleFolderPath)\$($ModuleName).md"
