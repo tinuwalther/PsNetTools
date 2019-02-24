@@ -24,10 +24,6 @@ Describe "Testing Test-PsNetUping on $($CurrentOS) OS" {
         (Test-PsNetUping -Destination 'sbb.powershell' -UdpPort 443 -MaxTimeout 1000).Succeeded | should BeFalse
     }
 
-    it "[NEG] [$($CurrentOS)] Testing Test-PsNetUping with false Port as parameter(s)"{
-        (Test-PsNetUping -Destination 'sbb.ch' -UdpPort 443443 -MaxTimeout 1000).Succeeded | should BeFalse
-    }
-
     it "[NEG] [$($CurrentOS)] Testing Test-PsNetUping with false IP Address as parameter(s)"{
         (Test-PsNetUping -Destination '255.255.255.256' -UdpPort 53 -MaxTimeout 1000).Succeeded | should BeFalse
     }

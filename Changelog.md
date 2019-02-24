@@ -2,6 +2,8 @@
 
 Version | Change
 -|-
+v0.4.3 | Update Markdown help for PsNetTping
+v0.4.2 | Adding support for CommonTcpPort in Test-PsNetTping
 v0.4.1 | Adding array-support for parameter 'TcpPort' and 'UdpPort'
 v0.4.0 | Adding a TcpPortListener
 v0.3.9 | Change Test for elevated privileges on Mac or Linux

@@ -1,4 +1,5 @@
-#From Stephane van Gulick (Thanks!)
+# From Stephane van Gulick (Thanks!)
+# https://github.com/PowerShell/platyPS
 
 Write-Host "[BUILD] [START] Launching Build Process" -ForegroundColor Yellow	
 
@@ -7,8 +8,8 @@ $Current = (Split-Path -Path $MyInvocation.MyCommand.Path)
 $Root = ((Get-Item $Current).Parent).FullName
 $ModuleName = "PsNetTools"
 $ModuleFolderPath = Join-Path -Path $Root -ChildPath $ModuleName
-
-$CodeSourcePath = Join-Path -Path $Root -ChildPath "Code"
+$DocsSourcePath   = Join-Path -Path $Root -ChildPath "Docs"
+$CodeSourcePath   = Join-Path -Path $Root -ChildPath "Code"
 
 $ExportPath = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psm1"
 if(Test-Path $ExportPath){
@@ -54,6 +55,21 @@ $FunctionsToExport = $PublicFunctions.BaseName
 $Manifest = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
 Update-ModuleManifest -Path $Manifest -FunctionsToExport $FunctionsToExport
 Write-Host "[BUILD] [END  ] [PSD1] building Manifest" -ForegroundColor Yellow
+
+Write-Host "[BUILD] [START] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
+if(!(Get-Module platyPS)){
+    Import-Module -Name platyPS
+}
+Import-Module $Manifest -Force
+if(Test-Path $DocsSourcePath){
+    Write-Host "[BUILD] [UPDATE] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
+    $null = Update-MarkdownHelp $DocsSourcePath -Force
+}
+else{
+    Write-Host "[BUILD] [CREATE] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
+    $null = New-MarkdownHelp -Module $ModuleName -OutputFolder $DocsSourcePath -Force
+}
+Write-Host "[BUILD] [END  ] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
 
 $Test = ((Get-Item $Root)).FullName
 $TestFolderPath = Join-Path -Path $Test -ChildPath 'Tests'

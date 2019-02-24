@@ -3,7 +3,7 @@ function Test-PsNetUping{
     <#
 
     .SYNOPSIS
-       Test-PsNetUping
+       Test the connectivity over a Udp port
 
     .DESCRIPTION
        Test connectivity to an endpoint over the specified Udp port
@@ -23,6 +23,18 @@ function Test-PsNetUping{
     .EXAMPLE
        Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
 
+           .EXAMPLE
+       Test the connectivity to one Destination and one Udp Port with a max. timeout of 100ms
+       Test-PsNetUping -Destination sbb.ch -UdpPort 53 -MaxTimeout 100
+
+    .EXAMPLE
+       Test the connectivity to two Destinations and one Udp Port with a max. timeout of 100ms
+       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
+
+    .EXAMPLE
+       Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
+       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+
     .NOTES
        Author: Martin Walther
 
@@ -33,7 +45,8 @@ function Test-PsNetUping{
          [Parameter(Mandatory=$true)]
          [String[]] $Destination,
 
-         [Parameter(Mandatory=$true)]
+         [Parameter(ParameterSetName = "RemotePort", Mandatory = $True)]
+         [Alias('RemotePort')] [ValidateRange(1,65535)]
          [Int[]] $UdpPort,
  
          [Parameter(Mandatory=$false)]

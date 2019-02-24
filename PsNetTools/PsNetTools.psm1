@@ -1,5 +1,5 @@
-﻿<#
-    Generated at 02/23/2019 15:08:44 by Martin Walther
+<#
+    Generated at 02/24/2019 11:37:31 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -1847,13 +1847,16 @@ function Test-PsNetTping{
     <#
 
     .SYNOPSIS
-       Test-PsNetUping
+       Test the connectivity over a Tcp port
 
     .DESCRIPTION
        Test connectivity to an endpoint over the specified Tcp port
 
     .PARAMETER Destination
        A String or an Array of Strings with Names or IP Addresses to test <string>
+
+    .PARAMETER CommonTcpPort
+      One of the Tcp ports for SMB, HTTP, HTTPS, WINRM, WINRMS, LDAP, LDAPS
 
     .PARAMETER TcpPort
        An Integer or an Array of Integers with Tcp Ports to test <int>
@@ -1865,6 +1868,19 @@ function Test-PsNetTping{
        Max. Timeout in ms, default is 1000
 
     .EXAMPLE
+       Test the connectivity to one Destination and one Tcp Port with a max. timeout of 100ms
+       Test-PsNetTping -Destination sbb.ch -TcpPort 443 -MaxTimeout 100
+
+    .EXAMPLE
+       Test the connectivity to one Destination and one CommonTcpPort with a max. timeout of 100ms
+       Test-PsNetTping -Destination sbb.ch -CommonTcpPort HTTPS -MaxTimeout 100
+
+    .EXAMPLE
+       Test the connectivity to two Destinations and one Tcp Port with a max. timeout of 100ms
+       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 100
+
+    .EXAMPLE
+       Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
        Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
 
     .NOTES
@@ -1877,7 +1893,12 @@ function Test-PsNetTping{
         [Parameter(Mandatory=$true)]
         [String[]] $Destination,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(ParameterSetName = "CommonTCPPort", Mandatory = $True, Position = 1)]
+        [ValidateSet('SMB','HTTP','HTTPS','RDP','WINRM','WINRMS','LDAP','LDAPS')]
+        [String] $CommonTcpPort,
+
+        [Parameter(ParameterSetName = "RemotePort", Mandatory = $True)]
+        [Alias('RemotePort')] [ValidateRange(1,65535)]
         [Int[]] $TcpPort,
 
         [Parameter(Mandatory=$false)]
@@ -1891,8 +1912,22 @@ function Test-PsNetTping{
     }
 
     process {
-       foreach($item in $Destination){
-          foreach($port in $TcpPort){
+      $AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
+      if ($AttemptTcpTest){
+         switch ($CommonTCPPort){
+            "HTTP"   {$TcpPort = 80}
+            "HTTPS"  {$TcpPort = 443}
+            "RDP"    {$TcpPort = 3389}
+            "SMB"    {$TcpPort = 445}
+            "LDAP"   {$TcpPort = 389}
+            "LDAPS"  {$TcpPort = 636}
+            "WINRM"  {$TcpPort = 5985}
+            "WINRMS" {$TcpPort = 5986}
+         }
+      }
+
+      foreach($item in $Destination){
+         foreach($port in $TcpPort){
             $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
          }
       }
@@ -1907,7 +1942,7 @@ function Test-PsNetUping{
     <#
 
     .SYNOPSIS
-       Test-PsNetUping
+       Test the connectivity over a Udp port
 
     .DESCRIPTION
        Test connectivity to an endpoint over the specified Udp port
@@ -1927,6 +1962,18 @@ function Test-PsNetUping{
     .EXAMPLE
        Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
 
+           .EXAMPLE
+       Test the connectivity to one Destination and one Udp Port with a max. timeout of 100ms
+       Test-PsNetUping -Destination sbb.ch -UdpPort 53 -MaxTimeout 100
+
+    .EXAMPLE
+       Test the connectivity to two Destinations and one Udp Port with a max. timeout of 100ms
+       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
+
+    .EXAMPLE
+       Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
+       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+
     .NOTES
        Author: Martin Walther
 
@@ -1937,7 +1984,8 @@ function Test-PsNetUping{
          [Parameter(Mandatory=$true)]
          [String[]] $Destination,
 
-         [Parameter(Mandatory=$true)]
+         [Parameter(ParameterSetName = "RemotePort", Mandatory = $True)]
+         [Alias('RemotePort')] [ValidateRange(1,65535)]
          [Int[]] $UdpPort,
  
          [Parameter(Mandatory=$false)]

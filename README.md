@@ -49,7 +49,7 @@ Function        Test-PsNetUping                                    0.4.1      Ps
 Function        Test-PsNetWping                                    0.4.1      PsNetTools
 ````
 
-[PsNetTools](./Docs/PsNetTools.md)
+[PsNetTools](./PsNetTools.md)
 
 # Test-PsNetDig
 
