@@ -1,14 +1,14 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
 # Add-PsNetHostsEntry
 
 ## SYNOPSIS
-Add-PsNetHostsEntry
+Add entries to the hosts-file
 
 ## SYNTAX
 
@@ -18,7 +18,8 @@ Add-PsNetHostsEntry [[-Path] <String>] [-IPAddress] <String> [-Hostname] <String
 ```
 
 ## DESCRIPTION
-Add an entry in the hosts-file
+Running this command with elevated privilege.
+Add any entries to the hosts-file
 
 ## EXAMPLES
 
@@ -94,9 +95,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### Hashtable
 ## OUTPUTS
 
+### PSCustomObject
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

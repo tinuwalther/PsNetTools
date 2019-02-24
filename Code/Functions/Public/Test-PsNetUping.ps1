@@ -2,41 +2,50 @@ function Test-PsNetUping{
 
     <#
 
-    .SYNOPSIS
-       Test the connectivity over a Udp port
+   .SYNOPSIS
+      Test the connectivity over a Udp port
 
-    .DESCRIPTION
-       Test connectivity to an endpoint over the specified Udp port
+   .DESCRIPTION
+      Test connectivity to an endpoint over the specified Udp port
 
-    .PARAMETER Destination
-       A String or an Array of Strings with Names or IP Addresses to test <string>
+   .PARAMETER Destination
+      A String or an Array of Strings with Names or IP Addresses to test <string>
 
-    .PARAMETER UdpPort
-       An Integer or an Array of Integers with Udp Ports to test <int>
+   .PARAMETER UdpPort
+      An Integer or an Array of Integers with Udp Ports to test <int>
 
-    .PARAMETER MinTimeout
-       Min. Timeout in ms, default is 0
+   .PARAMETER MinTimeout
+      Min. Timeout in ms, default is 0
 
-    .PARAMETER MaxTimeout
-       Max. Timeout in ms, default is 1000
+   .PARAMETER MaxTimeout
+      Max. Timeout in ms, default is 1000
  
-    .EXAMPLE
-       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+   .EXAMPLE
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
 
-           .EXAMPLE
-       Test the connectivity to one Destination and one Udp Port with a max. timeout of 100ms
-       Test-PsNetUping -Destination sbb.ch -UdpPort 53 -MaxTimeout 100
+   .EXAMPLE
+      Test the connectivity to one Destination and one Udp Port with a max. timeout of 100ms
+      Test-PsNetUping -Destination sbb.ch -UdpPort 53 -MaxTimeout 100
 
-    .EXAMPLE
-       Test the connectivity to two Destinations and one Udp Port with a max. timeout of 100ms
-       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
+   .EXAMPLE
+      Test the connectivity to two Destinations and one Udp Port with a max. timeout of 100ms
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
 
-    .EXAMPLE
-       Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
-       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+    EXAMPLE
+      Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
 
-    .NOTES
-       Author: Martin Walther
+   .INPUTS
+      Hashtable
+
+   .OUTPUTS
+      PSCustomObject
+
+   .NOTES
+      Author: Martin Walther
+
+   .LINK
+      https://tinuwalther.github.io/
 
     #>
 

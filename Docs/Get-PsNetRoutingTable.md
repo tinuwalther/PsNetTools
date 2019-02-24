@@ -1,14 +1,14 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
 # Get-PsNetRoutingTable
 
 ## SYNOPSIS
-Get-PsNetRoutingTable
+Get the Routing Table
 
 ## SYNTAX
 
@@ -24,6 +24,11 @@ Format the Routing Table to an object
 ### EXAMPLE 1
 ```
 Get-PsNetRoutingTable -IpVersion IPv4
+```
+
+### EXAMPLE 2
+```
+Get-PsNetRoutingTable -IpVersion IPv6
 ```
 
 ## PARAMETERS
@@ -50,7 +55,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
+### PSCustomObject
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

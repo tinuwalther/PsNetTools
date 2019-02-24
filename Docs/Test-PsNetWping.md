@@ -1,7 +1,7 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
@@ -24,10 +24,15 @@ Test web request to an Url
 
 ### EXAMPLE 1
 ```
-Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
+Test-PsNetWping -Destination 'https://sbb.ch'
 ```
 
 ### EXAMPLE 2
+```
+Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
+```
+
+### EXAMPLE 3
 ```
 Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
 ```
@@ -101,9 +106,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### Hashtable
 ## OUTPUTS
 
+### PSCustomObject
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

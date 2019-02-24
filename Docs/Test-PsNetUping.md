@@ -1,7 +1,7 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
@@ -41,11 +41,9 @@ Test the connectivity to two Destinations and one Udp Port with a max. timeout o
 
 Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
 
-### EXAMPLE 4
-```
-Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
-```
-
+EXAMPLE
+Test the connectivity to two Destinations and two Udp Ports with a max.
+timeout of 100ms
 Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
 
 ## PARAMETERS
@@ -117,9 +115,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### Hashtable
 ## OUTPUTS
 
+### PSCustomObject
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

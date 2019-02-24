@@ -3,7 +3,7 @@
     <#
 
     .SYNOPSIS
-       Start-PsNetPortListener
+       Start a TCP Portlistener
 
     .DESCRIPTION
        Temporarily listen on a given TCP port for connections dumps connections to the screen
@@ -17,9 +17,16 @@
     .EXAMPLE
        Start-PsNetPortListener -TcpPort 443, Listening on TCP port 443, press CTRL+C to cancel
 
-    .INFO
-       Created by Shane Wright. Neossian@gmail.com
-       Changed by Martin Walther. it@martin-walther.ch
+    .INPUTS
+
+    .OUTPUTS
+       PSCustomObject
+
+    .NOTES
+       Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 

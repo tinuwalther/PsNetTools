@@ -1,14 +1,14 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
 # Remove-PsNetHostsEntry
 
 ## SYNOPSIS
-Remove-PsNetHostsEntry
+Remove an entry from the hostsfile
 
 ## SYNTAX
 
@@ -17,7 +17,9 @@ Remove-PsNetHostsEntry [[-Path] <String>] [-Hostsentry] <String> [<CommonParamet
 ```
 
 ## DESCRIPTION
-Remove an entry in the hosts-file
+Running this command with elevated privilege. 
+ 
+Backup the hostsfile and remove an entry from the hostsfile
 
 ## EXAMPLES
 
@@ -44,7 +46,7 @@ Accept wildcard characters: False
 ```
 
 ### -Hostsentry
-IP Address to remove
+IP Address and hostname to remove
 
 ```yaml
 Type: String
@@ -63,9 +65,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### Hashtable
 ## OUTPUTS
 
+### PSCustomObject
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

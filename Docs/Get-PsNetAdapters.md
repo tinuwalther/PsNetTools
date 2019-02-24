@@ -1,14 +1,14 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
 # Get-PsNetAdapters
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Get Network Adapters
 
 ## SYNTAX
 
@@ -17,16 +17,14 @@ Get-PsNetAdapters [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+List all network adapters
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Get-PsNetAdapters
+```
 
 ## PARAMETERS
 
@@ -35,11 +33,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
-
 ## OUTPUTS
 
-### System.Object
+### PSCustomObject
 ## NOTES
+Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

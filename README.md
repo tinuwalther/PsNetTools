@@ -49,16 +49,10 @@ Function        Test-PsNetUping                                    0.4.1      Ps
 Function        Test-PsNetWping                                    0.4.1      PsNetTools
 ````
 
-[PsNetTools](./PsNetTools.md)
-
 # Test-PsNetDig
 
 Test-PsNetDig - domain information groper.  
 Resolves a hostname to the IP addresses or an IP Address to the hostname.  
-
-Test-PsNetDig -Destination
-
-- Destination: Hostname or IP Address or Alias or WebUrl as String or String-Array
 
 **Example 1:**
 

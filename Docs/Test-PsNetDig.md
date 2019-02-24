@@ -1,14 +1,14 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
 # Test-PsNetDig
 
 ## SYNOPSIS
-Test-PsNetDig
+Domain information groper
 
 ## SYNTAX
 
@@ -17,24 +17,35 @@ Test-PsNetDig [-Destination] <String[]> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Resolves a hostname or an ip address
+Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Test-PsNetDig -Destination sbb.ch, google.com
+Resolve a hostname to the IP Address
 ```
+
+Test-PsNetDig -Destination sbb.ch
 
 ### EXAMPLE 2
 ```
-sbb.ch, google.com | Test-PsNetDig
+Resolve an array of hostnames to the IP Address
 ```
+
+Test-PsNetDig -Destination sbb.ch, google.com
+
+### EXAMPLE 3
+```
+Resolve an array of hostnames to the IP Address with ValueFromPipeline
+```
+
+sbb.ch, google.com | Test-PsNetDig
 
 ## PARAMETERS
 
 ### -Destination
-A String or an Array of Strings with Names or IP Addresses to resolve
+Hostname or IP Address or Alias or WebUrl as String or String-Array
 
 ```yaml
 Type: String[]
@@ -53,9 +64,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### Hashtable
 ## OUTPUTS
 
+### PSCustomObject
+### TargetName  : sbb.ch
+### IpV4Address : 194.150.245.142
+### IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e
+### Duration    : 4ms
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

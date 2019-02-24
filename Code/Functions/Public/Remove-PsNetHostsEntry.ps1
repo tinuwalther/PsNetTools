@@ -3,22 +3,32 @@ function Remove-PsNetHostsEntry {
     <#
 
     .SYNOPSIS
-       Remove-PsNetHostsEntry
+       Remove an entry from the hostsfile
 
     .DESCRIPTION
-       Remove an entry in the hosts-file
+       Running this command with elevated privilege.   
+       Backup the hostsfile and remove an entry from the hostsfile
 
     .PARAMETER Path
        Path to the hostsfile, can be empty
 
     .PARAMETER Hostsentry
-       IP Address to remove
+       IP Address and hostname to remove
  
     .EXAMPLE
        Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 tinu'
 
+    .INPUTS
+       Hashtable
+
+    .OUTPUTS
+       PSCustomObject
+
     .NOTES
        Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 

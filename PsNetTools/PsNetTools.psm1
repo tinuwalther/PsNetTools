@@ -1,13 +1,13 @@
 <#
-    Generated at 02/24/2019 11:37:31 by Martin Walther
+    Generated at 02/24/2019 15:49:44 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
 Class PsNetAdapter {
 
     <#
-        [PsNetAdapter]::GetNetAdapters
-        [PsNetAdapter]::GetNetadapterConfiguration
+        [PsNetAdapter]::listadapters
+        [PsNetAdapter]::listadapterconfig
     #>
 
     #region Properties with default values
@@ -21,11 +21,11 @@ Class PsNetAdapter {
     #endregion
 
     #region methods
-    [object] static GetNetadapters(){
+    [object] static listadapters(){
 
         #https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinterface.getipproperties?view=netframework-4.7.2#System_Net_NetworkInformation_NetworkInterface_GetIPProperties
 
-        $function  = 'GetNetadapters()'
+        $function  = 'listadapters()'
         $resultset = @()
 
         try{
@@ -93,11 +93,11 @@ Class PsNetAdapter {
         return $resultset
     }
 
-    [object] static GetNetadapterConfiguration(){
+    [object] static listadapterconfig(){
 
         #https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinterface.getipproperties?view=netframework-4.7.2#System_Net_NetworkInformation_NetworkInterface_GetIPProperties
 
-        $function  = 'GetNetadapterConfigurations()'
+        $function  = 'listadapterconfig()'
         $resultset = @()
 
         try{
@@ -1414,10 +1414,11 @@ function Add-PsNetHostsEntry {
     <#
 
     .SYNOPSIS
-       Add-PsNetHostsEntry
+       Add entries to the hosts-file
 
     .DESCRIPTION
-       Add an entry in the hosts-file
+       Running this command with elevated privilege.
+       Add any entries to the hosts-file
 
     .PARAMETER Path
        Path to the hostsfile, can be empty
@@ -1434,8 +1435,17 @@ function Add-PsNetHostsEntry {
     .EXAMPLE
        Add-PsNetHostsEntry -IPAddress 127.0.0.1 -Hostname tinu -FullyQualifiedName tinu.walther.ch
 
+    .INPUTS
+       Hashtable
+
+    .OUTPUTS
+       PSCustomObject
+
     .NOTES
        Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 
@@ -1488,23 +1498,30 @@ function Add-PsNetHostsEntry {
 }
 
 function Get-PsNetAdapterConfiguration{
-   <#
 
-   .SYNOPSIS
-      Get-PsNetAdapterConfiguration
+    <#
 
-   .DESCRIPTION
-      List network adapter configuraion for all adapters
+    .SYNOPSIS
+       Get Network Adapter Configuration
 
-   .PARAMETER
+    .DESCRIPTION
+       List network adapter configuraion for all adapters
 
-   .EXAMPLE
-      Get-PsNetAdapterConfiguration
+    .EXAMPLE
+       Get-PsNetAdapterConfiguration
+
+    .INPUTS
+
+    .OUTPUTS
+       PSCustomObject
 
     .NOTES
-      Author: Martin Walther
+       Author: Martin Walther
 
-   #>
+    .LINK
+       https://tinuwalther.github.io/
+
+    #>
 
    [CmdletBinding()]
    param()   
@@ -1512,7 +1529,7 @@ function Get-PsNetAdapterConfiguration{
    }
 
    process {
-       return [PsNetAdapter]::GetNetadapterConfiguration()
+       return [PsNetAdapter]::listadapterconfig()
    }
 
    end {
@@ -1525,18 +1542,24 @@ function Get-PsNetAdapters{
     <#
 
     .SYNOPSIS
-       Get-PsNetAdapters
+       Get Network Adapters
 
     .DESCRIPTION
        List all network adapters
-
-    .PARAMETER
  
     .EXAMPLE
        Get-PsNetAdapters
 
+    .INPUTS
+
+    .OUTPUTS
+       PSCustomObject
+
     .NOTES
        Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 
@@ -1547,7 +1570,7 @@ function Get-PsNetAdapters{
     }
     
     process {
-        return [PsNetAdapter]::GetNetadapters()
+        return [PsNetAdapter]::listadapters()
     }
     
     end {
@@ -1559,10 +1582,10 @@ function Get-PsNetHostsTable {
     <#
 
     .SYNOPSIS
-       Get-PsNetHostsTable
+       Get the content of the hostsfile
 
     .DESCRIPTION
-       Format the hostsfile to an object
+       Format the content of the hostsfile to an object
 
     .PARAMETER Path
        Path to the hostsfile, can be empty
@@ -1570,8 +1593,16 @@ function Get-PsNetHostsTable {
     .EXAMPLE
        Get-PsNetHostsTable -Path "$($env:windir)\system32\drivers\etc\hosts"
 
+    .INPUTS
+
+    .OUTPUTS
+       PSCustomObject
+
     .NOTES
        Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 
@@ -1619,19 +1650,30 @@ function Get-PsNetRoutingTable {
     <#
 
     .SYNOPSIS
-       Get-PsNetRoutingTable
+      Get the Routing Table
 
     .DESCRIPTION
-       Format the Routing Table to an object
+      Format the Routing Table to an object
 
     .PARAMETER IpVersion
-       IPv4 or IPv6
+      IPv4 or IPv6
  
     .EXAMPLE
-       Get-PsNetRoutingTable -IpVersion IPv4
+      Get-PsNetRoutingTable -IpVersion IPv4
+    
+    .EXAMPLE
+      Get-PsNetRoutingTable -IpVersion IPv6
+
+    .INPUTS
+
+    .OUTPUTS
+      PSCustomObject
 
     .NOTES
-       Author: Martin Walther
+      Author: Martin Walther
+
+    .LINK
+      https://tinuwalther.github.io/
 
     #>
 
@@ -1665,22 +1707,32 @@ function Remove-PsNetHostsEntry {
     <#
 
     .SYNOPSIS
-       Remove-PsNetHostsEntry
+       Remove an entry from the hostsfile
 
     .DESCRIPTION
-       Remove an entry in the hosts-file
+       Running this command with elevated privilege.   
+       Backup the hostsfile and remove an entry from the hostsfile
 
     .PARAMETER Path
        Path to the hostsfile, can be empty
 
     .PARAMETER Hostsentry
-       IP Address to remove
+       IP Address and hostname to remove
  
     .EXAMPLE
        Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 tinu'
 
+    .INPUTS
+       Hashtable
+
+    .OUTPUTS
+       PSCustomObject
+
     .NOTES
        Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 
@@ -1731,7 +1783,7 @@ function Start-PsNetPortListener {
     <#
 
     .SYNOPSIS
-       Start-PsNetPortListener
+       Start a TCP Portlistener
 
     .DESCRIPTION
        Temporarily listen on a given TCP port for connections dumps connections to the screen
@@ -1745,9 +1797,16 @@ function Start-PsNetPortListener {
     .EXAMPLE
        Start-PsNetPortListener -TcpPort 443, Listening on TCP port 443, press CTRL+C to cancel
 
-    .INFO
-       Created by Shane Wright. Neossian@gmail.com
-       Changed by Martin Walther. it@martin-walther.ch
+    .INPUTS
+
+    .OUTPUTS
+       PSCustomObject
+
+    .NOTES
+       Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 
@@ -1802,22 +1861,41 @@ function Test-PsNetDig{
     <#
 
     .SYNOPSIS
-       Test-PsNetDig
+      Domain information groper
 
     .DESCRIPTION
-       Resolves a hostname or an ip address
+      Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
     .PARAMETER Destination
-       A String or an Array of Strings with Names or IP Addresses to resolve
+      Hostname or IP Address or Alias or WebUrl as String or String-Array
  
     .EXAMPLE
-       Test-PsNetDig -Destination sbb.ch, google.com
+      Resolve a hostname to the IP Address
+      Test-PsNetDig -Destination sbb.ch
 
     .EXAMPLE
-       sbb.ch, google.com | Test-PsNetDig
+      Resolve an array of hostnames to the IP Address
+      Test-PsNetDig -Destination sbb.ch, google.com
+
+    .EXAMPLE
+      Resolve an array of hostnames to the IP Address with ValueFromPipeline
+      sbb.ch, google.com | Test-PsNetDig
+
+    .INPUTS
+      Hashtable
+
+    .OUTPUTS
+      PSCustomObject
+      TargetName  : sbb.ch
+      IpV4Address : 194.150.245.142
+      IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e
+      Duration    : 4ms
 
     .NOTES
-       Author: Martin Walther
+      Author: Martin Walther
+
+    .LINK
+      https://tinuwalther.github.io/
 
     #>
 
@@ -1847,44 +1925,53 @@ function Test-PsNetTping{
     <#
 
     .SYNOPSIS
-       Test the connectivity over a Tcp port
+      Test the connectivity over a Tcp port
 
     .DESCRIPTION
-       Test connectivity to an endpoint over the specified Tcp port
+      Test connectivity to an endpoint over the specified Tcp port
 
     .PARAMETER Destination
-       A String or an Array of Strings with Names or IP Addresses to test <string>
+      A String or an Array of Strings with Names or IP Addresses to test <string>
 
     .PARAMETER CommonTcpPort
       One of the Tcp ports for SMB, HTTP, HTTPS, WINRM, WINRMS, LDAP, LDAPS
 
     .PARAMETER TcpPort
-       An Integer or an Array of Integers with Tcp Ports to test <int>
+      An Integer or an Array of Integers with Tcp Ports to test <int>
 
     .PARAMETER MinTimeout
-       Min. Timeout in ms, default is 0
+      Min. Timeout in ms, default is 0
 
     .PARAMETER MaxTimeout
-       Max. Timeout in ms, default is 1000
+      Max. Timeout in ms, default is 1000
 
     .EXAMPLE
-       Test the connectivity to one Destination and one Tcp Port with a max. timeout of 100ms
-       Test-PsNetTping -Destination sbb.ch -TcpPort 443 -MaxTimeout 100
+      Test the connectivity to one Destination and one Tcp Port with a max. timeout of 100ms
+      Test-PsNetTping -Destination sbb.ch -TcpPort 443 -MaxTimeout 100
 
     .EXAMPLE
-       Test the connectivity to one Destination and one CommonTcpPort with a max. timeout of 100ms
-       Test-PsNetTping -Destination sbb.ch -CommonTcpPort HTTPS -MaxTimeout 100
+      Test the connectivity to one Destination and one CommonTcpPort with a max. timeout of 100ms
+      Test-PsNetTping -Destination sbb.ch -CommonTcpPort HTTPS -MaxTimeout 100
 
     .EXAMPLE
-       Test the connectivity to two Destinations and one Tcp Port with a max. timeout of 100ms
-       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 100
+      Test the connectivity to two Destinations and one Tcp Port with a max. timeout of 100ms
+      Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 100
 
     .EXAMPLE
-       Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
-       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
+      Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
+      Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
+
+    .INPUTS
+      Hashtable
+
+    .OUTPUTS
+      PSCustomObject
 
     .NOTES
-       Author: Martin Walther
+      Author: Martin Walther
+
+    .LINK
+      https://tinuwalther.github.io/
 
     #>
 
@@ -1941,41 +2028,50 @@ function Test-PsNetUping{
 
     <#
 
-    .SYNOPSIS
-       Test the connectivity over a Udp port
+   .SYNOPSIS
+      Test the connectivity over a Udp port
 
-    .DESCRIPTION
-       Test connectivity to an endpoint over the specified Udp port
+   .DESCRIPTION
+      Test connectivity to an endpoint over the specified Udp port
 
-    .PARAMETER Destination
-       A String or an Array of Strings with Names or IP Addresses to test <string>
+   .PARAMETER Destination
+      A String or an Array of Strings with Names or IP Addresses to test <string>
 
-    .PARAMETER UdpPort
-       An Integer or an Array of Integers with Udp Ports to test <int>
+   .PARAMETER UdpPort
+      An Integer or an Array of Integers with Udp Ports to test <int>
 
-    .PARAMETER MinTimeout
-       Min. Timeout in ms, default is 0
+   .PARAMETER MinTimeout
+      Min. Timeout in ms, default is 0
 
-    .PARAMETER MaxTimeout
-       Max. Timeout in ms, default is 1000
+   .PARAMETER MaxTimeout
+      Max. Timeout in ms, default is 1000
  
-    .EXAMPLE
-       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+   .EXAMPLE
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
 
-           .EXAMPLE
-       Test the connectivity to one Destination and one Udp Port with a max. timeout of 100ms
-       Test-PsNetUping -Destination sbb.ch -UdpPort 53 -MaxTimeout 100
+   .EXAMPLE
+      Test the connectivity to one Destination and one Udp Port with a max. timeout of 100ms
+      Test-PsNetUping -Destination sbb.ch -UdpPort 53 -MaxTimeout 100
 
-    .EXAMPLE
-       Test the connectivity to two Destinations and one Udp Port with a max. timeout of 100ms
-       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
+   .EXAMPLE
+      Test the connectivity to two Destinations and one Udp Port with a max. timeout of 100ms
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
 
-    .EXAMPLE
-       Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
-       Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+    EXAMPLE
+      Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
 
-    .NOTES
-       Author: Martin Walther
+   .INPUTS
+      Hashtable
+
+   .OUTPUTS
+      PSCustomObject
+
+   .NOTES
+      Author: Martin Walther
+
+   .LINK
+      https://tinuwalther.github.io/
 
     #>
 
@@ -2015,32 +2111,44 @@ function Test-PsNetWping{
 
     <#
 
-    .SYNOPSIS
-       Test-PsNetWping
+   .SYNOPSIS
+      Test-PsNetWping
 
-    .DESCRIPTION
-       Test web request to an Url
+   .DESCRIPTION
+      Test web request to an Url
 
-    .PARAMETER Destination
-       A String or an Array of Strings with Url's to test
+   .PARAMETER Destination
+      A String or an Array of Strings with Url's to test
 
-    .PARAMETER MinTimeout
-       Min. Timeout in ms, default is 0
+   .PARAMETER MinTimeout
+      Min. Timeout in ms, default is 0
 
-    .PARAMETER MaxTimeout
-       Max. Timeout in ms, default is 1000
+   .PARAMETER MaxTimeout
+      Max. Timeout in ms, default is 1000
 
-    .PARAMETER NoProxy
+   .PARAMETER NoProxy
       Test web request without a proxy
  
-    .EXAMPLE
-       Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
+   .EXAMPLE
+      Test-PsNetWping -Destination 'https://sbb.ch'
 
-    .EXAMPLE
-       Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
+   .EXAMPLE
+      Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
 
-    .NOTES
-       Author: Martin Walther
+   .EXAMPLE
+      Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
+
+   .INPUTS
+      Hashtable
+
+   .OUTPUTS
+      PSCustomObject
+
+   .NOTES
+      Author: Martin Walther
+
+   .LINK
+      https://tinuwalther.github.io/
 
     #>
 

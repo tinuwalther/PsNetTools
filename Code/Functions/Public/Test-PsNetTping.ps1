@@ -3,44 +3,53 @@ function Test-PsNetTping{
     <#
 
     .SYNOPSIS
-       Test the connectivity over a Tcp port
+      Test the connectivity over a Tcp port
 
     .DESCRIPTION
-       Test connectivity to an endpoint over the specified Tcp port
+      Test connectivity to an endpoint over the specified Tcp port
 
     .PARAMETER Destination
-       A String or an Array of Strings with Names or IP Addresses to test <string>
+      A String or an Array of Strings with Names or IP Addresses to test <string>
 
     .PARAMETER CommonTcpPort
       One of the Tcp ports for SMB, HTTP, HTTPS, WINRM, WINRMS, LDAP, LDAPS
 
     .PARAMETER TcpPort
-       An Integer or an Array of Integers with Tcp Ports to test <int>
+      An Integer or an Array of Integers with Tcp Ports to test <int>
 
     .PARAMETER MinTimeout
-       Min. Timeout in ms, default is 0
+      Min. Timeout in ms, default is 0
 
     .PARAMETER MaxTimeout
-       Max. Timeout in ms, default is 1000
+      Max. Timeout in ms, default is 1000
 
     .EXAMPLE
-       Test the connectivity to one Destination and one Tcp Port with a max. timeout of 100ms
-       Test-PsNetTping -Destination sbb.ch -TcpPort 443 -MaxTimeout 100
+      Test the connectivity to one Destination and one Tcp Port with a max. timeout of 100ms
+      Test-PsNetTping -Destination sbb.ch -TcpPort 443 -MaxTimeout 100
 
     .EXAMPLE
-       Test the connectivity to one Destination and one CommonTcpPort with a max. timeout of 100ms
-       Test-PsNetTping -Destination sbb.ch -CommonTcpPort HTTPS -MaxTimeout 100
+      Test the connectivity to one Destination and one CommonTcpPort with a max. timeout of 100ms
+      Test-PsNetTping -Destination sbb.ch -CommonTcpPort HTTPS -MaxTimeout 100
 
     .EXAMPLE
-       Test the connectivity to two Destinations and one Tcp Port with a max. timeout of 100ms
-       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 100
+      Test the connectivity to two Destinations and one Tcp Port with a max. timeout of 100ms
+      Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 100
 
     .EXAMPLE
-       Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
-       Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
+      Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
+      Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
+
+    .INPUTS
+      Hashtable
+
+    .OUTPUTS
+      PSCustomObject
 
     .NOTES
-       Author: Martin Walther
+      Author: Martin Walther
+
+    .LINK
+      https://tinuwalther.github.io/
 
     #>
 

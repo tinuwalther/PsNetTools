@@ -1,14 +1,14 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
 # Start-PsNetPortListener
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Start a TCP Portlistener
 
 ## SYNTAX
 
@@ -17,36 +17,19 @@ Start-PsNetPortListener [-TcpPort] <Int32> [[-MaxTimeout] <Int32>] [<CommonParam
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+Temporarily listen on a given TCP port for connections dumps connections to the screen
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Start-PsNetPortListener -TcpPort 443, Listening on TCP port 443, press CTRL+C to cancel
+```
 
 ## PARAMETERS
 
-### -MaxTimeout
-{{Fill MaxTimeout Description}}
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -TcpPort
-{{Fill TcpPort Description}}
+The TCP port that the listener should attach to
 
 ```yaml
 Type: Int32
@@ -54,8 +37,23 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 0
-Default value: None
+Position: 1
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MaxTimeout
+MaxTimeout in milliseconds to wait, default is 5000
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: 5000
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -65,11 +63,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
-
 ## OUTPUTS
 
-### System.Object
+### PSCustomObject
 ## NOTES
+Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

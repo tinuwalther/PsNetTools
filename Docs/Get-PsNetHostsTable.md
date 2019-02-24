@@ -1,14 +1,14 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version:
+online version: https://tinuwalther.github.io/
 schema: 2.0.0
 ---
 
 # Get-PsNetHostsTable
 
 ## SYNOPSIS
-Get-PsNetHostsTable
+Get the content of the hostsfile
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-PsNetHostsTable [[-Path] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Format the hostsfile to an object
+Format the content of the hostsfile to an object
 
 ## EXAMPLES
 
@@ -50,7 +50,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
+### PSCustomObject
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
+
+[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+

@@ -3,18 +3,24 @@ function Get-PsNetAdapters{
     <#
 
     .SYNOPSIS
-       Get-PsNetAdapters
+       Get Network Adapters
 
     .DESCRIPTION
        List all network adapters
-
-    .PARAMETER
  
     .EXAMPLE
        Get-PsNetAdapters
 
+    .INPUTS
+
+    .OUTPUTS
+       PSCustomObject
+
     .NOTES
        Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 
@@ -25,7 +31,7 @@ function Get-PsNetAdapters{
     }
     
     process {
-        return [PsNetAdapter]::GetNetadapters()
+        return [PsNetAdapter]::listadapters()
     }
     
     end {

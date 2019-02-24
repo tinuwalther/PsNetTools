@@ -10,8 +10,6 @@ function Set-HeaderLines{
 $mdcontent = @"
 # PsNetTools`n
 PsNetTools is a cross platform PowerShell module to test some network features on Windows and Mac.`n
-![PsNetTools](./Images/NewPsNetTools.png)`n
-Image generated with [PSWordCloud](https://github.com/vexx32/PSWordCloud) by Joel Sallow.
 
 # Table of Contents`n
 - [PsNetTools](#psnettools) 
@@ -45,9 +43,10 @@ else{
 }
 Write-Host "[BUILD] [END  ] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
 
-Set-HeaderLines -Path "$($Root)\$($ModuleName).md"
+Set-HeaderLines -Path "$($ModuleFolderPath)\$($ModuleName).md"
 Get-ChildItem $DocsSourcePath | ForEach-Object {
-    "- [$($_.BaseName)](./Docs/$($_.Name))" | Out-File -FilePath "$($Root)\$($ModuleName).md" -Append
+    #"- [$($_.BaseName)](./Docs/$($_.Name))" | Out-File -FilePath "$($Root)\$($ModuleName).md" -Append
+    Get-Content -Path $_.FullName | Out-File -FilePath "$($ModuleFolderPath)\$($ModuleName).md" -Append
 }
 
-"`n[ [Top] ](#psnettools)" | Out-File -FilePath "$($Root)\$($ModuleName).md" -Append
+"`n[ [Top] ](#psnettools)" | Out-File -FilePath "$($ModuleFolderPath)\$($ModuleName).md" -Append
