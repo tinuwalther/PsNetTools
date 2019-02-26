@@ -73,7 +73,9 @@ function Test-PsNetTping{
         [Int] $MaxTimeout = 1000
     )    
     begin {
-       $resultset = @()
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
     }
 
     process {

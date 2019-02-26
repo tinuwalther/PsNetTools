@@ -15,7 +15,12 @@ Class PsNetPingType {
         $this.Port        = $Port
         $this.MinTimeout  = $MinTimeout
         $this.MaxTimeout  = $MaxTimeout
-        $this.TimeMs      = $TimeMs
+        if($TimeMs -gt $MaxTimeout){
+            $this.TimeMs = $MaxTimeout
+        }
+        else{
+            $this.TimeMs      = $TimeMs
+        }
     }
 }
 
@@ -38,7 +43,7 @@ Class PsNetPing {
     #endregion
     
     #region methods
-    [PsNetPingType]static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
+    [PsNetPingType] static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
 
         [DateTime] $start        = Get-Date
         [bool]     $tcpsucceeded = $false
@@ -63,84 +68,44 @@ Class PsNetPing {
         return [PsNetPingType]::New($tcpsucceeded, $TargetName, $TcpPort, $mintimeout, $maxtimeout, $duration)
     }
 
-    [object]static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
+    [PsNetPingType] static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
 
-        $function  = 'uping()'
-        $resultset = @()
+        [DateTime] $start        = Get-Date
+        [bool]     $udpsucceeded = $false
+        [Object]   $udpclient    = $null
+        [Object]   $connect      = $null
+        [bool]     $WaitOne      = $false
+        [string]   $returndata   = $null
 
-        if(([String]::IsNullOrEmpty($TargetName))){
-            Write-Warning "$($function): Empty TargetName specified!"
+        $receivebytes   = $null
+
+        $udpclient = New-Object System.Net.Sockets.UdpClient
+        $connect   = $udpclient.Connect($TargetName,$UdpPort)
+        $WaitOne   = $udpclient.Client.ReceiveTimeout = $maxtimeout
+        
+        $dgram = new-object system.text.asciiencoding
+        $byte  = $dgram.GetBytes("TEST")
+        [void]$udpclient.Send($byte,$byte.length)
+        $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
+        Start-Sleep -Milliseconds (20 + $mintimeout)
+
+        try{
+            $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
         }
-        else{
-            $udpclient      = $null
-            $connect        = $null
-            $patience       = $null
-            $udpsucceeded   = $null
-            $dgram          = $null
-            $byte           = $null
-            $remoteendpoint = $null
-            $receivebytes   = $null
+        catch{
+            $error.Clear()
+        }
+    
+        if (-not([String]::IsNullOrEmpty($receivebytes))) {
+            $returndata   = $dgram.GetString($receivebytes)
+            $udpsucceeded = $true
+        } 
+    
+        $udpclient.Close()
+        $udpclient.Dispose()
 
-            try {
-                $start     = Get-Date
-                $udpclient = New-Object System.Net.Sockets.UdpClient
-                $connect   = $udpclient.Connect($TargetName,$UdpPort)
-                $patience  = $udpclient.Client.ReceiveTimeout = $maxtimeout
-                
-                $dgram = new-object system.text.asciiencoding
-                $byte  = $dgram.GetBytes("TEST")
-                [void]$udpclient.Send($byte,$byte.length)
-                $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
-                Start-Sleep -Milliseconds (20 + $mintimeout)
-
-                try{
-                    $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
-                }
-                catch{
-                    $udpsucceeded = $false
-                    $error.Clear()
-                }
-            
-                if (-not([String]::IsNullOrEmpty($receivebytes))) {
-                    [string]$returndata = $dgram.GetString($receivebytes)
-                    $udpsucceeded = $true
-                } 
-            
-                $udpclient.Close()
-                $udpclient.Dispose()
-                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-                
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $true
-                    TargetName    = $TargetName
-                    UdpPort       = $UdpPort
-                    UdpSucceeded  = $udpsucceeded
-
-                    Duration      = "$($duration)ms"
-                    MinTimeout    = "$($mintimeout)ms"
-                    MaxTimeout    = "$($maxtimeout)ms"
-                }
-                $resultset += $obj
-                    
-            } catch {
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $false
-                    TargetName    = $TargetName
-                    UdpPort       = $UdpPort
-                    UdpSucceeded  = $false
-
-                    Function           = $function
-                    Message            = $($_.Exception.Message)
-                    Category           = $($_.CategoryInfo).Category
-                    Exception          = $($_.Exception.GetType().FullName)
-                    CategoryActivity   = $($_.CategoryInfo).Activity
-                    CategoryTargetName = $($_.CategoryInfo).TargetName
-                }
-                $resultset += $obj
-                $error.Clear()
-            }                
-        }    
-        return $resultset    
+        $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
+        return [PsNetPingType]::New($udpsucceeded, $TargetName, $UdpPort, $mintimeout, $maxtimeout, $duration)
     }
 
     [object]static wping([String]$url, [int] $mintimeout, [int] $maxtimeout) {

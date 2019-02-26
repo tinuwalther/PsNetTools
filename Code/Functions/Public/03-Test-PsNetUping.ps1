@@ -33,7 +33,7 @@ function Test-PsNetUping{
 
     EXAMPLE
       Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
-      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100 | Format-Table
 
    .INPUTS
       Hashtable
@@ -65,19 +65,27 @@ function Test-PsNetUping{
          [Int] $MaxTimeout = 1000
     )    
     begin {
-      $resultset = @()
-   }
-
-    process {
-      foreach($item in $Destination){
-         foreach($port in $UdpPort){
-            $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
-         }
-      }
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
     }
 
-    end {
-      return $resultset
-    }
+	process {
+		foreach($item in $Destination){
+			foreach($port in $UdpPort){
+                try{
+                    $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
+                }
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
+			}
+		}
+	}
+
+	end {
+		return $resultset
+	}
 
 }
