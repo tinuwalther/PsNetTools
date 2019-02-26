@@ -7,12 +7,6 @@ Class PsNetDigType {
     [ipaddress] $IpV6Address
     [int]       $TimeMs
 
-    #region Constructor
-    PsNetDigType() {
-        $this.Succeeded   = $false
-        $this.InputString = 'Empty'
-    }
-
     PsNetDigType(
         [bool] $Succeeded, [String] $InputString, [String] $Destination, [ipaddress] $IpV4Address, [ipaddress] $IpV6Address, [int] $TimeMs
     ) {
