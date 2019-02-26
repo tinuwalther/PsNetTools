@@ -1,3 +1,24 @@
+Class PsNetPingType {
+
+    [bool]   $Succeeded
+    [String] $Destination
+    [int]    $Port
+    [int]    $MinTimeout
+    [int]    $MaxTimeout
+    [int]    $TimeMs
+
+    PsNetPingType(
+        [bool] $Succeeded, [String] $Destination, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+    ){
+        $this.Succeeded   = $Succeeded
+        $this.Destination = $Destination
+        $this.Port        = $Port
+        $this.MinTimeout  = $MinTimeout
+        $this.MaxTimeout  = $MaxTimeout
+        $this.TimeMs      = $TimeMs
+    }
+}
+
 Class PsNetPing {
 
     <#
@@ -17,70 +38,29 @@ Class PsNetPing {
     #endregion
     
     #region methods
-    [object]static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
+    [PsNetPingType]static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
 
-        $function  = 'tping()'
-        $resultset = @()
-
-        if(([String]::IsNullOrEmpty($TargetName))){
-            Write-Warning "$($function): Empty TargetName specified!"
-        }
-        else{
-            $tcpclient    = $null
-            $connect      = $null
-            $patience     = $null
-            $tcpsucceeded = $null
-
-            try {
-                $start     = Get-Date
-                $tcpclient = New-Object System.Net.Sockets.TcpClient
-                $connect   = $TcpClient.BeginConnect($TargetName,$TcpPort,$null,$null)
-                Start-Sleep -Milliseconds (20 + $mintimeout)
-                $patience  = $connect.AsyncWaitHandle.WaitOne($maxtimeout,$false) 
-                if(!($patience)){
-                    $tcpsucceeded = $false
-                }
-                else{
-                    $tcpsucceeded = $tcpclient.Connected
-                    if($tcpsucceeded){
-                        $tcpclient.EndConnect($connect)
-                    }
-                }
-                $tcpclient.Close()
-                $tcpclient.Dispose()
-                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-                
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $true
-                    TargetName    = $TargetName
-                    TcpPort       = $TcpPort
-                    TcpSucceeded  = $tcpsucceeded
-
-                    Duration      = "$($duration)ms"
-                    MinTimeout    = "$($mintimeout)ms"
-                    MaxTimeout    = "$($maxtimeout)ms"
-                }
-                $resultset += $obj
+        [DateTime] $start        = Get-Date
+        [bool]     $tcpsucceeded = $false
+        [bool]     $WaitOne      = $false
+        [Object]   $tcpclient    = $null
+        [Object]   $connect      = $null
         
-            } catch {
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $false
-                    TargetName    = $TargetName
-                    TcpPort       = $TcpPort
-                    TcpSucceeded  = $false
+        $tcpclient = New-Object System.Net.Sockets.TcpClient
+        $connect   = $TcpClient.BeginConnect($TargetName,$TcpPort,$null,$null)
+        Start-Sleep -Milliseconds (20 + $mintimeout)
+        $WaitOne  = $connect.AsyncWaitHandle.WaitOne($maxtimeout,$false) 
+        if($WaitOne){
+            $tcpsucceeded = $tcpclient.Connected
+            if($tcpsucceeded){
+                $tcpclient.EndConnect($connect)
+            }
+        }
+        $tcpclient.Close()
+        $tcpclient.Dispose()
 
-                    Function           = $function
-                    Message            = $($_.Exception.Message)
-                    Category           = $($_.CategoryInfo).Category
-                    Exception          = $($_.Exception.GetType().FullName)
-                    CategoryActivity   = $($_.CategoryInfo).Activity
-                    CategoryTargetName = $($_.CategoryInfo).TargetName
-                }
-                $resultset += $obj
-                $error.Clear()
-            }                
-        }    
-        return $resultset    
+        $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
+        return [PsNetPingType]::New($tcpsucceeded, $TargetName, $TcpPort, $mintimeout, $maxtimeout, $duration)
     }
 
     [object]static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {

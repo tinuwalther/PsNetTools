@@ -37,7 +37,7 @@ function Test-PsNetTping{
 
     .EXAMPLE
       Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
-      Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
+      Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100 | Format-Table
 
     .INPUTS
       Hashtable
@@ -71,34 +71,40 @@ function Test-PsNetTping{
 
         [Parameter(Mandatory=$false)]
         [Int] $MaxTimeout = 1000
-   )    
+    )    
     begin {
        $resultset = @()
     }
 
     process {
-      $AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
-      if ($AttemptTcpTest){
-         switch ($CommonTCPPort){
-            "HTTP"   {$TcpPort = 80}
-            "HTTPS"  {$TcpPort = 443}
-            "RDP"    {$TcpPort = 3389}
-            "SMB"    {$TcpPort = 445}
-            "LDAP"   {$TcpPort = 389}
-            "LDAPS"  {$TcpPort = 636}
-            "WINRM"  {$TcpPort = 5985}
-            "WINRMS" {$TcpPort = 5986}
-         }
-      }
+		$AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
+		if ($AttemptTcpTest){
+			switch ($CommonTCPPort){
+			"HTTP"   {$TcpPort = 80}
+			"HTTPS"  {$TcpPort = 443}
+			"RDP"    {$TcpPort = 3389}
+			"SMB"    {$TcpPort = 445}
+			"LDAP"   {$TcpPort = 389}
+			"LDAPS"  {$TcpPort = 636}
+			"WINRM"  {$TcpPort = 5985}
+			"WINRMS" {$TcpPort = 5986}
+			}
+		}
 
-      foreach($item in $Destination){
-         foreach($port in $TcpPort){
-            $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
-         }
-      }
-    }
+		foreach($item in $Destination){
+			foreach($port in $TcpPort){
+				try{
+					$resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
+				}
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
+			}
+		}
+	}
 
-    end {
-      return $resultset
-   }
+	end {
+		return $resultset
+	}
 }
