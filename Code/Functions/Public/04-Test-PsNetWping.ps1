@@ -27,7 +27,7 @@ function Test-PsNetWping{
       Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
 
    .EXAMPLE
-      Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
+      Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy | Format-Table
 
    .INPUTS
       Hashtable
@@ -58,30 +58,44 @@ function Test-PsNetWping{
          [Switch] $NoProxy
     )  
     begin {
-      $resultset = @()
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
     }
 
     process {
-      if($NoProxy) {
-         foreach($item in $Destination){
-            if($item -notmatch '^http'){
-               $item = "http://$($item)"
+        if($NoProxy) {
+            foreach($item in $Destination){
+                if($item -notmatch '^http'){
+                    $item = "http://$($item)"
+                }
+                try{
+                    $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout, $true)
+                }
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
             }
-            $resultset += [PsNetPing]::wping($item, $MinTimeout, $MaxTimeout, $true)
-         }
-      }
-      else{
-         foreach($item in $Destination){
-            if($item -notmatch '^http'){
-               $item = "http://$($item)"
+        }
+        else{
+            foreach($item in $Destination){
+                if($item -notmatch '^http'){
+                    $item = "http://$($item)"
+                }
+                try{
+                    $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout)
+                }
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
             }
-            $resultset += [PsNetPing]::wping($item, $MinTimeout, $MaxTimeout)
-         }
-      }
+        }
     }
 
     end {
-      return $resultset
+        return $resultset
     }
 
 }
