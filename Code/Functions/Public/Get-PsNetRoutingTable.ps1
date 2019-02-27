@@ -26,7 +26,7 @@ function Get-PsNetRoutingTable {
       Author: Martin Walther
 
     .LINK
-      https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 

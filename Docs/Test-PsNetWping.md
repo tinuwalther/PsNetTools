@@ -5,87 +5,98 @@ online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
-# Add-PsNetHostsEntry
+# Test-PsNetWping
 
 ## SYNOPSIS
-Add entries to the hosts-file
+Test-PsNetWping
 
 ## SYNTAX
 
 ```
-Add-PsNetHostsEntry [[-Path] <String>] [-IPAddress] <String> [-Hostname] <String>
- [-FullyQualifiedName] <String> [<CommonParameters>]
+Test-PsNetWping [-Destination] <String[]> [[-MinTimeout] <Int32>] [[-MaxTimeout] <Int32>] [-NoProxy]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Running this command with elevated privilege.
-Add any entries to the hosts-file
+Test web request to an Url
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Add-PsNetHostsEntry -IPAddress 127.0.0.1 -Hostname tinu -FullyQualifiedName tinu.walther.ch
+Test-PsNetWping -Destination 'https://sbb.ch'
+```
+
+### EXAMPLE 2
+```
+Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
+```
+
+### EXAMPLE 3
+```
+Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy | Format-Table
 ```
 
 ## PARAMETERS
 
-### -Path
-Path to the hostsfile, can be empty
+### -Destination
+A String or an Array of Strings with Url's to test
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
-Required: False
+Required: True
 Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IPAddress
-IP Address to add
+### -MinTimeout
+Min.
+Timeout in ms, default is 0
 
 ```yaml
-Type: String
+Type: Int32
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 2
-Default value: None
+Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Hostname
-Hostname to add
+### -MaxTimeout
+Max.
+Timeout in ms, default is 1000
 
 ```yaml
-Type: String
+Type: Int32
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 3
-Default value: None
+Default value: 1000
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -FullyQualifiedName
-FullyQualifiedName to add
+### -NoProxy
+Test web request without a proxy
 
 ```yaml
-Type: String
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
-Required: True
-Position: 4
-Default value: None
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

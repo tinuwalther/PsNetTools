@@ -1,7 +1,7 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -44,7 +44,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -56,5 +57,5 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 

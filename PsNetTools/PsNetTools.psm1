@@ -1,5 +1,5 @@
 ﻿<#
-    Generated at 02/26/2019 21:28:54 by Martin Walther
+    Generated at 02/27/2019 20:52:52 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -25,6 +25,7 @@ Class PsNetError {
     }
 
 }
+
 Class PsNetDigType {
 
     [bool]      $Succeeded
@@ -124,21 +125,79 @@ Class PsNetDig {
 
 Class PsNetPingType {
 
-    [bool]   $Succeeded
+    hidden [bool]   $Succeeded
     [String] $Destination
     [String] $StatusDescription
-    [int]    $Port
     [int]    $MinTimeout
     [int]    $MaxTimeout
     [int]    $TimeMs
 
-    PsNetPingType(
-        [bool] $Succeeded, [String] $Destination, [String] $StatusDescription, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+}
+
+Class PsNetTpingType : PsNetPingType {
+
+    [bool]   $TcpSucceeded
+    [int]    $TcpPort
+
+    PsNetTpingType(
+        [bool] $Succeeded, [bool] $TcpSucceeded, [String] $Destination, [String] $StatusDescription, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
         $this.Destination       = $Destination
+        $this.TcpSucceeded      = $TcpSucceeded
+        $this.TcpPort           = $Port
+        $this.MinTimeout        = $MinTimeout
+        $this.MaxTimeout        = $MaxTimeout
+        if($TimeMs -gt $MaxTimeout){
+            $this.TimeMs = $MaxTimeout
+        }
+        else{
+            $this.TimeMs = $TimeMs
+        }
         $this.StatusDescription = $StatusDescription
-        $this.Port              = $Port
+    }
+}
+
+Class PsNetUpingType : PsNetPingType {
+
+    [bool]   $UdpSucceeded
+    [int]    $UdpPort
+
+    PsNetUpingType(
+        [bool] $Succeeded, [bool] $UdpSucceeded, [String] $Destination, [String] $StatusDescription, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+    ){
+        $this.Succeeded         = $Succeeded
+        $this.Destination       = $Destination
+        $this.UdpSucceeded      = $UdpSucceeded
+        $this.UdpPort           = $Port
+        $this.MinTimeout        = $MinTimeout
+        $this.MaxTimeout        = $MaxTimeout
+        if($TimeMs -gt $MaxTimeout){
+            $this.TimeMs = $MaxTimeout
+        }
+        else{
+            $this.TimeMs = $TimeMs
+        }
+        $this.StatusDescription = $StatusDescription
+    }
+}
+
+Class PsNetWebType : PsNetPingType {
+
+    hidden [bool]   $Succeeded
+    [bool]   $HttpSucceeded
+    [String] $ReturnedUrl
+    [bool]   $NoProxy
+
+    PsNetWebType(
+        [bool] $Succeeded, [bool] $HttpSucceeded, [String] $Destination, [String] $Url, [String] $StatusDescription, [bool] $Proxy, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+    ){
+        $this.Succeeded         = $Succeeded
+        $this.HttpSucceeded     = $HttpSucceeded
+        $this.Destination       = $Destination
+        $this.ReturnedUrl       = $Url
+        $this.StatusDescription = $StatusDescription
+        $this.NoProxy           = $Proxy
         $this.MinTimeout        = $MinTimeout
         $this.MaxTimeout        = $MaxTimeout
         if($TimeMs -gt $MaxTimeout){
@@ -168,7 +227,7 @@ Class PsNetPing {
     #endregion
     
     #region methods
-    [PsNetPingType] static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
+    [PsNetTpingType] static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
 
         [DateTime] $start        = Get-Date
         [bool]     $tcpsucceeded = $false
@@ -196,16 +255,15 @@ Class PsNetPing {
                 $description = $_.Exception.Message
                 $error.Clear()
             }
-    
         }
         $tcpclient.Close()
         $tcpclient.Dispose()
 
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetPingType]::New($tcpsucceeded, $TargetName, $description, $TcpPort, $mintimeout, $maxtimeout, $duration)
+        return [PsNetTpingType]::New($true, $tcpsucceeded, $TargetName, $description, $TcpPort, $mintimeout, $maxtimeout, $duration)
     }
 
-    [PsNetPingType] static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
+    [PsNetUpingType] static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
 
         [DateTime] $start        = Get-Date
         [bool]     $udpsucceeded = $false
@@ -218,67 +276,44 @@ Class PsNetPing {
         $receivebytes   = $null
 
         $udpclient = New-Object System.Net.Sockets.UdpClient
-        $connect   = $udpclient.Connect($TargetName,$UdpPort)
-        $WaitOne   = $udpclient.Client.ReceiveTimeout = $maxtimeout
-        
-        $dgram = new-object system.text.asciiencoding
-        $byte  = $dgram.GetBytes("TEST")
-        [void]$udpclient.Send($byte,$byte.length)
-        $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
-        Start-Sleep -Milliseconds (20 + $mintimeout)
-
         try{
-            $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
-            $description  = 'UDP Test success'
+            $connect   = $udpclient.Connect($TargetName,$UdpPort)
+            $WaitOne   = $udpclient.Client.ReceiveTimeout = $maxtimeout
+            
+            $dgram = new-object system.text.asciiencoding
+            $byte  = $dgram.GetBytes("TEST")
+            [void]$udpclient.Send($byte,$byte.length)
+            $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
+            Start-Sleep -Milliseconds (20 + $mintimeout)
+
+            try{
+                $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
+                $description  = 'UDP Test success'
+            }
+            catch{
+                $description = ($_.Exception.Message -split ': ')[1]
+                $error.Clear()
+            }
+        
+            if (-not([String]::IsNullOrEmpty($receivebytes))) {
+                $returndata   = $dgram.GetString($receivebytes)
+                $udpsucceeded = $true
+            } 
+        
         }
         catch{
-            $description = ($_.Exception.Message -split ':')[1]
+            $description = ($_.Exception.Message -split ': ')[1]
             $error.Clear()
         }
-    
-        if (-not([String]::IsNullOrEmpty($receivebytes))) {
-            $returndata   = $dgram.GetString($receivebytes)
-            $udpsucceeded = $true
-        } 
-    
+
         $udpclient.Close()
         $udpclient.Dispose()
 
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetPingType]::New($udpsucceeded, $TargetName, $description, $UdpPort, $mintimeout, $maxtimeout, $duration)
+        return [PsNetUpingType]::New($true, $udpsucceeded, $TargetName, $description, $UdpPort, $mintimeout, $maxtimeout, $duration)
     }
 
     #endregion
-}
-
-Class PsNetWebType {
-
-    [bool]   $Succeeded
-    [String] $Destination
-    [String] $Url
-    [String] $StatusDescription
-    [bool]   $NoProxy
-    [int]    $MinTimeout
-    [int]    $MaxTimeout
-    [int]    $TimeMs
-
-    PsNetWebType(
-        [bool] $Succeeded, [String] $Destination, [String] $Url, [String] $StatusDescription, [bool] $Proxy, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
-    ){
-        $this.Succeeded         = $Succeeded
-        $this.Destination       = $Destination
-        $this.Url               = $Url
-        $this.StatusDescription = $StatusDescription
-        $this.NoProxy           = $Proxy
-        $this.MinTimeout        = $MinTimeout
-        $this.MaxTimeout        = $MaxTimeout
-        if($TimeMs -gt $MaxTimeout){
-            $this.TimeMs = $MaxTimeout
-        }
-        else{
-            $this.TimeMs = $TimeMs
-        }
-    }
 }
 
 Class PsNetWeb {
@@ -320,11 +355,11 @@ Class PsNetWeb {
             $response.Close()
         }
         catch {
-            $description = ($_.Exception.Message -split ':')[1]
+            $description = ($_.Exception.Message -split ': ')[1]
             $error.Clear()
         }
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetWebType]::New($webreturn, $Url, $responseuri, $description, $false, $mintimeout, $maxtimeout, $duration)
+        return [PsNetWebType]::New($true, $webreturn, $Url, $responseuri, $description, $false, $mintimeout, $maxtimeout, $duration)
             
     }
     
@@ -354,11 +389,11 @@ Class PsNetWeb {
             $response.Close()
         }
         catch {
-            $description = ($_.Exception.Message -split ':')[1]
+            $description = ($_.Exception.Message -split ': ')[1]
             $error.Clear()
         }
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetWebType]::New($webreturn, $Url, $responseuri, $description, $true, $mintimeout, $maxtimeout, $duration)   
+        return [PsNetWebType]::New($true, $webreturn, $Url, $responseuri, $description, $true, $mintimeout, $maxtimeout, $duration)   
 
     }
 
@@ -1380,7 +1415,7 @@ function Add-PsNetHostsEntry {
        Author: Martin Walther
 
     .LINK
-       https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -1454,7 +1489,7 @@ function Get-PsNetAdapterConfiguration{
        Author: Martin Walther
 
     .LINK
-       https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -1494,7 +1529,7 @@ function Get-PsNetAdapters{
        Author: Martin Walther
 
     .LINK
-       https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -1537,7 +1572,7 @@ function Get-PsNetHostsTable {
        Author: Martin Walther
 
     .LINK
-       https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -1608,7 +1643,7 @@ function Get-PsNetRoutingTable {
       Author: Martin Walther
 
     .LINK
-      https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -1667,7 +1702,7 @@ function Remove-PsNetHostsEntry {
        Author: Martin Walther
 
     .LINK
-       https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -1741,7 +1776,7 @@ function Start-PsNetPortListener {
        Author: Martin Walther
 
     .LINK
-       https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -1834,7 +1869,7 @@ function Test-PsNetDig{
       Author: Martin Walther
 
     .LINK
-      https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -1918,7 +1953,7 @@ function Test-PsNetTping{
       Author: Martin Walther
 
     .LINK
-      https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -2026,7 +2061,7 @@ function Test-PsNetUping{
       Author: Martin Walther
 
    .LINK
-      https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -2111,7 +2146,7 @@ function Test-PsNetWping{
       Author: Martin Walther
 
    .LINK
-      https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 

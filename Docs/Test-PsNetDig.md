@@ -5,46 +5,64 @@ online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
-# Get-PsNetRoutingTable
+# Test-PsNetDig
 
 ## SYNOPSIS
-Get the Routing Table
+Domain information groper
 
 ## SYNTAX
 
 ```
-Get-PsNetRoutingTable [-IpVersion] <String> [<CommonParameters>]
+Test-PsNetDig [-Destination] <String[]> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Format the Routing Table to an object
+Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-PsNetRoutingTable -IpVersion IPv4
+Resolve a hostname to the IP Address
 ```
+
+Test-PsNetDig -Destination sbb.ch
 
 ### EXAMPLE 2
 ```
-Get-PsNetRoutingTable -IpVersion IPv6
+Resolve an IP address to the hostname
 ```
+
+Test-PsNetDig -Destination '127.0.0.1','194.150.245.142'
+
+### EXAMPLE 3
+```
+Resolve an array of hostnames to the IP Address
+```
+
+Test-PsNetDig -Destination sbb.ch, google.com
+
+### EXAMPLE 4
+```
+Resolve an array of hostnames to the IP Address with ValueFromPipeline
+```
+
+sbb.ch, google.com | Test-PsNetDig
 
 ## PARAMETERS
 
-### -IpVersion
-IPv4 or IPv6
+### -Destination
+Hostname or IP Address or Alias
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
@@ -54,9 +72,14 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
+### Hashtable
 ## OUTPUTS
 
 ### PSCustomObject
+### TargetName  : sbb.ch
+### IpV4Address : 194.150.245.142
+### IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e
+### Duration    : 4ms
 ## NOTES
 Author: Martin Walther
 
