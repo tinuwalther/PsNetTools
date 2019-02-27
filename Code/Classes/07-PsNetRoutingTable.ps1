@@ -1,9 +1,3 @@
-enum OSType {
-    Linux
-    Mac
-    Windows
-}
-
 Class PsNetRoutingTable{
 
     <#

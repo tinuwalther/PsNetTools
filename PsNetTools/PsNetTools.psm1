@@ -1,8 +1,446 @@
-<#
-    Generated at 02/24/2019 15:49:44 by Martin Walther
+﻿<#
+    Generated at 02/26/2019 21:28:54 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
+Class PsNetError {
+
+    [bool]   $Succeeded = $false
+    [String] $Function
+    [String] $FullyQualifiedErrorId
+    [String] $ErrorMessage
+    [String] $ErrorCategory
+    [String] $CategoryActivity
+    [String] $CategoryTargetName
+    [String] $ExceptionFullName
+
+    PsNetError([String] $Function, [Object]$ErrorObject){
+        $this.Function              = $Function
+        $this.FullyQualifiedErrorId = $ErrorObject.FullyQualifiedErrorId
+        $this.ErrorMessage          = $ErrorObject.Exception.Message
+        $this.ErrorCategory         = $ErrorObject.CategoryInfo.Category
+        $this.CategoryActivity      = $ErrorObject.CategoryInfo.Activity
+        $this.CategoryTargetName    = $ErrorObject.CategoryInfo.TargetName
+        $this.ExceptionFullName     = $ErrorObject.Exception.GetType().FullName
+    }
+
+}
+Class PsNetDigType {
+
+    [bool]      $Succeeded
+    [String]    $InputString
+    [String]    $Destination
+    [ipaddress] $IpV4Address
+    [ipaddress] $IpV6Address
+    [int]       $TimeMs
+
+    PsNetDigType(
+        [bool] $Succeeded, [String] $InputString, [String] $Destination, [ipaddress] $IpV4Address, [ipaddress] $IpV6Address, [int] $TimeMs
+    ) {
+        $this.Succeeded   = $Succeeded
+        $this.InputString = $InputString
+        $this.Destination = $Destination
+        $this.IpV4Address = $IpV4Address
+        $this.IpV6Address = $IpV6Address
+        $this.TimeMs      = $TimeMs
+    }
+    #endregion
+
+}
+
+Class PsNetDig {
+
+    <#
+        [PsNetDig]::dig('sbb.ch')
+        [PsNetDig]::dig('194.150.245.142')
+    #>
+
+    #region Properties with default values
+    [String]$Message = $null
+    #endregion
+
+    #region Constructor
+    PsNetDig(){
+        
+    }
+    #endregion
+    
+    #region methods
+    [PsNetDigType]static dig() {
+        return [PsNetDigType]::New()
+    }
+
+    [PsNetDigType]static dig([String] $InputString) {
+        
+        [bool]         $IsIpAddress = $false
+        [DateTime]     $start       = Get-Date
+        [Object]       $dnsreturn   = $null
+        [Object]       $collection  = $null
+        [ipaddress]    $ipv4address = $null
+        [ipaddress]    $ipv6address = $null
+        [String]       $TargetName  = $null
+
+        try {
+            $InputString = [ipaddress]$InputString
+            $IsIpAddress = $true
+        }
+        catch {
+            $Error.Clear()
+        }
+
+        # InputType is IPv4Address
+        if($IsIpAddress){
+            $dnsreturn = [System.Net.Dns]::GetHostByAddress($InputString)
+            if(-not([String]::IsNullOrEmpty($dnsreturn))){
+                $TargetName = $dnsreturn.hostname
+                $collection = $dnsreturn.AddressList
+            }
+        }
+
+        # InputType is Hostname
+        else{
+            $dnsreturn = [System.Net.Dns]::GetHostAddressesAsync($InputString).GetAwaiter().GetResult()
+            if(-not([String]::IsNullOrEmpty($dnsreturn))){
+                $TargetName = [System.Net.Dns]::GetHostByName($InputString).Hostname
+                $collection = $dnsreturn
+            }
+        }
+
+        foreach($item in $collection){
+            if($($item.AddressFamily) -eq 'InterNetwork'){
+                $ipv4address = $item.IPAddressToString
+            }
+            if($($item.AddressFamily) -eq 'InterNetworkV6'){
+                $ipv6address = $item.IPAddressToString
+            }
+        }
+
+        $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
+        return [PsNetDigType]::New($true, $InputString, $TargetName, $ipv4address, $ipv6address, $duration)
+    }
+    #endregion
+
+}
+
+Class PsNetPingType {
+
+    [bool]   $Succeeded
+    [String] $Destination
+    [String] $StatusDescription
+    [int]    $Port
+    [int]    $MinTimeout
+    [int]    $MaxTimeout
+    [int]    $TimeMs
+
+    PsNetPingType(
+        [bool] $Succeeded, [String] $Destination, [String] $StatusDescription, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+    ){
+        $this.Succeeded         = $Succeeded
+        $this.Destination       = $Destination
+        $this.StatusDescription = $StatusDescription
+        $this.Port              = $Port
+        $this.MinTimeout        = $MinTimeout
+        $this.MaxTimeout        = $MaxTimeout
+        if($TimeMs -gt $MaxTimeout){
+            $this.TimeMs = $MaxTimeout
+        }
+        else{
+            $this.TimeMs = $TimeMs
+        }
+    }
+}
+
+Class PsNetPing {
+
+    <#
+        [PsNetPing]::tping('sbb.ch', 80, 100)
+        [PsNetPing]::uping('sbb.ch', 53, 100)
+    #>
+
+    #region Properties with default values
+    [String]$Message = $null
+    #endregion
+
+    #region Constructor
+    PsNetPing(){
+        $this.Message = "Loading PsNetPing"
+    }
+    #endregion
+    
+    #region methods
+    [PsNetPingType] static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
+
+        [DateTime] $start        = Get-Date
+        [bool]     $tcpsucceeded = $false
+        [String]   $description  = $null
+        [bool]     $WaitOne      = $false
+        [Object]   $tcpclient    = $null
+        [Object]   $connect      = $null
+        
+        $tcpclient = New-Object System.Net.Sockets.TcpClient
+        $connect   = $TcpClient.BeginConnect($TargetName,$TcpPort,$null,$null)
+        Start-Sleep -Milliseconds (20 + $mintimeout)
+        $WaitOne  = $connect.AsyncWaitHandle.WaitOne($maxtimeout,$false) 
+        if($WaitOne){
+            try{
+                $tcpsucceeded = $tcpclient.Connected
+                if($tcpsucceeded){
+                    $tcpclient.EndConnect($connect)
+                    $description  = 'TCP Test success'
+                }
+                else{
+                    $description  = 'TCP Test failed'
+                }
+            }
+            catch{
+                $description = $_.Exception.Message
+                $error.Clear()
+            }
+    
+        }
+        $tcpclient.Close()
+        $tcpclient.Dispose()
+
+        $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
+        return [PsNetPingType]::New($tcpsucceeded, $TargetName, $description, $TcpPort, $mintimeout, $maxtimeout, $duration)
+    }
+
+    [PsNetPingType] static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
+
+        [DateTime] $start        = Get-Date
+        [bool]     $udpsucceeded = $false
+        [String]   $description  = $null
+        [Object]   $udpclient    = $null
+        [Object]   $connect      = $null
+        [bool]     $WaitOne      = $false
+        [string]   $returndata   = $null
+
+        $receivebytes   = $null
+
+        $udpclient = New-Object System.Net.Sockets.UdpClient
+        $connect   = $udpclient.Connect($TargetName,$UdpPort)
+        $WaitOne   = $udpclient.Client.ReceiveTimeout = $maxtimeout
+        
+        $dgram = new-object system.text.asciiencoding
+        $byte  = $dgram.GetBytes("TEST")
+        [void]$udpclient.Send($byte,$byte.length)
+        $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
+        Start-Sleep -Milliseconds (20 + $mintimeout)
+
+        try{
+            $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
+            $description  = 'UDP Test success'
+        }
+        catch{
+            $description = ($_.Exception.Message -split ':')[1]
+            $error.Clear()
+        }
+    
+        if (-not([String]::IsNullOrEmpty($receivebytes))) {
+            $returndata   = $dgram.GetString($receivebytes)
+            $udpsucceeded = $true
+        } 
+    
+        $udpclient.Close()
+        $udpclient.Dispose()
+
+        $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
+        return [PsNetPingType]::New($udpsucceeded, $TargetName, $description, $UdpPort, $mintimeout, $maxtimeout, $duration)
+    }
+
+    #endregion
+}
+
+Class PsNetWebType {
+
+    [bool]   $Succeeded
+    [String] $Destination
+    [String] $Url
+    [String] $StatusDescription
+    [bool]   $NoProxy
+    [int]    $MinTimeout
+    [int]    $MaxTimeout
+    [int]    $TimeMs
+
+    PsNetWebType(
+        [bool] $Succeeded, [String] $Destination, [String] $Url, [String] $StatusDescription, [bool] $Proxy, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+    ){
+        $this.Succeeded         = $Succeeded
+        $this.Destination       = $Destination
+        $this.Url               = $Url
+        $this.StatusDescription = $StatusDescription
+        $this.NoProxy           = $Proxy
+        $this.MinTimeout        = $MinTimeout
+        $this.MaxTimeout        = $MaxTimeout
+        if($TimeMs -gt $MaxTimeout){
+            $this.TimeMs = $MaxTimeout
+        }
+        else{
+            $this.TimeMs = $TimeMs
+        }
+    }
+}
+
+Class PsNetWeb {
+
+    <#
+        [PsNetWeb]::wping('https://sbb.ch', 1000, $true) 
+    #>
+
+    #region Properties with default values
+    [String]$Message = $null
+    #endregion
+
+    #region Constructor
+    PsNetWeb(){
+        $this.Message = "Loading PsNetWeb"
+    }
+    #endregion
+    
+    #region methods
+    [PsNetWebType] static wping([String]$url, [int] $mintimeout, [int] $maxtimeout) {
+    
+        [DateTime] $start     = Get-Date
+        [bool]     $webreturn = $false
+        [String]   $description = $null
+        [Object]   $responseuri = $null
+
+        $webreqest = [system.Net.HttpWebRequest]::Create($url)
+        $webreqest.Timeout = $maxtimeout
+        Start-Sleep -Milliseconds (20 + $mintimeout)
+
+        try{
+            $response    = $webreqest.GetResponse()
+            $responseuri = $response.ResponseUri
+            $statuscode  = $response.StatusCode
+            $description = $response.StatusDescription
+            if($statuscode -eq 'OK'){
+                $webreturn = $true
+            }
+            $response.Close()
+        }
+        catch {
+            $description = ($_.Exception.Message -split ':')[1]
+            $error.Clear()
+        }
+        $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
+        return [PsNetWebType]::New($webreturn, $Url, $responseuri, $description, $false, $mintimeout, $maxtimeout, $duration)
+            
+    }
+    
+    [PsNetWebType] static wping([String]$url, [int] $mintimeout, [int] $maxtimeout,[bool]$noproxy) {
+    
+        [DateTime] $start       = Get-Date
+        [bool]     $webreturn   = $false
+        [String]   $description = $null
+        [Object]   $responseuri = $null
+
+        $webreqest = [system.Net.HttpWebRequest]::Create($url)
+        $webreqest.Timeout = $maxtimeout
+        if($noproxy){
+            $webreqest.Proxy = [System.Net.GlobalProxySelection]::GetEmptyWebProxy()
+        }
+        Start-Sleep -Milliseconds (20 + $mintimeout)
+
+        try{
+            $response    = $webreqest.GetResponse()
+            $responseuri = $response.ResponseUri
+            $statuscode  = $response.StatusCode
+            $description = $response.StatusDescription
+            $response.Close()
+            if($statuscode -eq 'OK'){
+                $webreturn = $true
+            }
+            $response.Close()
+        }
+        catch {
+            $description = ($_.Exception.Message -split ':')[1]
+            $error.Clear()
+        }
+        $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
+        return [PsNetWebType]::New($webreturn, $Url, $responseuri, $description, $true, $mintimeout, $maxtimeout, $duration)   
+
+    }
+
+    [PsNetWebType] static ftpping([String]$uri,[int]$timeout,[PSCredential]$creds) {
+
+        #https://www.opentechguides.com/how-to/article/powershell/154/directory-listing.html
+
+        $function  = 'ftpping()'
+        $resultset = @()
+    
+        if(([String]::IsNullOrEmpty($uri))){
+            Write-Warning "$($function): Empty Uri specified!"
+        }
+        else{
+            $ftprequest  = $null
+            $response    = $null
+            $responseuri = $null
+            $statuscode  = $null
+
+            try {
+                $start      = Get-Date
+                $ftprequest = [System.Net.FtpWebRequest]::Create($uri)
+                $ftprequest.Credentials = New-Object System.Net.NetworkCredential($creds.UserName, $creds.Password)
+                $ftprequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
+                $ftprequest.Timeout = $timeout
+
+                try{
+                    $response    = $ftprequest.GetResponse()
+                    $responseuri = $response.ResponseUri
+                    $statuscode  = $response.StatusCode
+                    $response.Close()
+                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
+                    
+                    $obj = [PSCustomObject]@{
+                        Succeeded     = $true
+                        TargetName    = $Uri
+                        ResponseUri   = $responseuri
+                        StatusCode    = $statuscode
+                        Duration      = "$($duration)ms"
+                        MaxTimeout    = "$($Timeout)ms"
+                    }
+                    $resultset += $obj
+
+                } catch {
+                    $obj = [PSCustomObject]@{
+                        Succeeded     = $false
+                        TargetName    = $Uri
+                        StatusCode    = $false
+
+                        Function           = $function
+                        Message            = $($_.Exception.Message)
+                        Category           = $($_.CategoryInfo).Category
+                        Exception          = $($_.Exception.GetType().FullName)
+                        CategoryActivity   = $($_.CategoryInfo).Activity
+                        CategoryTargetName = $($_.CategoryInfo).TargetName
+                    }
+                    $resultset += $obj
+                    $Error.Clear()
+                }
+
+            } catch {
+                $obj = [PSCustomObject]@{
+                    Succeeded     = $false
+                    TargetName    = $Uri
+                    StatusCode    = $false
+
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
+                }
+                $resultset += $obj
+                $error.Clear()
+            }                
+        }    
+        return $resultset
+    }
+    #endregion
+}
+
 Class PsNetAdapter {
 
     <#
@@ -206,772 +644,10 @@ Class PsNetAdapter {
     #endregion
 }
 
-Class PsNetDig {
-
-    <#
-        [PsNetDig]::dig('sbb.ch')
-    #>
-
-    #region Properties with default values
-    [String]$Message = $null
-    #endregion
-
-    #region Constructor
-    PsNetDig(){
-        $this.Message = "Loading PsNetDig"
-    }
-    #endregion
-    
-    #region methods
-    [object]static dig([String] $TargetName) {
-        
-        $function  = 'dig()'
-        $resultset = $null
-
-        if([String]::IsNullOrEmpty($TargetName)){
-            Write-Warning "$($function): Empty TargetName specified!"
-        }
-        else{
-            $computer    = $null
-            $addresses   = $null
-            $ipv4address = $null
-            $ipv6address = $null
-            $ipv4pattern = '\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b'
-            try {
-                if($TargetName -match $ipv4pattern){
-                    $start     = Get-Date
-                    $addresses = [System.Net.Dns]::GetHostByAddress($TargetName)
-                    if(-not([String]::IsNullOrEmpty($addresses))){
-                        $computer = $addresses.hostname
-                        foreach($item in $addresses.AddressList){
-                            if($($item.AddressFamily) -eq 'InterNetwork'){
-                                $ipv4address = $item.IPAddressToString
-                            }
-                            if($($item.AddressFamily) -eq 'InterNetworkV6'){
-                                $ipv6address = $item.IPAddressToString
-                            }
-                            $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
-                            
-                            $resultset = [PSCustomObject]@{
-                                Succeeded    = $true
-                                TargetName  = $computer
-                                IpV4Address = $ipv4address
-                                IpV6Address = $ipv6address
-                                Duration    = "$($duration)ms"
-                            }
-                        }
-                    }
-                    else{
-                        return $null
-                    }
-                }
-                elseif($TargetName.GetType() -eq [String]){
-                    $start     = Get-Date
-                    $addresses = [System.Net.Dns]::GetHostAddressesAsync($TargetName).GetAwaiter().GetResult()
-                    if(-not([String]::IsNullOrEmpty($addresses))){
-                        foreach($item in $addresses){
-                            if($($item.AddressFamily) -eq 'InterNetwork'){
-                                $ipv4address = $item.IPAddressToString
-                            }
-                            if($($item.AddressFamily) -eq 'InterNetworkV6'){
-                                $ipv6address = $item.IPAddressToString
-                            }
-                            $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
-                            
-                            $resultset = [PSCustomObject]@{
-                                Succeeded   = $true
-                                TargetName  = $TargetName
-                                IpV4Address = $ipv4address
-                                IpV6Address = $ipv6address
-                                Duration    = "$($duration)ms"
-                            }
-                        }
-                    }
-                    else{
-                        return $null
-                    }
-                }
-            } 
-            catch {
-                $obj = [PSCustomObject]@{
-                    Succeeded          = $false
-                    Function           = $function
-                    Message            = $($_.Exception.Message)
-                    Category           = $($_.CategoryInfo).Category
-                    Exception          = $($_.Exception.GetType().FullName)
-                    CategoryActivity   = $($_.CategoryInfo).Activity
-                    CategoryTargetName = $($_.CategoryInfo).TargetName
-                }
-                $resultset += $obj
-                $error.Clear()
-            }
-        }
-        return $resultset
-    }
-    #endregion
-}
-
-Class PsNetPing {
-
-    <#
-        [PsNetPing]::tping('sbb.ch', 80, 100)
-        [PsNetPing]::uping('sbb.ch', 53, 100)
-        [PsNetPing]::wping('https://sbb.ch', 1000, $true) 
-    #>
-
-    #region Properties with default values
-    [String]$Message = $null
-    #endregion
-
-    #region Constructor
-    PsNetPing(){
-        $this.Message = "Loading PsNetPing"
-    }
-    #endregion
-    
-    #region methods
-    [object]static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
-
-        $function  = 'tping()'
-        $resultset = @()
-
-        if(([String]::IsNullOrEmpty($TargetName))){
-            Write-Warning "$($function): Empty TargetName specified!"
-        }
-        else{
-            $tcpclient    = $null
-            $connect      = $null
-            $patience     = $null
-            $tcpsucceeded = $null
-
-            try {
-                $start     = Get-Date
-                $tcpclient = New-Object System.Net.Sockets.TcpClient
-                $connect   = $TcpClient.BeginConnect($TargetName,$TcpPort,$null,$null)
-                Start-Sleep -Milliseconds (20 + $mintimeout)
-                $patience  = $connect.AsyncWaitHandle.WaitOne($maxtimeout,$false) 
-                if(!($patience)){
-                    $tcpsucceeded = $false
-                }
-                else{
-                    $tcpsucceeded = $tcpclient.Connected
-                    if($tcpsucceeded){
-                        $tcpclient.EndConnect($connect)
-                    }
-                }
-                $tcpclient.Close()
-                $tcpclient.Dispose()
-                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-                
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $true
-                    TargetName    = $TargetName
-                    TcpPort       = $TcpPort
-                    TcpSucceeded  = $tcpsucceeded
-
-                    Duration      = "$($duration)ms"
-                    MinTimeout    = "$($mintimeout)ms"
-                    MaxTimeout    = "$($maxtimeout)ms"
-                }
-                $resultset += $obj
-        
-            } catch {
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $false
-                    TargetName    = $TargetName
-                    TcpPort       = $TcpPort
-                    TcpSucceeded  = $false
-
-                    Function           = $function
-                    Message            = $($_.Exception.Message)
-                    Category           = $($_.CategoryInfo).Category
-                    Exception          = $($_.Exception.GetType().FullName)
-                    CategoryActivity   = $($_.CategoryInfo).Activity
-                    CategoryTargetName = $($_.CategoryInfo).TargetName
-                }
-                $resultset += $obj
-                $error.Clear()
-            }                
-        }    
-        return $resultset    
-    }
-
-    [object]static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
-
-        $function  = 'uping()'
-        $resultset = @()
-
-        if(([String]::IsNullOrEmpty($TargetName))){
-            Write-Warning "$($function): Empty TargetName specified!"
-        }
-        else{
-            $udpclient      = $null
-            $connect        = $null
-            $patience       = $null
-            $udpsucceeded   = $null
-            $dgram          = $null
-            $byte           = $null
-            $remoteendpoint = $null
-            $receivebytes   = $null
-
-            try {
-                $start     = Get-Date
-                $udpclient = New-Object System.Net.Sockets.UdpClient
-                $connect   = $udpclient.Connect($TargetName,$UdpPort)
-                $patience  = $udpclient.Client.ReceiveTimeout = $maxtimeout
-                
-                $dgram = new-object system.text.asciiencoding
-                $byte  = $dgram.GetBytes("TEST")
-                [void]$udpclient.Send($byte,$byte.length)
-                $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
-                Start-Sleep -Milliseconds (20 + $mintimeout)
-
-                try{
-                    $receivebytes = $udpclient.Receive([ref]$remoteendpoint) 
-                }
-                catch{
-                    $udpsucceeded = $false
-                    $error.Clear()
-                }
-            
-                if (-not([String]::IsNullOrEmpty($receivebytes))) {
-                    [string]$returndata = $dgram.GetString($receivebytes)
-                    $udpsucceeded = $true
-                } 
-            
-                $udpclient.Close()
-                $udpclient.Dispose()
-                $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-                
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $true
-                    TargetName    = $TargetName
-                    UdpPort       = $UdpPort
-                    UdpSucceeded  = $udpsucceeded
-
-                    Duration      = "$($duration)ms"
-                    MinTimeout    = "$($mintimeout)ms"
-                    MaxTimeout    = "$($maxtimeout)ms"
-                }
-                $resultset += $obj
-                    
-            } catch {
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $false
-                    TargetName    = $TargetName
-                    UdpPort       = $UdpPort
-                    UdpSucceeded  = $false
-
-                    Function           = $function
-                    Message            = $($_.Exception.Message)
-                    Category           = $($_.CategoryInfo).Category
-                    Exception          = $($_.Exception.GetType().FullName)
-                    CategoryActivity   = $($_.CategoryInfo).Activity
-                    CategoryTargetName = $($_.CategoryInfo).TargetName
-                }
-                $resultset += $obj
-                $error.Clear()
-            }                
-        }    
-        return $resultset    
-    }
-
-    [object]static wping([String]$url, [int] $mintimeout, [int] $maxtimeout) {
-
-        $function  = 'wping()'
-        $resultset = @()
-    
-        if(([String]::IsNullOrEmpty($url))){
-            Write-Warning "$($function): Empty Url specified!"
-        }
-        else{
-            $webreqest   = $null
-            $response    = $null
-            $responseuri = $null
-            $statuscode  = $null
-
-            try {
-                $start     = Get-Date
-                $webreqest = [system.Net.HttpWebRequest]::Create($url)
-                $webreqest.Timeout = $maxtimeout
-                Start-Sleep -Milliseconds (20 + $mintimeout)
-
-                try{
-                    $response    = $webreqest.GetResponse()
-                    $responseuri = $response.ResponseUri
-                    $statuscode  = $response.StatusCode
-                    $response.Close()
-                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-                    
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $true
-                        TargetName    = $Url
-                        ResponseUri   = $responseuri
-                        StatusCode    = $statuscode
-
-                        Duration      = "$($duration)ms"
-                        MinTimeout    = "$($mintimeout)ms"
-                        MaxTimeout    = "$($maxtimeout)ms"
-                    }
-                    $resultset += $obj
-
-                } catch [Exception]{
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $false
-                        TargetName    = $Url
-                        StatusCode    = $false
-
-                        Function           = $function
-                        Message            = $($_.Exception.Message)
-                        Category           = $($_.CategoryInfo).Category
-                        Exception          = $($_.Exception.GetType().FullName)
-                        CategoryActivity   = $($_.CategoryInfo).Activity
-                        CategoryTargetName = $($_.CategoryInfo).TargetName
-                    }
-                    $resultset += $obj
-                    $error.Clear()
-                }
-
-            } catch {
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $false
-                    TargetName    = $Url
-                    StatusCode    = $false
-
-                    Function           = $function
-                    Message            = $($_.Exception.Message)
-                    Category           = $($_.CategoryInfo).Category
-                    Exception          = $($_.Exception.GetType().FullName)
-                    CategoryActivity   = $($_.CategoryInfo).Activity
-                    CategoryTargetName = $($_.CategoryInfo).TargetName
-                }
-                $resultset += $obj
-                $error.Clear()
-            }                
-        }    
-        return $resultset    
-    }
-    
-    [object]static wping([String]$url, [int] $mintimeout, [int] $maxtimeout,[bool]$noproxy) {
-
-        $function  = 'wping()'
-        $resultset = @()
-    
-        if(([String]::IsNullOrEmpty($url))){
-            Write-Warning "$($function): Empty Url specified!"
-        }
-        else{
-            $webreqest   = $null
-            $response    = $null
-            $responseuri = $null
-            $statuscode  = $null
-
-            try {
-                $start     = Get-Date
-                $webreqest = [system.Net.HttpWebRequest]::Create($url)
-                $webreqest.Timeout = $maxtimeout
-                if($noproxy){
-                    $webreqest.Proxy = [System.Net.GlobalProxySelection]::GetEmptyWebProxy()
-                }
-                Start-Sleep -Milliseconds (20 + $mintimeout)
-
-                try{
-                    $response    = $webreqest.GetResponse()
-                    $responseuri = $response.ResponseUri
-                    $statuscode  = $response.StatusCode
-                    $response.Close()
-                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-                    
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $true
-                        TargetName    = $Url
-                        ResponseUri   = $responseuri
-                        StatusCode    = $statuscode
-
-                        Duration      = "$($duration)ms"
-                        MinTimeout    = "$($mintimeout)ms"
-                        MaxTimeout    = "$($maxtimeout)ms"
-                    }
-                    $resultset += $obj
-
-                } catch {
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $false
-                        TargetName    = $Url
-                        StatusCode    = $false
-
-                        Function           = $function
-                        Message            = $($_.Exception.Message)
-                        Category           = $($_.CategoryInfo).Category
-                        Exception          = $($_.Exception.GetType().FullName)
-                        CategoryActivity   = $($_.CategoryInfo).Activity
-                        CategoryTargetName = $($_.CategoryInfo).TargetName
-                    }
-                    $resultset += $obj
-                    $error.Clear()
-                }
-
-            } catch {
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $false
-                    TargetName    = $Url
-                    StatusCode    = $false
-
-                    Function           = $function
-                    Message            = $($_.Exception.Message)
-                    Category           = $($_.CategoryInfo).Category
-                    Exception          = $($_.Exception.GetType().FullName)
-                    CategoryActivity   = $($_.CategoryInfo).Activity
-                    CategoryTargetName = $($_.CategoryInfo).TargetName
-                }
-                $resultset += $obj
-                $error.Clear()
-            }                
-        }    
-        return $resultset    
-    }
-
-    [object]static ftpping([String]$uri,[int]$timeout,[PSCredential]$creds) {
-
-        #https://www.opentechguides.com/how-to/article/powershell/154/directory-listing.html
-
-        $function  = 'ftpping()'
-        $resultset = @()
-    
-        if(([String]::IsNullOrEmpty($uri))){
-            Write-Warning "$($function): Empty Uri specified!"
-        }
-        else{
-            $ftprequest  = $null
-            $response    = $null
-            $responseuri = $null
-            $statuscode  = $null
-
-            try {
-                $start      = Get-Date
-                $ftprequest = [System.Net.FtpWebRequest]::Create($uri)
-                $ftprequest.Credentials = New-Object System.Net.NetworkCredential($creds.UserName, $creds.Password)
-                $ftprequest.Method = [System.Net.WebRequestMethods+Ftp]::ListDirectoryDetails
-                $ftprequest.Timeout = $timeout
-
-                try{
-                    $response    = $ftprequest.GetResponse()
-                    $responseuri = $response.ResponseUri
-                    $statuscode  = $response.StatusCode
-                    $response.Close()
-                    $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0))
-                    
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $true
-                        TargetName    = $Uri
-                        ResponseUri   = $responseuri
-                        StatusCode    = $statuscode
-                        Duration      = "$($duration)ms"
-                        MaxTimeout    = "$($Timeout)ms"
-                    }
-                    $resultset += $obj
-
-                } catch {
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $false
-                        TargetName    = $Uri
-                        StatusCode    = $false
-
-                        Function           = $function
-                        Message            = $($_.Exception.Message)
-                        Category           = $($_.CategoryInfo).Category
-                        Exception          = $($_.Exception.GetType().FullName)
-                        CategoryActivity   = $($_.CategoryInfo).Activity
-                        CategoryTargetName = $($_.CategoryInfo).TargetName
-                    }
-                    $resultset += $obj
-                    $Error.Clear()
-                }
-
-            } catch {
-                $obj = [PSCustomObject]@{
-                    Succeeded     = $false
-                    TargetName    = $Uri
-                    StatusCode    = $false
-
-                    Function           = $function
-                    Message            = $($_.Exception.Message)
-                    Category           = $($_.CategoryInfo).Category
-                    Exception          = $($_.Exception.GetType().FullName)
-                    CategoryActivity   = $($_.CategoryInfo).Activity
-                    CategoryTargetName = $($_.CategoryInfo).TargetName
-                }
-                $resultset += $obj
-                $error.Clear()
-            }                
-        }    
-        return $resultset
-    }
-    #endregion
-}
-
 enum OSType {
     Linux
     Mac
     Windows
-}
-
-Class PsNetRoutingTable{
-
-    <#
-        [PsNetRoutingTable]::GetNetRoutingTable()
-        https://msdn.microsoft.com/en-us/library/hh872448(v=vs.85).aspx
-    #>
-
-    #region Properties with default values
-    [String]$Message = $null
-    #endregion
-
-    #region Constructor
-    PsNetRoutingTable(){
-        $this.Message = "Loading PsNetRoutingTable"
-    }
-    #endregion
-    
-    #region methods
-    [object] static GetNetRoutingTable([OSType]$CurrentOS,[String]$IpVersion) {
-
-        $function   = 'GetNetRoutingTable()'
-        $routeprint = $null
-        $resultset  = @()
-
-        try{
-            $routeprint = netstat -rn
-            if($IpVersion -eq 'IPv4'){
-                $resultset += [PsNetRoutingTable]::FormatIPv4RoutingTable($CurrentOS,$routeprint)
-            }
-            if($IpVersion -eq 'IPv6'){
-                $resultset += [PsNetRoutingTable]::FormatIPv6RoutingTable($CurrentOS,$routeprint)
-            }
-        }
-        catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
-            $error.Clear()
-        }                
-        return $resultset
-    }
-
-    [object] static FormatIPv4RoutingTable([OSType]$CurrentOS,[Object]$routeprint){
-
-        $function   = 'FormatIPv4RoutingTable()'
-        $IPv4Table  = @()
-        $resultset  = @()
-
-        try{
-            if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
-
-                $InterfaceList       = $routeprint -match 'Routing tables'
-                $IPv4RouteTable      = $routeprint -match 'Internet:'
-                $IPv6RouteTable      = $routeprint -match 'Internet6:'
-
-                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList) + 1
-                $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
-                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
-
-                for ($i = 0; $i -lt $routeprint.Length; $i++){
-                    if($i -eq $IPv4RouteTableIndex){
-                        for ($i = $IPv4RouteTableIndex; $i -lt $IPv6RouteTableIndex -1; $i++){
-                            $IPv4Table += $routeprint[$i]
-                        }
-                    }
-                }
-
-                if($IPv4Table -contains $IPv4RouteTable){
-                    $IPv4Table = $IPv4Table -replace $IPv4RouteTable 
-                }
-                $IPv4Table | ForEach-Object{
-                    $string = $_ -split '\s+'
-                    if($string){
-                        if($string[3] -match '^\d'){
-                            $obj = [PSCustomObject]@{
-                                Succeeded     = $true
-                                AddressFamily = 'IPv4'
-                                Destination   = $string[0]
-                                Gateway       = $string[1]
-                                Flags         = $string[2]
-                                Refs          = $string[3]
-                                Use           = $string[4]
-                                Netif         = $string[5]
-                                Expire        = $string[6]
-                            }
-                            $resultset += $obj
-                        }
-                    }
-                }
-
-            }
-            if($CurrentOS -eq [OSType]::Windows){
-
-                $InterfaceList       = $routeprint -match 'Interface List'
-                $IPv4RouteTable      = $routeprint -match 'IPv4 Route Table'
-                $IPv6RouteTable      = $routeprint -match 'IPv6 Route Table'
-
-                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
-                $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
-                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
-
-                for ($i = 0; $i -lt $routeprint.Length; $i++){
-                    if($i -eq $IPv4RouteTableIndex){
-                        for ($i = $IPv4RouteTableIndex; $i -lt $IPv6RouteTableIndex -1; $i++){
-                            $IPv4Table += $routeprint[$i]
-                        }
-                    }
-                }
-
-                if($IPv4Table -contains '='){
-                    $IPv4Table = $IPv4Table -replace '=' 
-                }
-                $IPv4Table | ForEach-Object{
-                    $string = $_ -split '\s+'
-                    if($string){
-                        if($string[5] -match '^\d'){
-                            $obj = [PSCustomObject]@{
-                                Succeeded     = $true
-                                AddressFamily = 'IPv4'
-                                Destination   = $string[1]
-                                Netmask       = $string[2]
-                                Gateway       = $string[3]
-                                Interface     = $string[4]
-                                Metric        = $string[5]
-                            }
-                            $resultset += $obj
-                        }
-                    }
-                }
-            }
-        }
-        catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
-            $error.Clear()
-        }                
-        return $resultset
-    }
-
-    [object] static FormatIPv6RoutingTable([OSType]$CurrentOS,[Object]$routeprint){
-
-        $function   = 'FormatIPv6RoutingTable()'
-        $IPv6Table  = @()
-        $resultset  = @()
-
-        try{
-            if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
-
-                $InterfaceList       = $routeprint -match 'Routing tables'
-                $IPv4RouteTable      = $routeprint -match 'Internet:'
-                $IPv6RouteTable      = $routeprint -match 'Internet6:'
-
-                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList) + 1
-                #$IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
-                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
-
-                for ($i = 0; $i -lt $routeprint.Length; $i++){
-                    if($i -eq $IPv6RouteTableIndex){
-                        for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
-                            $IPv6Table += $routeprint[$i]
-                        }
-                    }
-                }
-
-                if($IPv6Table -contains $IPv6RouteTable){
-                    $IPv6Table = $IPv6Table -replace $IPv6RouteTable 
-                }
-                $IPv6Table | ForEach-Object{
-                    $string = $_ -split '\s+'
-                    if($string){
-                        if($string[0] -notmatch '^\Destination'){
-                            $obj = [PSCustomObject]@{
-                                Succeeded     = $true 
-                                AddressFamily = 'IPv6'
-                                Destination   = $string[0]
-                                Gateway       = $string[1]
-                                Flags         = $string[2]
-                                Netif         = $string[3]
-                                Expire        = $string[4]
-                            }
-                            $resultset += $obj
-                        }
-                    }
-                }
-
-            }
-            if($CurrentOS -eq [OSType]::Windows){
-
-                $InterfaceList       = $routeprint -match 'Interface List'
-                $IPv4RouteTable      = $routeprint -match 'IPv4 Route Table'
-                $IPv6RouteTable      = $routeprint -match 'IPv6 Route Table'
-
-                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
-                #$IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
-                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
-
-                for ($i = 0; $i -lt $routeprint.Length; $i++){
-                    if($i -eq $IPv6RouteTableIndex){
-                        for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
-                            $IPv6Table += $routeprint[$i]
-                        }
-                    }
-                }
-
-                if($IPv6Table -contains '='){
-                    $IPv6Table = $IPv6Table -replace '=' 
-                }
-                $IPv6Table | ForEach-Object{
-                    $string = $_ -split '\s+'
-                    if($string){
-                        if($string[1] -match '^\d'){
-                            $obj = [PSCustomObject]@{
-                                Succeeded     = $true 
-                                AddressFamily = 'IPv6'
-                                Index         = $string[1]
-                                Metric        = $string[2]
-                                Destination   = $string[3]
-                                Gateway       = $string[4]
-                            }
-                            $resultset += $obj
-                        }
-                    }
-                }
-            } 
-        }
-        catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
-            $error.Clear()
-        }                
-        return $resultset
-    }
-    #endregion
 }
 
 Class PsNetHostsTable {
@@ -1403,6 +1079,265 @@ Class PsNetHostsTable {
             }
             $resultset += $obj
         }
+        return $resultset
+    }
+
+    #endregion
+}
+
+Class PsNetRoutingTable{
+
+    <#
+        [PsNetRoutingTable]::GetNetRoutingTable()
+        https://msdn.microsoft.com/en-us/library/hh872448(v=vs.85).aspx
+    #>
+
+    #region Properties with default values
+    [String]$Message = $null
+    #endregion
+
+    #region Constructor
+    PsNetRoutingTable(){
+        $this.Message = "Loading PsNetRoutingTable"
+    }
+    #endregion
+    
+    #region methods
+    [object] static GetNetRoutingTable([OSType]$CurrentOS,[String]$IpVersion) {
+
+        $function   = 'GetNetRoutingTable()'
+        $routeprint = $null
+        $resultset  = @()
+
+        try{
+            $routeprint = netstat -rn
+            if($IpVersion -eq 'IPv4'){
+                $resultset += [PsNetRoutingTable]::FormatIPv4RoutingTable($CurrentOS,$routeprint)
+            }
+            if($IpVersion -eq 'IPv6'){
+                $resultset += [PsNetRoutingTable]::FormatIPv6RoutingTable($CurrentOS,$routeprint)
+            }
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
+            $error.Clear()
+        }                
+        return $resultset
+    }
+
+    [object] static FormatIPv4RoutingTable([OSType]$CurrentOS,[Object]$routeprint){
+
+        $function   = 'FormatIPv4RoutingTable()'
+        $IPv4Table  = @()
+        $resultset  = @()
+
+        try{
+            if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
+
+                $InterfaceList       = $routeprint -match 'Routing tables'
+                $IPv4RouteTable      = $routeprint -match 'Internet:'
+                $IPv6RouteTable      = $routeprint -match 'Internet6:'
+
+                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList) + 1
+                $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
+
+                for ($i = 0; $i -lt $routeprint.Length; $i++){
+                    if($i -eq $IPv4RouteTableIndex){
+                        for ($i = $IPv4RouteTableIndex; $i -lt $IPv6RouteTableIndex -1; $i++){
+                            $IPv4Table += $routeprint[$i]
+                        }
+                    }
+                }
+
+                if($IPv4Table -contains $IPv4RouteTable){
+                    $IPv4Table = $IPv4Table -replace $IPv4RouteTable 
+                }
+                $IPv4Table | ForEach-Object{
+                    $string = $_ -split '\s+'
+                    if($string){
+                        if($string[3] -match '^\d'){
+                            $obj = [PSCustomObject]@{
+                                Succeeded     = $true
+                                AddressFamily = 'IPv4'
+                                Destination   = $string[0]
+                                Gateway       = $string[1]
+                                Flags         = $string[2]
+                                Refs          = $string[3]
+                                Use           = $string[4]
+                                Netif         = $string[5]
+                                Expire        = $string[6]
+                            }
+                            $resultset += $obj
+                        }
+                    }
+                }
+
+            }
+            if($CurrentOS -eq [OSType]::Windows){
+
+                $InterfaceList       = $routeprint -match 'Interface List'
+                $IPv4RouteTable      = $routeprint -match 'IPv4 Route Table'
+                $IPv6RouteTable      = $routeprint -match 'IPv6 Route Table'
+
+                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
+                $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
+
+                for ($i = 0; $i -lt $routeprint.Length; $i++){
+                    if($i -eq $IPv4RouteTableIndex){
+                        for ($i = $IPv4RouteTableIndex; $i -lt $IPv6RouteTableIndex -1; $i++){
+                            $IPv4Table += $routeprint[$i]
+                        }
+                    }
+                }
+
+                if($IPv4Table -contains '='){
+                    $IPv4Table = $IPv4Table -replace '=' 
+                }
+                $IPv4Table | ForEach-Object{
+                    $string = $_ -split '\s+'
+                    if($string){
+                        if($string[5] -match '^\d'){
+                            $obj = [PSCustomObject]@{
+                                Succeeded     = $true
+                                AddressFamily = 'IPv4'
+                                Destination   = $string[1]
+                                Netmask       = $string[2]
+                                Gateway       = $string[3]
+                                Interface     = $string[4]
+                                Metric        = $string[5]
+                            }
+                            $resultset += $obj
+                        }
+                    }
+                }
+            }
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
+            $error.Clear()
+        }                
+        return $resultset
+    }
+
+    [object] static FormatIPv6RoutingTable([OSType]$CurrentOS,[Object]$routeprint){
+
+        $function   = 'FormatIPv6RoutingTable()'
+        $IPv6Table  = @()
+        $resultset  = @()
+
+        try{
+            if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
+
+                $InterfaceList       = $routeprint -match 'Routing tables'
+                $IPv4RouteTable      = $routeprint -match 'Internet:'
+                $IPv6RouteTable      = $routeprint -match 'Internet6:'
+
+                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList) + 1
+                #$IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
+
+                for ($i = 0; $i -lt $routeprint.Length; $i++){
+                    if($i -eq $IPv6RouteTableIndex){
+                        for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
+                            $IPv6Table += $routeprint[$i]
+                        }
+                    }
+                }
+
+                if($IPv6Table -contains $IPv6RouteTable){
+                    $IPv6Table = $IPv6Table -replace $IPv6RouteTable 
+                }
+                $IPv6Table | ForEach-Object{
+                    $string = $_ -split '\s+'
+                    if($string){
+                        if($string[0] -notmatch '^\Destination'){
+                            $obj = [PSCustomObject]@{
+                                Succeeded     = $true 
+                                AddressFamily = 'IPv6'
+                                Destination   = $string[0]
+                                Gateway       = $string[1]
+                                Flags         = $string[2]
+                                Netif         = $string[3]
+                                Expire        = $string[4]
+                            }
+                            $resultset += $obj
+                        }
+                    }
+                }
+
+            }
+            if($CurrentOS -eq [OSType]::Windows){
+
+                $InterfaceList       = $routeprint -match 'Interface List'
+                $IPv4RouteTable      = $routeprint -match 'IPv4 Route Table'
+                $IPv6RouteTable      = $routeprint -match 'IPv6 Route Table'
+
+                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
+                #$IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
+                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
+
+                for ($i = 0; $i -lt $routeprint.Length; $i++){
+                    if($i -eq $IPv6RouteTableIndex){
+                        for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
+                            $IPv6Table += $routeprint[$i]
+                        }
+                    }
+                }
+
+                if($IPv6Table -contains '='){
+                    $IPv6Table = $IPv6Table -replace '=' 
+                }
+                $IPv6Table | ForEach-Object{
+                    $string = $_ -split '\s+'
+                    if($string){
+                        if($string[1] -match '^\d'){
+                            $obj = [PSCustomObject]@{
+                                Succeeded     = $true 
+                                AddressFamily = 'IPv6'
+                                Index         = $string[1]
+                                Metric        = $string[2]
+                                Destination   = $string[3]
+                                Gateway       = $string[4]
+                            }
+                            $resultset += $obj
+                        }
+                    }
+                }
+            } 
+        }
+        catch{
+            $obj = [PSCustomObject]@{
+                Succeeded          = $false
+                Function           = $function
+                Message            = $($_.Exception.Message)
+                Category           = $($_.CategoryInfo).Category
+                Exception          = $($_.Exception.GetType().FullName)
+                CategoryActivity   = $($_.CategoryInfo).Activity
+                CategoryTargetName = $($_.CategoryInfo).TargetName
+            }
+            $resultset += $obj
+            $error.Clear()
+        }                
         return $resultset
     }
 
@@ -1867,11 +1802,15 @@ function Test-PsNetDig{
       Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
     .PARAMETER Destination
-      Hostname or IP Address or Alias or WebUrl as String or String-Array
+      Hostname orÂ IP Address or Alias
  
     .EXAMPLE
       Resolve a hostname to the IP Address
       Test-PsNetDig -Destination sbb.ch
+
+    .EXAMPLE
+      Resolve an IP address to the hostname
+      Test-PsNetDig -Destination '127.0.0.1','194.150.245.142'
 
     .EXAMPLE
       Resolve an array of hostnames to the IP Address
@@ -1906,17 +1845,25 @@ function Test-PsNetDig{
     ) 
        
     begin {
-      $resultset = @()
-   }
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
+    }
     
     process {
-      foreach($item in $Destination){
-         $resultset += [PsNetDig]::dig($item)
-      }
+        foreach($item in $Destination){
+            try{
+                $resultset += [PsNetDig]::dig($item)
+            }
+            catch {
+                $resultset += [PsNetError]::New("$($function)($item)", $_)
+                $error.Clear()
+            }
+        }
     }
     
     end {
-      return $resultset
+        return $resultset
     }
 
 }
@@ -1959,7 +1906,7 @@ function Test-PsNetTping{
 
     .EXAMPLE
       Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
-      Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
+      Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100 | Format-Table
 
     .INPUTS
       Hashtable
@@ -1993,36 +1940,44 @@ function Test-PsNetTping{
 
         [Parameter(Mandatory=$false)]
         [Int] $MaxTimeout = 1000
-   )    
+    )    
     begin {
-       $resultset = @()
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
     }
 
     process {
-      $AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
-      if ($AttemptTcpTest){
-         switch ($CommonTCPPort){
-            "HTTP"   {$TcpPort = 80}
-            "HTTPS"  {$TcpPort = 443}
-            "RDP"    {$TcpPort = 3389}
-            "SMB"    {$TcpPort = 445}
-            "LDAP"   {$TcpPort = 389}
-            "LDAPS"  {$TcpPort = 636}
-            "WINRM"  {$TcpPort = 5985}
-            "WINRMS" {$TcpPort = 5986}
-         }
-      }
+		$AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
+		if ($AttemptTcpTest){
+			switch ($CommonTCPPort){
+			"HTTP"   {$TcpPort = 80}
+			"HTTPS"  {$TcpPort = 443}
+			"RDP"    {$TcpPort = 3389}
+			"SMB"    {$TcpPort = 445}
+			"LDAP"   {$TcpPort = 389}
+			"LDAPS"  {$TcpPort = 636}
+			"WINRM"  {$TcpPort = 5985}
+			"WINRMS" {$TcpPort = 5986}
+			}
+		}
 
-      foreach($item in $Destination){
-         foreach($port in $TcpPort){
-            $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
-         }
-      }
-    }
+		foreach($item in $Destination){
+			foreach($port in $TcpPort){
+				try{
+					$resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
+				}
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
+			}
+		}
+	}
 
-    end {
-      return $resultset
-   }
+	end {
+		return $resultset
+	}
 }
 function Test-PsNetUping{
 
@@ -2059,7 +2014,7 @@ function Test-PsNetUping{
 
     EXAMPLE
       Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
-      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100 | Format-Table
 
    .INPUTS
       Hashtable
@@ -2091,20 +2046,28 @@ function Test-PsNetUping{
          [Int] $MaxTimeout = 1000
     )    
     begin {
-      $resultset = @()
-   }
-
-    process {
-      foreach($item in $Destination){
-         foreach($port in $UdpPort){
-            $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
-         }
-      }
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
     }
 
-    end {
-      return $resultset
-    }
+	process {
+		foreach($item in $Destination){
+			foreach($port in $UdpPort){
+                try{
+                    $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
+                }
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
+			}
+		}
+	}
+
+	end {
+		return $resultset
+	}
 
 }
 function Test-PsNetWping{
@@ -2136,7 +2099,7 @@ function Test-PsNetWping{
       Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000
 
    .EXAMPLE
-      Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
+      Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy | Format-Table
 
    .INPUTS
       Hashtable
@@ -2167,30 +2130,44 @@ function Test-PsNetWping{
          [Switch] $NoProxy
     )  
     begin {
-      $resultset = @()
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
     }
 
     process {
-      if($NoProxy) {
-         foreach($item in $Destination){
-            if($item -notmatch '^http'){
-               $item = "http://$($item)"
+        if($NoProxy) {
+            foreach($item in $Destination){
+                if($item -notmatch '^http'){
+                    $item = "http://$($item)"
+                }
+                try{
+                    $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout, $true)
+                }
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
             }
-            $resultset += [PsNetPing]::wping($item, $MinTimeout, $MaxTimeout, $true)
-         }
-      }
-      else{
-         foreach($item in $Destination){
-            if($item -notmatch '^http'){
-               $item = "http://$($item)"
+        }
+        else{
+            foreach($item in $Destination){
+                if($item -notmatch '^http'){
+                    $item = "http://$($item)"
+                }
+                try{
+                    $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout)
+                }
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
             }
-            $resultset += [PsNetPing]::wping($item, $MinTimeout, $MaxTimeout)
-         }
-      }
+        }
     }
 
     end {
-      return $resultset
+        return $resultset
     }
 
 }
