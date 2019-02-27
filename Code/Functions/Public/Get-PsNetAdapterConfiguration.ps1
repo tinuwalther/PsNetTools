@@ -1,21 +1,28 @@
 function Get-PsNetAdapterConfiguration{
-   <#
 
-   .SYNOPSIS
-      Get-PsNetAdapterConfiguration
+    <#
 
-   .DESCRIPTION
-      List network adapter configuraion for all adapters
+    .SYNOPSIS
+       Get Network Adapter Configuration
 
-   .PARAMETER
+    .DESCRIPTION
+       List network adapter configuraion for all adapters
 
-   .EXAMPLE
-      Get-PsNetAdapterConfiguration
+    .EXAMPLE
+       Get-PsNetAdapterConfiguration
+
+    .INPUTS
+
+    .OUTPUTS
+       PSCustomObject
 
     .NOTES
-      Author: Martin Walther
+       Author: Martin Walther
 
-   #>
+    .LINK
+       https://tinuwalther.github.io/
+
+    #>
 
    [CmdletBinding()]
    param()   
@@ -23,7 +30,7 @@ function Get-PsNetAdapterConfiguration{
    }
 
    process {
-       return [PsNetAdapter]::GetNetadapterConfiguration()
+       return [PsNetAdapter]::listadapterconfig()
    }
 
    end {

@@ -1,8 +1,8 @@
 Class PsNetAdapter {
 
     <#
-        [PsNetAdapter]::GetNetAdapters
-        [PsNetAdapter]::GetNetadapterConfiguration
+        [PsNetAdapter]::listadapters
+        [PsNetAdapter]::listadapterconfig
     #>
 
     #region Properties with default values
@@ -16,11 +16,11 @@ Class PsNetAdapter {
     #endregion
 
     #region methods
-    [object] static GetNetadapters(){
+    [object] static listadapters(){
 
         #https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinterface.getipproperties?view=netframework-4.7.2#System_Net_NetworkInformation_NetworkInterface_GetIPProperties
 
-        $function  = 'GetNetadapters()'
+        $function  = 'listadapters()'
         $resultset = @()
 
         try{
@@ -88,11 +88,11 @@ Class PsNetAdapter {
         return $resultset
     }
 
-    [object] static GetNetadapterConfiguration(){
+    [object] static listadapterconfig(){
 
         #https://docs.microsoft.com/en-us/dotnet/api/system.net.networkinformation.networkinterface.getipproperties?view=netframework-4.7.2#System_Net_NetworkInformation_NetworkInterface_GetIPProperties
 
-        $function  = 'GetNetadapterConfigurations()'
+        $function  = 'listadapterconfig()'
         $resultset = @()
 
         try{

@@ -24,10 +24,6 @@ Describe "Testing Test-PsNetTping on $($CurrentOS) OS" {
         (Test-PsNetTping -Destination 'sbb.powershell' -TcpPort 443 -MaxTimeout 1000).TcpSucceeded | should BeFalse
     }
 
-    it "[NEG] [$($CurrentOS)] Testing Test-PsNetTping with false Port as parameter(s)"{
-        (Test-PsNetTping -Destination 'sbb.ch' -TcpPort 443443 -MaxTimeout 1000).Succeeded | should BeFalse
-    }
-
     it "[NEG] [$($CurrentOS)] Testing Test-PsNetTping with false IP Address as parameter(s)"{
         (Test-PsNetTping -Destination '255.255.255.256' -TcpPort 443 -MaxTimeout 1000).TcpSucceeded | should BeFalse
     }

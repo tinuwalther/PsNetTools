@@ -3,10 +3,11 @@ function Add-PsNetHostsEntry {
     <#
 
     .SYNOPSIS
-       Add-PsNetHostsEntry
+       Add entries to the hosts-file
 
     .DESCRIPTION
-       Add an entry in the hosts-file
+       Running this command with elevated privilege.
+       Add any entries to the hosts-file
 
     .PARAMETER Path
        Path to the hostsfile, can be empty
@@ -23,8 +24,17 @@ function Add-PsNetHostsEntry {
     .EXAMPLE
        Add-PsNetHostsEntry -IPAddress 127.0.0.1 -Hostname tinu -FullyQualifiedName tinu.walther.ch
 
+    .INPUTS
+       Hashtable
+
+    .OUTPUTS
+       PSCustomObject
+
     .NOTES
        Author: Martin Walther
+
+    .LINK
+       https://tinuwalther.github.io/
 
     #>
 
