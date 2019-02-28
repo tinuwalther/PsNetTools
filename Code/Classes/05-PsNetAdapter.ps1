@@ -1,3 +1,42 @@
+Class PsNetAdapterType {
+
+    [bool]   $Succeeded
+    [int]    $Index
+    hidden [Object] $adapter
+    [String] $Name
+    [String] $Description
+    [String] $NetworkInterfaceType
+    [String] $OperationalStatus
+    [String] $PhysicalAddres
+    [String] $IpVersion
+    [bool]   $IsAPIPAEnabled
+    [Object] $IpV4Addresses
+    [Object] $IpV6Addresses
+
+    PsNetAdapterType (
+        [bool]   $Succeeded,
+        [int]    $Index,
+        [Object] $adapter,
+        [String] $IpVersion,
+        [bool]   $IsAPIPAEnabled,
+        [Object] $IpV4Addresses,
+        [Object] $IpV6Addresses
+    ) {
+        $this.Succeeded            = $Succeeded
+        $this.Index                = $Index
+        $this.Name                 = $adapter.Name
+        $this.Description          = $adapter.Description
+        $this.NetworkInterfaceType = $adapter.NetworkInterfaceType
+        $this.OperationalStatus    = $adapter.OperationalStatus
+        $this.PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
+        $this.IpVersion            = $IpVersion
+        $this.IsAPIPAEnabled       = $IsAPIPAEnabled
+        $this.IpV4Addresses        = $IpV4Addresses
+        $this.IpV6Addresses        = $IpV6Addresses
+    }
+
+}
+
 Class PsNetAdapter {
 
     <#
@@ -54,38 +93,33 @@ Class PsNetAdapter {
                             $IpV6Addresses += $ip.Address.ToString()
                         }
                     }
-
+                    <#
                     $obj = [PSCustomObject]@{
                         Succeeded            = $true
                         Index                = $IpV4properties.Index
+
                         Name                 = $adapter.Name
                         Description          = $adapter.Description
                         NetworkInterfaceType = $adapter.NetworkInterfaceType
                         OperationalStatus    = $adapter.OperationalStatus
+                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
+
                         IpVersion            = $IpVersion
                         IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
                         IpV4Addresses        = $IpV4Addresses
                         IpV6Addresses        = $IpV6Addresses
-                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
                     }
                     $resultset += $obj
+                    #>
+                    $resultset += [PsNetAdapterType]::New($true,$IpV4properties.Index,$adapter,$IpVersion,$IpV4properties.IsAutomaticPrivateAddressingActive,$IpV4Addresses,$IpV6Addresses)
                 }
             }
         }
         catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
+            $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
-        }                
-        return $resultset
+        }  
+        return $resultset              
     }
 
     [object] static listadapterconfig(){
@@ -144,6 +178,7 @@ Class PsNetAdapter {
                     $obj = [PSCustomObject]@{
                         Succeeded            = $true
                         Index                = $IpV4properties.Index
+
                         Id                   = $adapter.Id
                         Name                 = $adapter.Name
                         Description          = $adapter.Description
@@ -152,30 +187,26 @@ Class PsNetAdapter {
                         Speed                = $adapter.Speed
                         IsReceiveOnly        = $adapter.IsReceiveOnly
                         SupportsMulticast    = $adapter.SupportsMulticast
+                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
                 
                         IpVersion            = $IpVersion
                         IpV4Addresses        = $IpV4Addresses
                         IpV6Addresses        = $IpV6Addresses
-                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
                         
                         IsDnsEnabled         = $properties.IsDnsEnabled
                         IsDynamicDnsEnabled  = $properties.IsDynamicDnsEnabled
                         DnsSuffix            = $properties.DnsSuffix
                         DnsAddresses         = $properties.DnsAddresses
+                        DhcpServerAddresses  = $properties.DhcpServerAddresses
+                        WinsServersAddresses = $properties.WinsServersAddresses
                         
                         Mtu                  = $IpV4properties.Mtu
-                
                         IsForwardingEnabled  = $IpV4properties.IsForwardingEnabled
-                        
                         IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
                         IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingEnabled
-                
                         IsDhcpEnabled        = $IpV4properties.IsDhcpEnabled
-                        DhcpServerAddresses  = $properties.DhcpServerAddresses
-                        
                         UsesWins             = $IpV4properties.UsesWins
-                        WinsServersAddresses = $properties.WinsServersAddresses
-                 
+
                         GatewayIpV4Addresses = $GatewayIpV4Addresses
                         GatewayIpV6Addresses = $GatewayIpV6Addresses
                     }
@@ -184,16 +215,7 @@ Class PsNetAdapter {
             }
         }
         catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
+            $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
         }                
         return $resultset
