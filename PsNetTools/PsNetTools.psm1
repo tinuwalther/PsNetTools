@@ -1,5 +1,5 @@
-﻿<#
-    Generated at 02/27/2019 20:52:52 by Martin Walther
+<#
+    Generated at 02/28/2019 18:56:19 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -36,7 +36,12 @@ Class PsNetDigType {
     [int]       $TimeMs
 
     PsNetDigType(
-        [bool] $Succeeded, [String] $InputString, [String] $Destination, [ipaddress] $IpV4Address, [ipaddress] $IpV6Address, [int] $TimeMs
+        [bool]      $Succeeded, 
+        [String]    $InputString, 
+        [String]    $Destination, 
+        [ipaddress] $IpV4Address, 
+        [ipaddress] $IpV6Address, 
+        [int]       $TimeMs
     ) {
         $this.Succeeded   = $Succeeded
         $this.InputString = $InputString
@@ -140,7 +145,14 @@ Class PsNetTpingType : PsNetPingType {
     [int]    $TcpPort
 
     PsNetTpingType(
-        [bool] $Succeeded, [bool] $TcpSucceeded, [String] $Destination, [String] $StatusDescription, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+        [bool] $Succeeded, 
+        [bool] $TcpSucceeded, 
+        [String] $Destination, 
+        [String] $StatusDescription, 
+        [int] $Port, 
+        [int] $MinTimeout, 
+        [int] $MaxTimeout, 
+        [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
         $this.Destination       = $Destination
@@ -164,7 +176,14 @@ Class PsNetUpingType : PsNetPingType {
     [int]    $UdpPort
 
     PsNetUpingType(
-        [bool] $Succeeded, [bool] $UdpSucceeded, [String] $Destination, [String] $StatusDescription, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+        [bool] $Succeeded, 
+        [bool] $UdpSucceeded, 
+        [String] $Destination, 
+        [String] $StatusDescription, 
+        [int] $Port, 
+        [int] $MinTimeout, 
+        [int] $MaxTimeout, 
+        [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
         $this.Destination       = $Destination
@@ -186,16 +205,24 @@ Class PsNetWebType : PsNetPingType {
 
     hidden [bool]   $Succeeded
     [bool]   $HttpSucceeded
-    [String] $ReturnedUrl
+    [String] $ResponsedUrl
     [bool]   $NoProxy
 
     PsNetWebType(
-        [bool] $Succeeded, [bool] $HttpSucceeded, [String] $Destination, [String] $Url, [String] $StatusDescription, [bool] $Proxy, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+        [bool] $Succeeded, 
+        [bool] $HttpSucceeded, 
+        [String] $Destination, 
+        [String] $Url, 
+        [String] $StatusDescription, 
+        [bool] $Proxy, 
+        [int] $MinTimeout, 
+        [int] $MaxTimeout, 
+        [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
         $this.HttpSucceeded     = $HttpSucceeded
         $this.Destination       = $Destination
-        $this.ReturnedUrl       = $Url
+        $this.ResponsedUrl      = $Url
         $this.StatusDescription = $StatusDescription
         $this.NoProxy           = $Proxy
         $this.MinTimeout        = $MinTimeout
@@ -476,6 +503,45 @@ Class PsNetWeb {
     #endregion
 }
 
+Class PsNetAdapterType {
+
+    [bool]   $Succeeded
+    [int]    $Index
+    hidden [Object] $adapter
+    [String] $Name
+    [String] $Description
+    [String] $NetworkInterfaceType
+    [String] $OperationalStatus
+    [String] $PhysicalAddres
+    [String] $IpVersion
+    [bool]   $IsAPIPAEnabled
+    [Object] $IpV4Addresses
+    [Object] $IpV6Addresses
+
+    PsNetAdapterType (
+        [bool]   $Succeeded,
+        [int]    $Index,
+        [Object] $adapter,
+        [String] $IpVersion,
+        [bool]   $IsAPIPAEnabled,
+        [Object] $IpV4Addresses,
+        [Object] $IpV6Addresses
+    ) {
+        $this.Succeeded            = $Succeeded
+        $this.Index                = $Index
+        $this.Name                 = $adapter.Name
+        $this.Description          = $adapter.Description
+        $this.NetworkInterfaceType = $adapter.NetworkInterfaceType
+        $this.OperationalStatus    = $adapter.OperationalStatus
+        $this.PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
+        $this.IpVersion            = $IpVersion
+        $this.IsAPIPAEnabled       = $IsAPIPAEnabled
+        $this.IpV4Addresses        = $IpV4Addresses
+        $this.IpV6Addresses        = $IpV6Addresses
+    }
+
+}
+
 Class PsNetAdapter {
 
     <#
@@ -532,38 +598,33 @@ Class PsNetAdapter {
                             $IpV6Addresses += $ip.Address.ToString()
                         }
                     }
-
+                    <#
                     $obj = [PSCustomObject]@{
                         Succeeded            = $true
                         Index                = $IpV4properties.Index
+
                         Name                 = $adapter.Name
                         Description          = $adapter.Description
                         NetworkInterfaceType = $adapter.NetworkInterfaceType
                         OperationalStatus    = $adapter.OperationalStatus
+                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
+
                         IpVersion            = $IpVersion
                         IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
                         IpV4Addresses        = $IpV4Addresses
                         IpV6Addresses        = $IpV6Addresses
-                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
                     }
                     $resultset += $obj
+                    #>
+                    $resultset += [PsNetAdapterType]::New($true,$IpV4properties.Index,$adapter,$IpVersion,$IpV4properties.IsAutomaticPrivateAddressingActive,$IpV4Addresses,$IpV6Addresses)
                 }
             }
         }
         catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
+            $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
-        }                
-        return $resultset
+        }  
+        return $resultset              
     }
 
     [object] static listadapterconfig(){
@@ -622,6 +683,7 @@ Class PsNetAdapter {
                     $obj = [PSCustomObject]@{
                         Succeeded            = $true
                         Index                = $IpV4properties.Index
+
                         Id                   = $adapter.Id
                         Name                 = $adapter.Name
                         Description          = $adapter.Description
@@ -630,30 +692,26 @@ Class PsNetAdapter {
                         Speed                = $adapter.Speed
                         IsReceiveOnly        = $adapter.IsReceiveOnly
                         SupportsMulticast    = $adapter.SupportsMulticast
+                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
                 
                         IpVersion            = $IpVersion
                         IpV4Addresses        = $IpV4Addresses
                         IpV6Addresses        = $IpV6Addresses
-                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
                         
                         IsDnsEnabled         = $properties.IsDnsEnabled
                         IsDynamicDnsEnabled  = $properties.IsDynamicDnsEnabled
                         DnsSuffix            = $properties.DnsSuffix
                         DnsAddresses         = $properties.DnsAddresses
+                        DhcpServerAddresses  = $properties.DhcpServerAddresses
+                        WinsServersAddresses = $properties.WinsServersAddresses
                         
                         Mtu                  = $IpV4properties.Mtu
-                
                         IsForwardingEnabled  = $IpV4properties.IsForwardingEnabled
-                        
                         IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
                         IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingEnabled
-                
                         IsDhcpEnabled        = $IpV4properties.IsDhcpEnabled
-                        DhcpServerAddresses  = $properties.DhcpServerAddresses
-                        
                         UsesWins             = $IpV4properties.UsesWins
-                        WinsServersAddresses = $properties.WinsServersAddresses
-                 
+
                         GatewayIpV4Addresses = $GatewayIpV4Addresses
                         GatewayIpV6Addresses = $GatewayIpV6Addresses
                     }
@@ -662,21 +720,55 @@ Class PsNetAdapter {
             }
         }
         catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
+            $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
         }                
         return $resultset
     }
     #endregion
+}
+
+Class PsNetHostsTableType {
+
+    [bool]   $Succeeded
+    [String] $IpAddress
+    [String] $Compuername
+    [String] $FullyQualifiedName
+    [String] $Message
+
+    PsNetHostsTableType (
+        [bool]   $Succeeded,
+        [String] $IpAddress,
+        [String] $Compuername,
+        [String] $FullyQualifiedName,
+        [String] $Message
+        ) {
+        $this.Succeeded          = $Succeeded
+        $this.IpAddress          = $IpAddress
+        $this.Compuername        = $Compuername
+        $this.FullyQualifiedName = $FullyQualifiedName
+        $this.Message            = $Message
+    }
+}
+
+Class PsNetHostsEntryType {
+
+    [bool]   $Succeeded
+    [String] $HostsEntry
+    [String] $BackupPath
+    [String] $Message
+
+    PsNetHostsEntryType (
+        [bool]   $Succeeded,
+        [String] $HostsEntry,
+        [String] $BackupPath,
+        [String] $Message
+    ) {
+        $this.Succeeded   = $Succeeded
+        $this.HostsEntry  = $HostsEntry
+        $this.BackupPath  = $BackupPath
+        $this.Message     = $Message
+    }
 }
 
 enum OSType {
@@ -712,54 +804,31 @@ Class PsNetHostsTable {
                     $string = ($filecontent | Select-String -Pattern $ipv4pattern).Line
                     for ($i = 0; $i -lt $string.Length; $i++){
                         $line = ($string[$i]) -Split '\s+'
-                        $obj = [PSCustomObject]@{
-                            Succeeded          = $true
-                            IpAddress          = $line[0]
-                            Compuername        = $line[1]
-                            FullyQualifiedName = $line[2]
-                        }
-                        $resultset += $obj
+                        $resultset += [PsNetHostsTableType]::New($true,$line[0],$line[1],$line[2],$null)
                     }
                 }
                 else{
-                    $obj = [PSCustomObject]@{
-                        Succeeded          = $true
-                        IpAddress          = '{}'
-                        Compuername        = '{}'
-                        FullyQualifiedName = '{}'
-                    }
-                    $resultset += $obj
+                    $resultset += [PsNetHostsTableType]::New($true,'{}','{}','{}',$null)
                 }
             }
             else{
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Message    = "$Path not found"
-                }
-                $resultset += $obj
+                $resultset += [PsNetHostsTableType]::New($false,'{}','{}','{}',"$Path not found")
             }
         }
         catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
+            $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
         }
         return $resultset
     }
 
-    [object] static AddPsNetHostEntry([OSType]$CurrentOS, [String]$Path, [String]$IPAddress, [String]$Hostname, [String]$FullyQualifiedName) {
+    [object] static AddPsNetHostsEntry([OSType]$CurrentOS, [String]$Path, [String]$IPAddress, [String]$Hostname, [String]$FullyQualifiedName) {
 
-        $function  = 'AddPsNetHostEntry'
+        $function  = 'AddPsNetHostsEntry'
         $resultset = @()
         $index     = -1
+        $IsAdmin   = $false
+        $savefile  = $null
         $ok        = $null
 
         $hostsfile = $Path
@@ -768,171 +837,107 @@ Class PsNetHostsTable {
 
             # For Mac and Linux
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
-                
                 $current   = (id -u)
                 $IsAdmin   = ($current -eq 0)
                 $savefile  = "$($env:HOME)/hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
-                
-                if($IsAdmin){
-                    try{
-                        $BackupSavedAt = $null
-                        [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
-
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
-                        if($newfilecontent){
-                            $index = $filecontent.IndexOf($newfilecontent)
-                        } 
-
-                        if($index -gt 0){
-                            $Succeeded     = $true
-                            $OkMessage     = 'Entry already exists'
-                            $Entry         = $newfilecontent
-                        }
-
-                        $addcontent = "$($IPAddress) $($Hostname) $($FullyQualifiedName)"
-                        if(-not(Test-Path $savefile)){ 
-                            $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
-                        }
-                        if($ok){
-                            $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru -ErrorAction Stop
-                            if($content.length -gt 0){
-                                $Succeeded     = $true
-                                $OkMessage     = 'Entry added'
-                                $Entry         = $addcontent
-                                $BackupSavedAt = $ok.FullName
-                            }
-                            else{
-                                Copy-Item -Path $savefile -Destination $hostsfile -Force
-                                throw "Add-Content: it's an empty string, restored $savefile"
-                            }
-                        }  
-                        else {
-                            throw "Add-Content: Could not save $($savefile)"
-                        }
-                        $obj = [PSCustomObject]@{
-                            Succeeded     = $Succeeded
-                            Message       = $OkMessage
-                            Entry         = $Entry
-                            BackupSavedAt = $BackupSavedAt
-                        }
-                        $resultset += $obj
-                    }
-                    catch {
-                        $obj = [PSCustomObject]@{
-                            Succeeded          = $false
-                            Function           = $function
-                            Message            = $($_.Exception.Message)
-                            Category           = $($_.CategoryInfo).Category
-                            Exception          = $($_.Exception.GetType().FullName)
-                            CategoryActivity   = $($_.CategoryInfo).Activity
-                            CategoryTargetName = $($_.CategoryInfo).TargetName
-                        }
-                        $resultset += $obj
-                        $error.Clear()
-                    }
-                }
-                else{
-                    $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Message    = "Running this command with elevated privileges"
-                    }
-                    $resultset += $obj
-                }
             }
 
             # For Windows only
             if($CurrentOS -eq [OSType]::Windows){
-                
                 $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
                 $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
                 $savefile  = "$($env:HOME)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+            }
 
-                if($IsAdmin){
-                    try{
-                        $BackupSavedAt = $null
-                        [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
+            if($IsAdmin){
+                try{
+                    #$BackupSavedAt = $null
+                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
-                        if($newfilecontent){
-                            $index = $filecontent.IndexOf($newfilecontent)
-                        } 
+                    $newfilecontent = ($filecontent | Select-String -Pattern "^$($IPAddress)\s+")
+                    if($newfilecontent){
+                        $index = $filecontent.IndexOf($newfilecontent)
+                    } 
+                    if($index -gt 0){
+                        <#
+                        $Succeeded     = $true
+                        $OkMessage     = 'Entry already exists'
+                        $Entry         = $newfilecontent
+                        #>
+                        $resultset += [PsNetHostsEntryType]::New($true,$newfilecontent,$null,'Entry already exists')
+                    }
 
-                        if($index -gt 0){
+                    $addcontent = "$($IPAddress) $($Hostname) $($FullyQualifiedName)"
+                    if(-not(Test-Path $savefile)){ 
+                        $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
+                    }
+                    if($ok){
+                        $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru -ErrorAction Stop
+                        if($content.length -gt 0){
+                            <#
                             $Succeeded     = $true
-                            $OkMessage     = 'Entry already exists'
-                            $Entry         = $newfilecontent
+                            $OkMessage     = 'Entry added'
+                            $Entry         = $addcontent
+                            $BackupSavedAt = $ok.FullName
+                            #>
+                            $resultset += [PsNetHostsEntryType]::New($true,$addcontent,$($ok.FullName),'Entry added')
                         }
                         else{
-                            $addcontent = "$($IPAddress) $($Hostname) $($FullyQualifiedName)"
-                            if(-not(Test-Path $savefile)){ 
-                                $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
-                            }
-                            if($ok){
-                                $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru
-                                if($content.length -gt 0){
-                                    $Succeeded     = $true
-                                    $OkMessage     = 'Entry added'
-                                    $Entry         = $addcontent
-                                    $BackupSavedAt = $ok.FullName
-                                }
-                                else{
-                                    Copy-Item -Path $savefile -Destination $hostsfile -Force
-                                    throw "Add-Content: it's an empty string, restored $savefile"
-                                }
-                            }  
-                            else {
-                                throw "Add-Content: Could not save $($savefile)"
-                            }
+                            Copy-Item -Path $savefile -Destination $hostsfile -Force
+                            throw "Add-Content: it's an empty string, restored $savefile"
                         }
-                        $obj = [PSCustomObject]@{
-                            Succeeded     = $Succeeded
-                            Message       = $OkMessage
-                            Entry         = $Entry
-                            BackupSavedAt = $BackupSavedAt
-                        }
-                        $resultset += $obj    
+                    }  
+                    else {
+                        throw "Add-Content: Could not save $($savefile)"
                     }
-                    catch {
-                        $obj = [PSCustomObject]@{
-                            Succeeded          = $false
-                            Function           = $function
-                            Message            = $($_.Exception.Message)
-                            Category           = $($_.CategoryInfo).Category
-                            Exception          = $($_.Exception.GetType().FullName)
-                            CategoryActivity   = $($_.CategoryInfo).Activity
-                            CategoryTargetName = $($_.CategoryInfo).TargetName
-                        }
-                        $resultset += $obj
-                        $error.Clear()
-                    }
-                }
-                else{
+                    <#
                     $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Message    = "Running this command with elevated privileges"
+                        Succeeded     = $Succeeded
+                        Message       = $OkMessage
+                        Entry         = $Entry
+                        BackupSavedAt = $BackupSavedAt
                     }
                     $resultset += $obj
+                    #>
                 }
+                catch {
+                    $resultset += [PsNetError]::New("$($function)()", $_)
+                    $error.Clear()
+                }
+            }
+            else{
+                <#
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Function   = $function
+                    Message    = "Running this command with elevated privileges"
+                }
+                $resultset += $obj
+                #>
+                $resultset += [PsNetHostsEntryType]::New($false,$null,$null,'Running this command with elevated privileges')
             }
         }
         else{
+            <#
             $obj = [PSCustomObject]@{
                 Succeeded  = $false
                 Function   = $function
                 Message    = "$Path not found"
             }
             $resultset += $obj
+            #>
+            $resultset += [PsNetHostsEntryType]::New($false,$null,$null,"$Path not found")
         }
         return $resultset
     }
 
-    [object] static RemovePsNetHostEntry([OSType]$CurrentOS, [String]$Path, [String]$Hostsentry) {
+    [object] static RemovePsNetHostsEntry([OSType]$CurrentOS, [String]$Path, [String]$Hostsentry) {
 
-        $function  = 'RemovePsNetHostEntry'
+        $function  = 'RemovePsNetHostsEntry'
         $resultset = @()
         $index     = -1
+        $IsAdmin   = $false
+        $savefile  = $null
         $ok        = $null
 
         $hostsfile = $Path
@@ -941,178 +946,104 @@ Class PsNetHostsTable {
 
             # For Mac and Linux
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
-                
                 $current   = (id -u)
                 $IsAdmin   = ($current -eq 0)
                 $savefile  = "$($env:HOME)/hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
-                
-                if($IsAdmin){
-                    try{
-                        $BackupSavedAt = $null
-                        [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
-
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
-                        if($newfilecontent){
-                            $index = $filecontent.IndexOf($newfilecontent)
-                        } 
-                        if($index -gt 0){
-                            $filecontent.RemoveAt($index)
-                            if([String]::IsNullOrEmpty($filecontent)){
-                                throw "RemoveAt: raised an error"
-                            }
-                            else{
-                                if(-not(Test-Path $savefile)){ 
-                                    $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
-                                }
-                                if($ok){
-                                    if([String]::IsNullOrEmpty($filecontent)){
-                                        throw "Set-Content: Value is an empty String"
-                                    }
-                                    $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force -ErrorAction Stop
-                                    if($hostsfile.length -gt 0){
-                                        $Succeeded     = $true
-                                        $OkMessage     = 'Entry removed'
-                                        $Entry         = $newfilecontent
-                                        $BackupSavedAt = $ok.FullName
-                                    }
-                                    else{
-                                        Copy-Item -Path $savefile -Destination $hostsfile -Force
-                                        throw "Set-Content: File is empty, restored $savefile"
-                                    }
-                                }
-                                else{
-                                    throw "Set-Content: Could not save $($savefile)"
-                                }
-                            }
-                        }
-                        else{
-                            $Succeeded = $true
-                            $OkMessage = "Entry not available"
-                            $Entry     = $Hostsentry
-                        }
-                        $obj = [PSCustomObject]@{
-                            Succeeded     = $Succeeded
-                            Message       = $OkMessage
-                            Entry         = $Entry
-                            BackupSavedAt = $BackupSavedAt
-                        }
-                        $resultset += $obj    
-                    }
-                    catch {
-                        $obj = [PSCustomObject]@{
-                            Succeeded          = $false
-                            Function           = $function
-                            Message            = $($_.Exception.Message)
-                            Category           = $($_.CategoryInfo).Category
-                            Exception          = $($_.Exception.GetType().FullName)
-                            CategoryActivity   = $($_.CategoryInfo).Activity
-                            CategoryTargetName = $($_.CategoryInfo).TargetName
-                        }
-                        $resultset += $obj
-                        $error.Clear()
-                    }
-                }
-                else{
-                    $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Message    = "Running this command with elevated privileges"
-                    }
-                    $resultset += $obj
-                }
             }
         
             # For Windows only
             if($CurrentOS -eq [OSType]::Windows){
-                
                 $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
                 $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
                 $savefile  = "$($env:HOME)\hosts_$(Get-Date -Format 'yyyyMMdd-HHmmss').txt"
+            }
+            if($IsAdmin){
+                try{
+                    #$BackupSavedAt = $null
+                    [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
 
-                if($IsAdmin){
-                    try{
-                        $BackupSavedAt = $null
-                        [System.Collections.ArrayList]$filecontent = Get-Content $hostsfile
-
-                        $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
-                        if($newfilecontent){
-                            $index = $filecontent.IndexOf($newfilecontent)
-                        } 
-
-                        if($index -gt 0){
-                            $filecontent.RemoveAt($index)
-                            if([String]::IsNullOrEmpty($filecontent)){
-                                throw "RemoveAt: raised an error"
-                            }
-                            else{
-                                if(-not(Test-Path $savefile)){ 
-                                    $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
-                                }
-                                if($ok){
-                                    if([String]::IsNullOrEmpty($filecontent)){
-                                        throw "Set-Content: Value is an empty String"
-                                    }
-                                    $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force
-                                    if($hostsfile.length -gt 0){
-                                        $Succeeded     = $true
-                                        $OkMessage     = 'Entry removed'
-                                        $Entry         = $newfilecontent
-                                        $BackupSavedAt = $ok.FullName
-                                    }
-                                    else{
-                                        Copy-Item -Path $savefile -Destination $hostsfile -Force
-                                        throw "Set-Content: File is empty, restored $savefile"
-                                    }
-                                }
-                                else{
-                                    throw "Set-Content: Could not save $($savefile)"
-                                }
-                            }
+                    $newfilecontent = ($filecontent | Select-String -Pattern "^$($Hostsentry)")
+                    if($newfilecontent){
+                        $index = $filecontent.IndexOf($newfilecontent)
+                    } 
+                    if($index -gt 0){
+                        $filecontent.RemoveAt($index)
+                        if([String]::IsNullOrEmpty($filecontent)){
+                            throw "RemoveAt: raised an error"
                         }
                         else{
-                            $Succeeded = $true
-                            $OkMessage = "Entry not available"
-                            $Entry     = $Hostsentry
+                            if(-not(Test-Path $savefile)){ 
+                                $ok = Copy-Item -Path $hostsfile -Destination $savefile -PassThru -Force
+                            }
+                            if($ok){
+                                if([String]::IsNullOrEmpty($filecontent)){
+                                    throw "Set-Content: Value is an empty String"
+                                }
+                                $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force -ErrorAction Stop
+                                if($hostsfile.length -gt 0){
+                                    <#
+                                    $Succeeded     = $true
+                                    $OkMessage     = 'Entry removed'
+                                    $Entry         = $newfilecontent
+                                    $BackupSavedAt = $ok.FullName
+                                    #>
+                                    $resultset += [PsNetHostsEntryType]::New($true,$newfilecontent,$($ok.FullName),'Entry removed')
+                                }
+                                else{
+                                    Copy-Item -Path $savefile -Destination $hostsfile -Force
+                                    throw "Set-Content: File is empty, restored $savefile"
+                                }
+                            }
+                            else{
+                                throw "Set-Content: Could not save $($savefile)"
+                            }
                         }
-                        $obj = [PSCustomObject]@{
-                            Succeeded     = $Succeeded
-                            Message       = $OkMessage
-                            Entry         = $Entry
-                            BackupSavedAt = $BackupSavedAt
-                        }
-                        $resultset += $obj    
                     }
-                    catch {
-                        $obj = [PSCustomObject]@{
-                            Succeeded          = $false
-                            Function           = $function
-                            Message            = $($_.Exception.Message)
-                            Category           = $($_.CategoryInfo).Category
-                            Exception          = $($_.Exception.GetType().FullName)
-                            CategoryActivity   = $($_.CategoryInfo).Activity
-                            CategoryTargetName = $($_.CategoryInfo).TargetName
-                        }
-                        $resultset += $obj
-                        $error.Clear()
+                    else{
+                        <#
+                        $Succeeded = $true
+                        $OkMessage = "Entry not available"
+                        $Entry     = $Hostsentry
+                        #>
+                        $resultset += [PsNetHostsEntryType]::New($true,$Hostsentry,$null,'Entry not available')
                     }
-                }
-                else{
+                    <#
                     $obj = [PSCustomObject]@{
-                        Succeeded  = $false
-                        Function   = $function
-                        Message    = "Running this command with elevated privileges"
+                        Succeeded     = $Succeeded
+                        Message       = $OkMessage
+                        Entry         = $Entry
+                        BackupSavedAt = $BackupSavedAt
                     }
-                    $resultset += $obj
+                    $resultset += $obj    
+                    #>
                 }
+                catch {
+                    $resultset += [PsNetError]::New("$($function)()", $_)
+                    $error.Clear()
+                }
+            }
+            else{
+                <#
+                $obj = [PSCustomObject]@{
+                    Succeeded  = $false
+                    Function   = $function
+                    Message    = "Running this command with elevated privileges"
+                }
+                $resultset += $obj
+                #>
+                $resultset += [PsNetHostsEntryType]::New($false,$null,$null,'Running this command with elevated privileges')
             }
         }
         else{
+            <#
             $obj = [PSCustomObject]@{
                 Succeeded  = $false
                 Function   = $function
                 Message    = "$Path not found"
             }
             $resultset += $obj
+            #>
+            $resultset += [PsNetHostsEntryType]::New($false,$null,$null,"$Path not found")
         }
         return $resultset
     }
@@ -1460,7 +1391,7 @@ function Add-PsNetHostsEntry {
                 $Path = "/etc/hosts"
             }
         }
-        return [PsNetHostsTable]::AddPsNetHostEntry($CurrentOS, $Path, $IPAddress, $Hostname, $FullyQualifiedName)
+        return [PsNetHostsTable]::AddPsNetHostsEntry($CurrentOS, $Path, $IPAddress, $Hostname, $FullyQualifiedName)
     }
     
     end {
@@ -1741,7 +1672,7 @@ function Remove-PsNetHostsEntry {
                 $Path = "/etc/hosts"
             }
         }
-        return [PsNetHostsTable]::RemovePsNetHostEntry($CurrentOS, $Path, $Hostsentry)
+        return [PsNetHostsTable]::RemovePsNetHostsEntry($CurrentOS, $Path, $Hostsentry)
     }
     
     end {
@@ -1837,7 +1768,7 @@ function Test-PsNetDig{
       Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
     .PARAMETER Destination
-      Hostname orÂ IP Address or Alias
+      Hostname or IP Address or Alias
  
     .EXAMPLE
       Resolve a hostname to the IP Address
@@ -1860,10 +1791,6 @@ function Test-PsNetDig{
 
     .OUTPUTS
       PSCustomObject
-      TargetName  : sbb.ch
-      IpV4Address : 194.150.245.142
-      IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e
-      Duration    : 4ms
 
     .NOTES
       Author: Martin Walther
