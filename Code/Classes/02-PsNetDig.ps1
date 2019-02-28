@@ -8,7 +8,12 @@ Class PsNetDigType {
     [int]       $TimeMs
 
     PsNetDigType(
-        [bool] $Succeeded, [String] $InputString, [String] $Destination, [ipaddress] $IpV4Address, [ipaddress] $IpV6Address, [int] $TimeMs
+        [bool]      $Succeeded, 
+        [String]    $InputString, 
+        [String]    $Destination, 
+        [ipaddress] $IpV4Address, 
+        [ipaddress] $IpV6Address, 
+        [int]       $TimeMs
     ) {
         $this.Succeeded   = $Succeeded
         $this.InputString = $InputString

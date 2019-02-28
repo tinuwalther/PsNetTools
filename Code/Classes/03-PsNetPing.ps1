@@ -15,7 +15,14 @@ Class PsNetTpingType : PsNetPingType {
     [int]    $TcpPort
 
     PsNetTpingType(
-        [bool] $Succeeded, [bool] $TcpSucceeded, [String] $Destination, [String] $StatusDescription, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+        [bool] $Succeeded, 
+        [bool] $TcpSucceeded, 
+        [String] $Destination, 
+        [String] $StatusDescription, 
+        [int] $Port, 
+        [int] $MinTimeout, 
+        [int] $MaxTimeout, 
+        [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
         $this.Destination       = $Destination
@@ -39,7 +46,14 @@ Class PsNetUpingType : PsNetPingType {
     [int]    $UdpPort
 
     PsNetUpingType(
-        [bool] $Succeeded, [bool] $UdpSucceeded, [String] $Destination, [String] $StatusDescription, [int] $Port, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+        [bool] $Succeeded, 
+        [bool] $UdpSucceeded, 
+        [String] $Destination, 
+        [String] $StatusDescription, 
+        [int] $Port, 
+        [int] $MinTimeout, 
+        [int] $MaxTimeout, 
+        [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
         $this.Destination       = $Destination
@@ -61,16 +75,24 @@ Class PsNetWebType : PsNetPingType {
 
     hidden [bool]   $Succeeded
     [bool]   $HttpSucceeded
-    [String] $ReturnedUrl
+    [String] $ResponsedUrl
     [bool]   $NoProxy
 
     PsNetWebType(
-        [bool] $Succeeded, [bool] $HttpSucceeded, [String] $Destination, [String] $Url, [String] $StatusDescription, [bool] $Proxy, [int] $MinTimeout, [int] $MaxTimeout, [int] $TimeMs
+        [bool] $Succeeded, 
+        [bool] $HttpSucceeded, 
+        [String] $Destination, 
+        [String] $Url, 
+        [String] $StatusDescription, 
+        [bool] $Proxy, 
+        [int] $MinTimeout, 
+        [int] $MaxTimeout, 
+        [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
         $this.HttpSucceeded     = $HttpSucceeded
         $this.Destination       = $Destination
-        $this.ReturnedUrl       = $Url
+        $this.ResponsedUrl      = $Url
         $this.StatusDescription = $StatusDescription
         $this.NoProxy           = $Proxy
         $this.MinTimeout        = $MinTimeout

@@ -32,10 +32,6 @@ function Test-PsNetDig{
 
     .OUTPUTS
       PSCustomObject
-      TargetName  : sbb.ch
-      IpV4Address : 194.150.245.142
-      IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e
-      Duration    : 4ms
 
     .NOTES
       Author: Martin Walther
