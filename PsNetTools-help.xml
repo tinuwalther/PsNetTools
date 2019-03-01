@@ -683,38 +683,6 @@
           <maml:para></maml:para>
         </maml:description>
       </command:returnValue>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>TargetName  : sbb.ch</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>IpV4Address : 194.150.245.142</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>Duration    : 4ms</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
@@ -1004,7 +972,7 @@
       <command:verb>Test</command:verb>
       <command:noun>PsNetUping</command:noun>
       <maml:description>
-        <maml:para>Test the connectivity over a Udp port</maml:para>
+        <maml:para>Test the connectivity over an Udp port</maml:para>
       </maml:description>
     </command:details>
     <maml:description>

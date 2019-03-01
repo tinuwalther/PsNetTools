@@ -1,5 +1,5 @@
 <#
-    Generated at 02/28/2019 18:56:19 by Martin Walther
+    Generated at 03/01/2019 19:08:00 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -508,6 +508,7 @@ Class PsNetAdapterType {
     [bool]   $Succeeded
     [int]    $Index
     hidden [Object] $adapter
+    hidden [Object] $IpV4properties
     [String] $Name
     [String] $Description
     [String] $NetworkInterfaceType
@@ -520,33 +521,126 @@ Class PsNetAdapterType {
 
     PsNetAdapterType (
         [bool]   $Succeeded,
-        [int]    $Index,
+        [Object] $IpV4properties,
         [Object] $adapter,
         [String] $IpVersion,
-        [bool]   $IsAPIPAEnabled,
         [Object] $IpV4Addresses,
         [Object] $IpV6Addresses
     ) {
         $this.Succeeded            = $Succeeded
-        $this.Index                = $Index
+        $this.Index                = $IpV4properties.Index
         $this.Name                 = $adapter.Name
         $this.Description          = $adapter.Description
         $this.NetworkInterfaceType = $adapter.NetworkInterfaceType
         $this.OperationalStatus    = $adapter.OperationalStatus
         $this.PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
         $this.IpVersion            = $IpVersion
-        $this.IsAPIPAEnabled       = $IsAPIPAEnabled
+        $this.IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
         $this.IpV4Addresses        = $IpV4Addresses
         $this.IpV6Addresses        = $IpV6Addresses
     }
 
 }
 
+Class PsNetAdapterConfigType : PsNetAdapterType {
+
+    [Object] $Id
+    [Single] $Speed
+    [bool]   $IsReceiveOnly
+    [bool]   $SupportsMulticast
+
+    [bool]   $IsDnsEnabled
+    [bool]   $IsDynamicDnsEnabled
+    [Object] $DnsSuffix
+    [Object] $DnsAddresses
+    [Object] $DhcpServerAddresses
+    [Object] $WinsServersAddresses
+
+    [String] $Mtu
+    [bool]   $IsForwardingEnabled
+    [bool]   $IsAPIPAActive
+    [bool]   $IsDhcpEnabled
+    [bool]   $UsesWins
+
+    [Object] $GatewayIpV4Addresses
+    [Object] $GatewayIpV6Addresses
+
+    <#
+
+    #Succeeded            = $true
+    #Name                 = $adapter.Name
+    #Description          = $adapter.Description
+    #NetworkInterfaceType = $adapter.NetworkInterfaceType
+    #OperationalStatus    = $adapter.OperationalStatus
+    #PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
+    #IpVersion            = $IpVersion
+    #IpV4Addresses        = $IpV4Addresses
+    #IpV6Addresses        = $IpV6Addresses
+    #IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
+
+    Id                   = $adapter.Id
+    Speed                = $adapter.Speed
+    IsReceiveOnly        = $adapter.IsReceiveOnly
+    SupportsMulticast    = $adapter.SupportsMulticast
+
+    IsDnsEnabled         = $properties.IsDnsEnabled
+    IsDynamicDnsEnabled  = $properties.IsDynamicDnsEnabled
+    DnsSuffix            = $properties.DnsSuffix
+    DnsAddresses         = $properties.DnsAddresses
+    DhcpServerAddresses  = $properties.DhcpServerAddresses
+    WinsServersAddresses = $properties.WinsServersAddresses
+
+    Index                = $IpV4properties.Index
+    Mtu                  = $IpV4properties.Mtu
+    IsForwardingEnabled  = $IpV4properties.IsForwardingEnabled
+    IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingEnabled
+    IsDhcpEnabled        = $IpV4properties.IsDhcpEnabled
+    UsesWins             = $IpV4properties.UsesWins
+
+    GatewayIpV4Addresses = $GatewayIpV4Addresses
+    GatewayIpV6Addresses = $GatewayIpV6Addresses
+    
+    #>
+
+    PsNetAdapterConfigType (
+        [Object] $adapter,
+        [Object] $properties,
+        [Object] $IpV4properties,
+        [String] $IpVersion,
+        [Object] $IpV4Addresses,
+        [Object] $IpV6Addresses,
+        [String] $GatewayIpV4Addresses,
+        [String] $GatewayIpV6Addresses    
+    ) {
+        $this.Id                   = $adapter.Id
+        $this.Speed                = $adapter.Speed
+        $this.IsReceiveOnly        = $adapter.IsReceiveOnly
+        $this.SupportsMulticast    = $adapter.SupportsMulticast
+    
+        $this.IsDnsEnabled         = $properties.IsDnsEnabled
+        $this.IsDynamicDnsEnabled  = $properties.IsDynamicDnsEnabled
+        $this.DnsSuffix            = $properties.DnsSuffix
+        $this.DnsAddresses         = $properties.DnsAddresses
+        $this.DhcpServerAddresses  = $properties.DhcpServerAddresses
+        $this.WinsServersAddresses = $properties.WinsServersAddresses
+    
+        $this.Index                = $IpV4properties.Index
+        $this.Mtu                  = $IpV4properties.Mtu
+        $this.IsForwardingEnabled  = $IpV4properties.IsForwardingEnabled
+        $this.IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingEnabled
+        $this.IsDhcpEnabled        = $IpV4properties.IsDhcpEnabled
+        $this.UsesWins             = $IpV4properties.UsesWins
+    
+        $this.GatewayIpV4Addresses = $GatewayIpV4Addresses
+        $this.GatewayIpV6Addresses = $GatewayIpV6Addresses
+        }
+}
+
 Class PsNetAdapter {
 
     <#
-        [PsNetAdapter]::listadapters
-        [PsNetAdapter]::listadapterconfig
+        [PsNetAdapter]::listadapters()
+        [PsNetAdapter]::listadapterconfig()
     #>
 
     #region Properties with default values
@@ -598,25 +692,7 @@ Class PsNetAdapter {
                             $IpV6Addresses += $ip.Address.ToString()
                         }
                     }
-                    <#
-                    $obj = [PSCustomObject]@{
-                        Succeeded            = $true
-                        Index                = $IpV4properties.Index
-
-                        Name                 = $adapter.Name
-                        Description          = $adapter.Description
-                        NetworkInterfaceType = $adapter.NetworkInterfaceType
-                        OperationalStatus    = $adapter.OperationalStatus
-                        PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
-
-                        IpVersion            = $IpVersion
-                        IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
-                        IpV4Addresses        = $IpV4Addresses
-                        IpV6Addresses        = $IpV6Addresses
-                    }
-                    $resultset += $obj
-                    #>
-                    $resultset += [PsNetAdapterType]::New($true,$IpV4properties.Index,$adapter,$IpVersion,$IpV4properties.IsAutomaticPrivateAddressingActive,$IpV4Addresses,$IpV6Addresses)
+                    $resultset += [PsNetAdapterType]::New($true,$IpV4properties,$adapter,$IpVersion,$IpV4Addresses,$IpV6Addresses)
                 }
             }
         }
@@ -679,11 +755,8 @@ Class PsNetAdapter {
                             $GatewayIpV4Addresses += $gateway.Address.IPAddressToString
                         }
                     }
-
                     $obj = [PSCustomObject]@{
                         Succeeded            = $true
-                        Index                = $IpV4properties.Index
-
                         Id                   = $adapter.Id
                         Name                 = $adapter.Name
                         Description          = $adapter.Description
@@ -693,25 +766,22 @@ Class PsNetAdapter {
                         IsReceiveOnly        = $adapter.IsReceiveOnly
                         SupportsMulticast    = $adapter.SupportsMulticast
                         PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
-                
                         IpVersion            = $IpVersion
                         IpV4Addresses        = $IpV4Addresses
                         IpV6Addresses        = $IpV6Addresses
-                        
                         IsDnsEnabled         = $properties.IsDnsEnabled
                         IsDynamicDnsEnabled  = $properties.IsDynamicDnsEnabled
                         DnsSuffix            = $properties.DnsSuffix
                         DnsAddresses         = $properties.DnsAddresses
                         DhcpServerAddresses  = $properties.DhcpServerAddresses
                         WinsServersAddresses = $properties.WinsServersAddresses
-                        
+                        Index                = $IpV4properties.Index
                         Mtu                  = $IpV4properties.Mtu
                         IsForwardingEnabled  = $IpV4properties.IsForwardingEnabled
                         IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
                         IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingEnabled
                         IsDhcpEnabled        = $IpV4properties.IsDhcpEnabled
                         UsesWins             = $IpV4properties.UsesWins
-
                         GatewayIpV4Addresses = $GatewayIpV4Addresses
                         GatewayIpV6Addresses = $GatewayIpV6Addresses
                     }
@@ -859,11 +929,6 @@ Class PsNetHostsTable {
                         $index = $filecontent.IndexOf($newfilecontent)
                     } 
                     if($index -gt 0){
-                        <#
-                        $Succeeded     = $true
-                        $OkMessage     = 'Entry already exists'
-                        $Entry         = $newfilecontent
-                        #>
                         $resultset += [PsNetHostsEntryType]::New($true,$newfilecontent,$null,'Entry already exists')
                     }
 
@@ -874,12 +939,6 @@ Class PsNetHostsTable {
                     if($ok){
                         $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru -ErrorAction Stop
                         if($content.length -gt 0){
-                            <#
-                            $Succeeded     = $true
-                            $OkMessage     = 'Entry added'
-                            $Entry         = $addcontent
-                            $BackupSavedAt = $ok.FullName
-                            #>
                             $resultset += [PsNetHostsEntryType]::New($true,$addcontent,$($ok.FullName),'Entry added')
                         }
                         else{
@@ -890,15 +949,6 @@ Class PsNetHostsTable {
                     else {
                         throw "Add-Content: Could not save $($savefile)"
                     }
-                    <#
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $Succeeded
-                        Message       = $OkMessage
-                        Entry         = $Entry
-                        BackupSavedAt = $BackupSavedAt
-                    }
-                    $resultset += $obj
-                    #>
                 }
                 catch {
                     $resultset += [PsNetError]::New("$($function)()", $_)
@@ -906,26 +956,10 @@ Class PsNetHostsTable {
                 }
             }
             else{
-                <#
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "Running this command with elevated privileges"
-                }
-                $resultset += $obj
-                #>
                 $resultset += [PsNetHostsEntryType]::New($false,$null,$null,'Running this command with elevated privileges')
             }
         }
         else{
-            <#
-            $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Message    = "$Path not found"
-            }
-            $resultset += $obj
-            #>
             $resultset += [PsNetHostsEntryType]::New($false,$null,$null,"$Path not found")
         }
         return $resultset
@@ -981,12 +1015,6 @@ Class PsNetHostsTable {
                                 }
                                 $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force -ErrorAction Stop
                                 if($hostsfile.length -gt 0){
-                                    <#
-                                    $Succeeded     = $true
-                                    $OkMessage     = 'Entry removed'
-                                    $Entry         = $newfilecontent
-                                    $BackupSavedAt = $ok.FullName
-                                    #>
                                     $resultset += [PsNetHostsEntryType]::New($true,$newfilecontent,$($ok.FullName),'Entry removed')
                                 }
                                 else{
@@ -1000,22 +1028,8 @@ Class PsNetHostsTable {
                         }
                     }
                     else{
-                        <#
-                        $Succeeded = $true
-                        $OkMessage = "Entry not available"
-                        $Entry     = $Hostsentry
-                        #>
                         $resultset += [PsNetHostsEntryType]::New($true,$Hostsentry,$null,'Entry not available')
                     }
-                    <#
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $Succeeded
-                        Message       = $OkMessage
-                        Entry         = $Entry
-                        BackupSavedAt = $BackupSavedAt
-                    }
-                    $resultset += $obj    
-                    #>
                 }
                 catch {
                     $resultset += [PsNetError]::New("$($function)()", $_)
@@ -1023,26 +1037,10 @@ Class PsNetHostsTable {
                 }
             }
             else{
-                <#
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "Running this command with elevated privileges"
-                }
-                $resultset += $obj
-                #>
                 $resultset += [PsNetHostsEntryType]::New($false,$null,$null,'Running this command with elevated privileges')
             }
         }
         else{
-            <#
-            $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Message    = "$Path not found"
-            }
-            $resultset += $obj
-            #>
             $resultset += [PsNetHostsEntryType]::New($false,$null,$null,"$Path not found")
         }
         return $resultset
@@ -1946,7 +1944,7 @@ function Test-PsNetUping{
     <#
 
    .SYNOPSIS
-      Test the connectivity over a Udp port
+      Test the connectivity over an Udp port
 
    .DESCRIPTION
       Test connectivity to an endpoint over the specified Udp port

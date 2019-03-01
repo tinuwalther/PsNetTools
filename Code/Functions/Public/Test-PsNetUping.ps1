@@ -3,7 +3,7 @@ function Test-PsNetUping{
     <#
 
    .SYNOPSIS
-      Test the connectivity over a Udp port
+      Test the connectivity over an Udp port
 
    .DESCRIPTION
       Test connectivity to an endpoint over the specified Udp port

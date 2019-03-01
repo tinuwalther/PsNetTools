@@ -129,11 +129,6 @@ Class PsNetHostsTable {
                         $index = $filecontent.IndexOf($newfilecontent)
                     } 
                     if($index -gt 0){
-                        <#
-                        $Succeeded     = $true
-                        $OkMessage     = 'Entry already exists'
-                        $Entry         = $newfilecontent
-                        #>
                         $resultset += [PsNetHostsEntryType]::New($true,$newfilecontent,$null,'Entry already exists')
                     }
 
@@ -144,12 +139,6 @@ Class PsNetHostsTable {
                     if($ok){
                         $content = Add-Content -Value $addcontent -Path $hostsfile -PassThru -ErrorAction Stop
                         if($content.length -gt 0){
-                            <#
-                            $Succeeded     = $true
-                            $OkMessage     = 'Entry added'
-                            $Entry         = $addcontent
-                            $BackupSavedAt = $ok.FullName
-                            #>
                             $resultset += [PsNetHostsEntryType]::New($true,$addcontent,$($ok.FullName),'Entry added')
                         }
                         else{
@@ -160,15 +149,6 @@ Class PsNetHostsTable {
                     else {
                         throw "Add-Content: Could not save $($savefile)"
                     }
-                    <#
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $Succeeded
-                        Message       = $OkMessage
-                        Entry         = $Entry
-                        BackupSavedAt = $BackupSavedAt
-                    }
-                    $resultset += $obj
-                    #>
                 }
                 catch {
                     $resultset += [PsNetError]::New("$($function)()", $_)
@@ -176,26 +156,10 @@ Class PsNetHostsTable {
                 }
             }
             else{
-                <#
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "Running this command with elevated privileges"
-                }
-                $resultset += $obj
-                #>
                 $resultset += [PsNetHostsEntryType]::New($false,$null,$null,'Running this command with elevated privileges')
             }
         }
         else{
-            <#
-            $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Message    = "$Path not found"
-            }
-            $resultset += $obj
-            #>
             $resultset += [PsNetHostsEntryType]::New($false,$null,$null,"$Path not found")
         }
         return $resultset
@@ -251,12 +215,6 @@ Class PsNetHostsTable {
                                 }
                                 $filecontent | Out-File -FilePath $hostsfile -Encoding default -Force -ErrorAction Stop
                                 if($hostsfile.length -gt 0){
-                                    <#
-                                    $Succeeded     = $true
-                                    $OkMessage     = 'Entry removed'
-                                    $Entry         = $newfilecontent
-                                    $BackupSavedAt = $ok.FullName
-                                    #>
                                     $resultset += [PsNetHostsEntryType]::New($true,$newfilecontent,$($ok.FullName),'Entry removed')
                                 }
                                 else{
@@ -270,22 +228,8 @@ Class PsNetHostsTable {
                         }
                     }
                     else{
-                        <#
-                        $Succeeded = $true
-                        $OkMessage = "Entry not available"
-                        $Entry     = $Hostsentry
-                        #>
                         $resultset += [PsNetHostsEntryType]::New($true,$Hostsentry,$null,'Entry not available')
                     }
-                    <#
-                    $obj = [PSCustomObject]@{
-                        Succeeded     = $Succeeded
-                        Message       = $OkMessage
-                        Entry         = $Entry
-                        BackupSavedAt = $BackupSavedAt
-                    }
-                    $resultset += $obj    
-                    #>
                 }
                 catch {
                     $resultset += [PsNetError]::New("$($function)()", $_)
@@ -293,26 +237,10 @@ Class PsNetHostsTable {
                 }
             }
             else{
-                <#
-                $obj = [PSCustomObject]@{
-                    Succeeded  = $false
-                    Function   = $function
-                    Message    = "Running this command with elevated privileges"
-                }
-                $resultset += $obj
-                #>
                 $resultset += [PsNetHostsEntryType]::New($false,$null,$null,'Running this command with elevated privileges')
             }
         }
         else{
-            <#
-            $obj = [PSCustomObject]@{
-                Succeeded  = $false
-                Function   = $function
-                Message    = "$Path not found"
-            }
-            $resultset += $obj
-            #>
             $resultset += [PsNetHostsEntryType]::New($false,$null,$null,"$Path not found")
         }
         return $resultset
