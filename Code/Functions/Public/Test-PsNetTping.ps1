@@ -56,6 +56,7 @@ function Test-PsNetTping{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
+        [ValidateLength(4,255)]
         [String[]] $Destination,
 
         [Parameter(ParameterSetName = "CommonTCPPort", Mandatory = $True, Position = 1)]

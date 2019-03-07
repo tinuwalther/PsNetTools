@@ -1,19 +1,19 @@
 Class PsNetDigType {
 
-    [bool]      $Succeeded
-    [String]    $InputString
-    [String]    $Destination
-    [ipaddress] $IpV4Address
-    [ipaddress] $IpV6Address
-    [int]       $TimeMs
+    [bool]   $Succeeded
+    [String] $InputString
+    [String] $Destination
+    [Array]  $IpV4Address
+    [Array]  $IpV6Address
+    [int]    $TimeMs
 
     PsNetDigType(
-        [bool]      $Succeeded, 
-        [String]    $InputString, 
-        [String]    $Destination, 
-        [ipaddress] $IpV4Address, 
-        [ipaddress] $IpV6Address, 
-        [int]       $TimeMs
+        [bool]   $Succeeded, 
+        [String] $InputString, 
+        [String] $Destination, 
+        [Array]  $IpV4Address, 
+        [Array]  $IpV6Address, 
+        [int]    $TimeMs
     ) {
         $this.Succeeded   = $Succeeded
         $this.InputString = $InputString
@@ -30,7 +30,8 @@ Class PsNetDig {
 
     <#
         [PsNetDig]::dig('sbb.ch')
-        [PsNetDig]::dig('194.150.245.142')
+        [PsNetDig]::dig('google.com')
+        [PsNetDig]::dig('8.8.8.8')
     #>
 
     #region Properties with default values
@@ -50,13 +51,13 @@ Class PsNetDig {
 
     [PsNetDigType]static dig([String] $InputString) {
         
-        [bool]         $IsIpAddress = $false
-        [DateTime]     $start       = Get-Date
-        [Object]       $dnsreturn   = $null
-        [Object]       $collection  = $null
-        [ipaddress]    $ipv4address = $null
-        [ipaddress]    $ipv6address = $null
-        [String]       $TargetName  = $null
+        [bool]     $IsIpAddress = $false
+        [DateTime] $start       = Get-Date
+        [Array]    $dnsreturn   = $null
+        [Array]    $collection  = $null
+        [Array]    $ipv4address = $null
+        [Array]    $ipv6address = $null
+        [String]   $TargetName  = $null
 
         try {
             $InputString = [ipaddress]$InputString
@@ -86,10 +87,10 @@ Class PsNetDig {
 
         foreach($item in $collection){
             if($($item.AddressFamily) -eq 'InterNetwork'){
-                $ipv4address = $item.IPAddressToString
+                $ipv4address += $item.IPAddressToString
             }
             if($($item.AddressFamily) -eq 'InterNetworkV6'){
-                $ipv6address = $item.IPAddressToString
+                $ipv6address += $item.IPAddressToString
             }
         }
 

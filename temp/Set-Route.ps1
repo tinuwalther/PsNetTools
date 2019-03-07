@@ -1,3 +1,18 @@
+<#
+    Gets the IP route information from the IP routing table.
+    https://docs.microsoft.com/en-us/powershell/module/nettcpip/get-netroute?view=win10-ps
+
+    Modifies an entry or entries in the IP routing table.
+    https://docs.microsoft.com/en-us/powershell/module/nettcpip/set-netroute?view=win10-ps
+
+    Creates a route in the IP routing table.
+    https://docs.microsoft.com/en-us/powershell/module/nettcpip/new-netroute?view=win10-ps
+
+    Removes IP routes from the IP routing table.
+    https://docs.microsoft.com/en-us/powershell/module/nettcpip/remove-netroute?view=win10-ps
+
+#>
+
 function Add-RouteEntry{
     param(
         [Parameter(Mandatory = $true)][String]$IPAddress = '',

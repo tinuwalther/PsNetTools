@@ -46,6 +46,7 @@ function Test-PsNetWping{
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
+         [ValidateLength(4,255)]
          [String[]] $Destination,
 
          [Parameter(Mandatory=$false)]
