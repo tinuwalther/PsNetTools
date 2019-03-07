@@ -21,7 +21,7 @@ function Copy-ToVirtualMachine{
        Destination folder on the VM
  
     .EXAMPLE
-    Copy-ToVirtualMachine -VMName 'Server01' - creds $creds -Source 'C:\Daten\PsNetTools\' -Destination 'C:\Admin'
+    Copy-ToVirtualMachine -VMName 'Server01' - creds $creds -Source 'C:\Export\*' -Destination 'C:\Import'
 
     #>
 
@@ -34,10 +34,10 @@ function Copy-ToVirtualMachine{
         [PSCredential] $creds,
 
         [Parameter(Mandatory=$false)]
-        [String] $Source = 'C:\Daten\PsNetTools\',
+        [String] $Source = 'D:\Export\*',
 
         [Parameter(Mandatory=$false)]
-        [String] $Destination = 'C:\Admin'
+        [String] $Destination = 'C:\Import'
     )
     
     $function = $($MyInvocation.MyCommand.Name)
@@ -71,7 +71,7 @@ function Copy-ToHyperVHost{
        Destination folder on the VM
  
     .EXAMPLE
-    Copy-ToVirtualMachine -VMName 'Server01' - creds $creds -Source 'C:\Admin\PsNetTools\' -Destination 'C:\Daten\'
+    Copy-ToVirtualMachine -VMName 'Server01' - creds $creds -Source 'C:\Export\*' -Destination 'C:\Import'
 
     #>
     
@@ -84,10 +84,10 @@ function Copy-ToHyperVHost{
         [PSCredential] $creds,
 
         [Parameter(Mandatory=$false)]
-        [String] $Source = 'C:\Admin\PsNetTools\',
+        [String] $Source = 'C:\Export\*',
 
         [Parameter(Mandatory=$false)]
-        [String] $Destination = 'C:\Daten\'
+        [String] $Destination = 'D:\Import'
     )
 
     $function = $($MyInvocation.MyCommand.Name)
