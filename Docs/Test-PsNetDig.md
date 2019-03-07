@@ -1,7 +1,7 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -30,12 +30,19 @@ Test-PsNetDig -Destination sbb.ch
 
 ### EXAMPLE 2
 ```
+Resolve an IP address to the hostname
+```
+
+Test-PsNetDig -Destination '127.0.0.1','194.150.245.142'
+
+### EXAMPLE 3
+```
 Resolve an array of hostnames to the IP Address
 ```
 
 Test-PsNetDig -Destination sbb.ch, google.com
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Resolve an array of hostnames to the IP Address with ValueFromPipeline
 ```
@@ -45,7 +52,7 @@ sbb.ch, google.com | Test-PsNetDig
 ## PARAMETERS
 
 ### -Destination
-Hostname or IP Address or Alias or WebUrl as String or String-Array
+Hostname or IP Address or Alias
 
 ```yaml
 Type: String[]
@@ -68,14 +75,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### PSCustomObject
-### TargetName  : sbb.ch
-### IpV4Address : 194.150.245.142
-### IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e
-### Duration    : 4ms
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 

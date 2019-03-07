@@ -28,7 +28,7 @@ function Remove-PsNetHostsEntry {
        Author: Martin Walther
 
     .LINK
-       https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -67,7 +67,7 @@ function Remove-PsNetHostsEntry {
                 $Path = "/etc/hosts"
             }
         }
-        return [PsNetHostsTable]::RemovePsNetHostEntry($CurrentOS, $Path, $Hostsentry)
+        return [PsNetHostsTable]::RemovePsNetHostsEntry($CurrentOS, $Path, $Hostsentry)
     }
     
     end {

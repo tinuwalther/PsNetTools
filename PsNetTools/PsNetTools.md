@@ -5,213 +5,12 @@ PsNetTools is a cross platform PowerShell module to test some network features o
 
 # Table of Contents
 
-- [PsNetTools](#psnettools)
-- [Table of Contents](#table-of-contents)
-  - [schema: 2.0.0](#schema-200)
-- [Add-PsNetHostsEntry](#add-psnethostsentry)
-  - [SYNOPSIS](#synopsis)
-  - [SYNTAX](#syntax)
-  - [DESCRIPTION](#description)
-  - [EXAMPLES](#examples)
-    - [EXAMPLE 1](#example-1)
-  - [PARAMETERS](#parameters)
-    - [-Path](#path)
-    - [-IPAddress](#ipaddress)
-    - [-Hostname](#hostname)
-    - [-FullyQualifiedName](#fullyqualifiedname)
-    - [CommonParameters](#commonparameters)
-  - [INPUTS](#inputs)
-    - [Hashtable](#hashtable)
-  - [OUTPUTS](#outputs)
-    - [PSCustomObject](#pscustomobject)
-  - [NOTES](#notes)
-  - [RELATED LINKS](#related-links)
-  - [schema: 2.0.0](#schema-200-1)
-- [Get-PsNetAdapterConfiguration](#get-psnetadapterconfiguration)
-  - [SYNOPSIS](#synopsis-1)
-  - [SYNTAX](#syntax-1)
-  - [DESCRIPTION](#description-1)
-  - [EXAMPLES](#examples-1)
-    - [EXAMPLE 1](#example-1-1)
-  - [PARAMETERS](#parameters-1)
-    - [CommonParameters](#commonparameters-1)
-  - [INPUTS](#inputs-1)
-  - [OUTPUTS](#outputs-1)
-    - [PSCustomObject](#pscustomobject-1)
-  - [NOTES](#notes-1)
-  - [RELATED LINKS](#related-links-1)
-  - [schema: 2.0.0](#schema-200-2)
-- [Get-PsNetAdapters](#get-psnetadapters)
-  - [SYNOPSIS](#synopsis-2)
-  - [SYNTAX](#syntax-2)
-  - [DESCRIPTION](#description-2)
-  - [EXAMPLES](#examples-2)
-    - [EXAMPLE 1](#example-1-2)
-  - [PARAMETERS](#parameters-2)
-    - [CommonParameters](#commonparameters-2)
-  - [INPUTS](#inputs-2)
-  - [OUTPUTS](#outputs-2)
-    - [PSCustomObject](#pscustomobject-2)
-  - [NOTES](#notes-2)
-  - [RELATED LINKS](#related-links-2)
-  - [schema: 2.0.0](#schema-200-3)
-- [Get-PsNetHostsTable](#get-psnethoststable)
-  - [SYNOPSIS](#synopsis-3)
-  - [SYNTAX](#syntax-3)
-  - [DESCRIPTION](#description-3)
-  - [EXAMPLES](#examples-3)
-    - [EXAMPLE 1](#example-1-3)
-  - [PARAMETERS](#parameters-3)
-    - [-Path](#path-1)
-    - [CommonParameters](#commonparameters-3)
-  - [INPUTS](#inputs-3)
-  - [OUTPUTS](#outputs-3)
-    - [PSCustomObject](#pscustomobject-3)
-  - [NOTES](#notes-3)
-  - [RELATED LINKS](#related-links-3)
-  - [schema: 2.0.0](#schema-200-4)
-- [Get-PsNetRoutingTable](#get-psnetroutingtable)
-  - [SYNOPSIS](#synopsis-4)
-  - [SYNTAX](#syntax-4)
-  - [DESCRIPTION](#description-4)
-  - [EXAMPLES](#examples-4)
-    - [EXAMPLE 1](#example-1-4)
-    - [EXAMPLE 2](#example-2)
-  - [PARAMETERS](#parameters-4)
-    - [-IpVersion](#ipversion)
-    - [CommonParameters](#commonparameters-4)
-  - [INPUTS](#inputs-4)
-  - [OUTPUTS](#outputs-4)
-    - [PSCustomObject](#pscustomobject-4)
-  - [NOTES](#notes-4)
-  - [RELATED LINKS](#related-links-4)
-  - [schema: 2.0.0](#schema-200-5)
-- [Remove-PsNetHostsEntry](#remove-psnethostsentry)
-  - [SYNOPSIS](#synopsis-5)
-  - [SYNTAX](#syntax-5)
-  - [DESCRIPTION](#description-5)
-  - [EXAMPLES](#examples-5)
-    - [EXAMPLE 1](#example-1-5)
-  - [PARAMETERS](#parameters-5)
-    - [-Path](#path-2)
-    - [-Hostsentry](#hostsentry)
-    - [CommonParameters](#commonparameters-5)
-  - [INPUTS](#inputs-5)
-    - [Hashtable](#hashtable-1)
-  - [OUTPUTS](#outputs-5)
-    - [PSCustomObject](#pscustomobject-5)
-  - [NOTES](#notes-5)
-  - [RELATED LINKS](#related-links-5)
-  - [schema: 2.0.0](#schema-200-6)
-- [Start-PsNetPortListener](#start-psnetportlistener)
-  - [SYNOPSIS](#synopsis-6)
-  - [SYNTAX](#syntax-6)
-  - [DESCRIPTION](#description-6)
-  - [EXAMPLES](#examples-6)
-    - [EXAMPLE 1](#example-1-6)
-  - [PARAMETERS](#parameters-6)
-    - [-TcpPort](#tcpport)
-    - [-MaxTimeout](#maxtimeout)
-    - [CommonParameters](#commonparameters-6)
-  - [INPUTS](#inputs-6)
-  - [OUTPUTS](#outputs-6)
-    - [PSCustomObject](#pscustomobject-6)
-  - [NOTES](#notes-6)
-  - [RELATED LINKS](#related-links-6)
-  - [schema: 2.0.0](#schema-200-7)
-- [Test-PsNetDig](#test-psnetdig)
-  - [SYNOPSIS](#synopsis-7)
-  - [SYNTAX](#syntax-7)
-  - [DESCRIPTION](#description-7)
-  - [EXAMPLES](#examples-7)
-    - [EXAMPLE 1](#example-1-7)
-    - [EXAMPLE 2](#example-2-1)
-    - [EXAMPLE 3](#example-3)
-  - [PARAMETERS](#parameters-7)
-    - [-Destination](#destination)
-    - [CommonParameters](#commonparameters-7)
-  - [INPUTS](#inputs-7)
-    - [Hashtable](#hashtable-2)
-  - [OUTPUTS](#outputs-7)
-    - [PSCustomObject](#pscustomobject-7)
-    - [TargetName : sbb.ch](#targetname--sbbch)
-    - [IpV4Address : 194.150.245.142](#ipv4address--194150245142)
-    - [IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e](#ipv6address--2a004bc0ffffffffc296f58e)
-    - [Duration : 4ms](#duration--4ms)
-  - [NOTES](#notes-7)
-  - [RELATED LINKS](#related-links-7)
-  - [schema: 2.0.0](#schema-200-8)
-- [Test-PsNetTping](#test-psnettping)
-  - [SYNOPSIS](#synopsis-8)
-  - [SYNTAX](#syntax-8)
-    - [CommonTCPPort](#commontcpport)
-    - [RemotePort](#remoteport)
-  - [DESCRIPTION](#description-8)
-  - [EXAMPLES](#examples-8)
-    - [EXAMPLE 1](#example-1-8)
-    - [EXAMPLE 2](#example-2-2)
-    - [EXAMPLE 3](#example-3-1)
-    - [EXAMPLE 4](#example-4)
-  - [PARAMETERS](#parameters-8)
-    - [-Destination](#destination-1)
-    - [-CommonTcpPort](#commontcpport)
-    - [-TcpPort](#tcpport-1)
-    - [-MinTimeout](#mintimeout)
-    - [-MaxTimeout](#maxtimeout-1)
-    - [CommonParameters](#commonparameters-8)
-  - [INPUTS](#inputs-8)
-    - [Hashtable](#hashtable-3)
-  - [OUTPUTS](#outputs-8)
-    - [PSCustomObject](#pscustomobject-8)
-  - [NOTES](#notes-8)
-  - [RELATED LINKS](#related-links-8)
-  - [schema: 2.0.0](#schema-200-9)
-- [Test-PsNetUping](#test-psnetuping)
-  - [SYNOPSIS](#synopsis-9)
-  - [SYNTAX](#syntax-9)
-  - [DESCRIPTION](#description-9)
-  - [EXAMPLES](#examples-9)
-    - [EXAMPLE 1](#example-1-9)
-    - [EXAMPLE 2](#example-2-3)
-    - [EXAMPLE 3](#example-3-2)
-  - [PARAMETERS](#parameters-9)
-    - [-Destination](#destination-2)
-    - [-UdpPort](#udpport)
-    - [-MinTimeout](#mintimeout-1)
-    - [-MaxTimeout](#maxtimeout-2)
-    - [CommonParameters](#commonparameters-9)
-  - [INPUTS](#inputs-9)
-    - [Hashtable](#hashtable-4)
-  - [OUTPUTS](#outputs-9)
-    - [PSCustomObject](#pscustomobject-9)
-  - [NOTES](#notes-9)
-  - [RELATED LINKS](#related-links-9)
-  - [schema: 2.0.0](#schema-200-10)
-- [Test-PsNetWping](#test-psnetwping)
-  - [SYNOPSIS](#synopsis-10)
-  - [SYNTAX](#syntax-10)
-  - [DESCRIPTION](#description-10)
-  - [EXAMPLES](#examples-10)
-    - [EXAMPLE 1](#example-1-10)
-    - [EXAMPLE 2](#example-2-4)
-    - [EXAMPLE 3](#example-3-3)
-  - [PARAMETERS](#parameters-10)
-    - [-Destination](#destination-3)
-    - [-MinTimeout](#mintimeout-2)
-    - [-MaxTimeout](#maxtimeout-3)
-    - [-NoProxy](#noproxy)
-    - [CommonParameters](#commonparameters-10)
-  - [INPUTS](#inputs-10)
-    - [Hashtable](#hashtable-5)
-  - [OUTPUTS](#outputs-10)
-    - [PSCustomObject](#pscustomobject-10)
-  - [NOTES](#notes-10)
-  - [RELATED LINKS](#related-links-10)
+- [PsNetTools](#psnettools) 
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -314,12 +113,12 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -359,12 +158,12 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -404,12 +203,12 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -464,12 +263,12 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -529,12 +328,12 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -607,12 +406,12 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -682,12 +481,12 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -716,12 +515,19 @@ Test-PsNetDig -Destination sbb.ch
 
 ### EXAMPLE 2
 ```
+Resolve an IP address to the hostname
+```
+
+Test-PsNetDig -Destination '127.0.0.1','194.150.245.142'
+
+### EXAMPLE 3
+```
 Resolve an array of hostnames to the IP Address
 ```
 
 Test-PsNetDig -Destination sbb.ch, google.com
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Resolve an array of hostnames to the IP Address with ValueFromPipeline
 ```
@@ -731,7 +537,7 @@ sbb.ch, google.com | Test-PsNetDig
 ## PARAMETERS
 
 ### -Destination
-Hostname or IP Address or Alias or WebUrl as String or String-Array
+Hostname or IP Address or Alias
 
 ```yaml
 Type: String[]
@@ -754,21 +560,17 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### PSCustomObject
-### TargetName  : sbb.ch
-### IpV4Address : 194.150.245.142
-### IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e
-### Duration    : 4ms
 ## NOTES
 Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -822,7 +624,7 @@ Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 100
 Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
 ```
 
-Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
+Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100 | Format-Table
 
 ## PARAMETERS
 
@@ -917,19 +719,19 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
 # Test-PsNetUping
 
 ## SYNOPSIS
-Test the connectivity over a Udp port
+Test the connectivity over an Udp port
 
 ## SYNTAX
 
@@ -965,7 +767,7 @@ Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
 EXAMPLE
 Test the connectivity to two Destinations and two Udp Ports with a max.
 timeout of 100ms
-Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100 | Format-Table
 
 ## PARAMETERS
 
@@ -1045,12 +847,12 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -1083,7 +885,7 @@ Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 
 
 ### EXAMPLE 3
 ```
-Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
+Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy | Format-Table
 ```
 
 ## PARAMETERS
@@ -1164,7 +966,7 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 
 
 [ [Top] ](#psnettools)

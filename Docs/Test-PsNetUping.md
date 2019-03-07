@@ -1,14 +1,14 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
 # Test-PsNetUping
 
 ## SYNOPSIS
-Test the connectivity over a Udp port
+Test the connectivity over an Udp port
 
 ## SYNTAX
 
@@ -44,7 +44,7 @@ Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100
 EXAMPLE
 Test the connectivity to two Destinations and two Udp Ports with a max.
 timeout of 100ms
-Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100 | Format-Table
 
 ## PARAMETERS
 
@@ -124,5 +124,5 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 

@@ -151,8 +151,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -201,8 +201,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -251,8 +251,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -326,8 +326,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -408,8 +408,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -517,8 +517,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -616,8 +616,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -639,7 +639,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Destination</maml:name>
           <maml:Description>
-            <maml:para>Hostname or IP Address or Alias or WebUrl as String or String-Array</maml:para>
+            <maml:para>Hostname or IP Address or Alias</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -654,7 +654,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Destination</maml:name>
         <maml:Description>
-          <maml:para>Hostname or IP Address or Alias or WebUrl as String or String-Array</maml:para>
+          <maml:para>Hostname or IP Address or Alias</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -683,38 +683,6 @@
           <maml:para></maml:para>
         </maml:description>
       </command:returnValue>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>TargetName  : sbb.ch</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>IpV4Address : 194.150.245.142</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>IpV6Address : 2a00:4bc0:ffff:ffff::c296:f58e</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>Duration    : 4ms</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
@@ -731,13 +699,20 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Resolve an IP address to the hostname</dev:code>
+        <dev:remarks>
+          <maml:para>Test-PsNetDig -Destination '127.0.0.1','194.150.245.142'</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Resolve an array of hostnames to the IP Address</dev:code>
         <dev:remarks>
           <maml:para>Test-PsNetDig -Destination sbb.ch, google.com</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Resolve an array of hostnames to the IP Address with ValueFromPipeline</dev:code>
         <dev:remarks>
           <maml:para>sbb.ch, google.com | Test-PsNetDig</maml:para>
@@ -746,8 +721,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -980,14 +955,14 @@
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms</dev:code>
         <dev:remarks>
-          <maml:para>Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100</maml:para>
+          <maml:para>Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100 | Format-Table</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -997,7 +972,7 @@
       <command:verb>Test</command:verb>
       <command:noun>PsNetUping</command:noun>
       <maml:description>
-        <maml:para>Test the connectivity over a Udp port</maml:para>
+        <maml:para>Test the connectivity over an Udp port</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
@@ -1151,14 +1126,14 @@
         <dev:code>Test the connectivity to two Destinations and one Udp Port with a max. timeout of 100ms</dev:code>
         <dev:remarks>
           <maml:para>Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 100</maml:para>
-          <maml:para>EXAMPLE Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100</maml:para>
+          <maml:para>EXAMPLE Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100 | Format-Table</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -1318,7 +1293,7 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy</dev:code>
+        <dev:code>Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy | Format-Table</dev:code>
         <dev:remarks>
           <maml:para></maml:para>
         </dev:remarks>
@@ -1326,8 +1301,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://tinuwalther.github.io/</maml:linkText>
-        <maml:uri>https://tinuwalther.github.io/</maml:uri>
+        <maml:linkText>https://github.com/tinuwalther/PsNetTools</maml:linkText>
+        <maml:uri>https://github.com/tinuwalther/PsNetTools</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>

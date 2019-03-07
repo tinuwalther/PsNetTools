@@ -34,7 +34,7 @@ function Add-PsNetHostsEntry {
        Author: Martin Walther
 
     .LINK
-       https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
@@ -79,7 +79,7 @@ function Add-PsNetHostsEntry {
                 $Path = "/etc/hosts"
             }
         }
-        return [PsNetHostsTable]::AddPsNetHostEntry($CurrentOS, $Path, $IPAddress, $Hostname, $FullyQualifiedName)
+        return [PsNetHostsTable]::AddPsNetHostsEntry($CurrentOS, $Path, $IPAddress, $Hostname, $FullyQualifiedName)
     }
     
     end {
