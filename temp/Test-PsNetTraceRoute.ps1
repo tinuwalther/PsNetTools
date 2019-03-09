@@ -1,4 +1,4 @@
-function Get-PsNetTraceRoute{
+function Test-PsNetTraceRoute{
 
     <#
 
