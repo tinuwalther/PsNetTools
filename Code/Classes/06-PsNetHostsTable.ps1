@@ -72,7 +72,7 @@ Class PsNetHostsTable {
                 $filecontent = Get-Content -Path $Path
                 if($filecontent -match $ipv4pattern){
                     $string = ($filecontent | Select-String -Pattern $ipv4pattern)
-                    for ($i = 0; $i -lt $string.Length; $i++){
+                    for ($i = 1; $i -lt $string.Length; $i++){
                         $line = ($string[$i]) -Split '\s+'
                         $resultset += [PsNetHostsTableType]::New($true,$line[0],$line[1],$line[2],$null)
                     }
