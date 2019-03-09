@@ -1,5 +1,5 @@
 <#
-    Generated at 03/09/2019 20:37:19 by Martin Walther
+    Generated at 03/09/2019 20:48:21 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -880,15 +880,19 @@ Class PsNetHostsTable {
                 if($filecontent -match $ipv4pattern){
                     $string = ($filecontent | Select-String -Pattern $ipv4pattern)
                     for ($i = 0; $i -lt $string.Length; $i++){
-                        $line = ($string[$i]) -Split '\s+'
-                        $resultset += [PsNetHostsTableType]::New($true,'IPv4',$line[0],$line[1],$line[2],$null)
+                        if($string[$i] -notmatch '#'){
+                            $line = ($string[$i]) -Split '\s+'
+                            $resultset += [PsNetHostsTableType]::New($true,'IPv4',$line[0],$line[1],$line[2],$null)
+                        }
                     }
                 }
                 if($filecontent -match $ipv6pattern){
                     $string = ($filecontent | Select-String -Pattern $ipv6pattern)
                     for ($i = 0; $i -lt $string.Length; $i++){
-                        $line = ($string[$i]) -Split '\s+'
-                        $resultset += [PsNetHostsTableType]::New($true,'IPv6',$line[0],$line[1],$line[2],$null)
+                        if($string[$i] -notmatch '#'){
+                            $line = ($string[$i]) -Split '\s+'
+                            $resultset += [PsNetHostsTableType]::New($true,'IPv6',$line[0],$line[1],$line[2],$null)
+                        }
                     }
                 }                
                 else{
