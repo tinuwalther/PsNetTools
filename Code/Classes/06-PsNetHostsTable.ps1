@@ -1,6 +1,7 @@
 Class PsNetHostsTableType {
 
     [bool]   $Succeeded
+    [String] $IpVersion
     [String] $IpAddress
     [String] $Compuername
     [String] $FullyQualifiedName
@@ -8,12 +9,14 @@ Class PsNetHostsTableType {
 
     PsNetHostsTableType (
         [bool]   $Succeeded,
+        [String] $IpVersion,
         [String] $IpAddress,
         [String] $Compuername,
         [String] $FullyQualifiedName,
         [String] $Message
         ) {
         $this.Succeeded          = $Succeeded
+        $this.IpVersion          = $IpVersion
         $this.IpAddress          = $IpAddress
         $this.Compuername        = $Compuername
         $this.FullyQualifiedName = $FullyQualifiedName
@@ -68,15 +71,25 @@ Class PsNetHostsTable {
 
         try{
             if(Test-Path -Path $Path){
+
                 $ipv4pattern = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+                $ipv6pattern = '(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))'
+
                 $filecontent = Get-Content -Path $Path
                 if($filecontent -match $ipv4pattern){
                     $string = ($filecontent | Select-String -Pattern $ipv4pattern)
-                    for ($i = 1; $i -lt $string.Length; $i++){
+                    for ($i = 0; $i -lt $string.Length; $i++){
                         $line = ($string[$i]) -Split '\s+'
-                        $resultset += [PsNetHostsTableType]::New($true,$line[0],$line[1],$line[2],$null)
+                        $resultset += [PsNetHostsTableType]::New($true,'IPv4',$line[0],$line[1],$line[2],$null)
                     }
                 }
+                if($filecontent -match $ipv6pattern){
+                    $string = ($filecontent | Select-String -Pattern $ipv6pattern)
+                    for ($i = 0; $i -lt $string.Length; $i++){
+                        $line = ($string[$i]) -Split '\s+'
+                        $resultset += [PsNetHostsTableType]::New($true,'IPv6',$line[0],$line[1],$line[2],$null)
+                    }
+                }                
                 else{
                     $resultset += [PsNetHostsTableType]::New($true,'{}','{}','{}',$null)
                 }
