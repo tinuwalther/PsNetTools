@@ -54,7 +54,34 @@ Class PsNetRoutingTable{
         $resultset  = @()
 
         try{
-            if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
+            if($CurrentOS -eq [OSType]::Linux){
+
+                $ipv4pattern = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+                $routeprint  = netstat -rn
+                $IPv4Table   = $routeprint -replace 'Kernel IP routing table'
+
+                $IPv4Table | ForEach-Object{
+                    $string = $_ -split '\s+'
+                    if($string){
+                        if($string[0] -match $ipv4pattern){
+                            $obj = [PSCustomObject]@{
+                                Succeeded     = $true
+                                AddressFamily = 'IPv4'
+                                Destination   = $string[0]
+                                Gateway       = $string[1]
+                                Genmask       = $string[2]
+                                Flags         = $string[3]
+                                MSSWindow     = $string[4]
+                                irtt          = $string[5]
+                                Iface         = $string[6]
+                            }
+                            $resultset += $obj
+                        }
+                    }
+                }    
+
+            }
+            if($CurrentOS -eq [OSType]::Mac){
 
                 $InterfaceList       = $routeprint -match 'Routing tables'
                 $IPv4RouteTable      = $routeprint -match 'Internet:'
