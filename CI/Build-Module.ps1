@@ -56,6 +56,7 @@ $Manifest = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
 Update-ModuleManifest -Path $Manifest -FunctionsToExport $FunctionsToExport
 Write-Host "[BUILD] [END  ] [PSD1] building Manifest" -ForegroundColor Yellow
 
+<#
 Write-Host "[BUILD] [START] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
 if(!(Get-Module platyPS)){
     Import-Module -Name platyPS
@@ -70,3 +71,4 @@ else{
     $null = New-MarkdownHelp -Module $ModuleName -OutputFolder $DocsSourcePath -Force
 }
 Write-Host "[BUILD] [END  ] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
+#>

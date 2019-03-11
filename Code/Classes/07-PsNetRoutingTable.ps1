@@ -32,16 +32,7 @@ Class PsNetRoutingTable{
             }
         }
         catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
+            $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
         }                
         return $resultset
@@ -54,11 +45,12 @@ Class PsNetRoutingTable{
         $resultset  = @()
 
         try{
+            
+            $ipv4pattern = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+
             if($CurrentOS -eq [OSType]::Linux){
 
-                $ipv4pattern = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-                $routeprint  = netstat -rn
-                $IPv4Table   = $routeprint -replace 'Kernel IP routing table'
+                $IPv4Table = $routeprint -replace 'Kernel IP routing table'
 
                 $IPv4Table | ForEach-Object{
                     $string = $_ -split '\s+'
@@ -125,35 +117,18 @@ Class PsNetRoutingTable{
             }
             if($CurrentOS -eq [OSType]::Windows){
 
-                $InterfaceList       = $routeprint -match 'Interface List'
-                $IPv4RouteTable      = $routeprint -match 'IPv4 Route Table'
-                $IPv6RouteTable      = $routeprint -match 'IPv6 Route Table'
-
-                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
-                $IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
-                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
-
-                for ($i = 0; $i -lt $routeprint.Length; $i++){
-                    if($i -eq $IPv4RouteTableIndex){
-                        for ($i = $IPv4RouteTableIndex; $i -lt $IPv6RouteTableIndex -1; $i++){
-                            $IPv4Table += $routeprint[$i]
-                        }
-                    }
-                }
-
-                if($IPv4Table -contains '='){
-                    $IPv4Table = $IPv4Table -replace '=' 
-                }
+                $IPv4Table = $routeprint
+                
                 $IPv4Table | ForEach-Object{
                     $string = $_ -split '\s+'
                     if($string){
-                        if($string[5] -match '^\d'){
+                        if($string[1] -match $ipv4pattern){
                             $obj = [PSCustomObject]@{
                                 Succeeded     = $true
                                 AddressFamily = 'IPv4'
                                 Destination   = $string[1]
-                                Netmask       = $string[2]
                                 Gateway       = $string[3]
+                                Netmask       = $string[2]
                                 Interface     = $string[4]
                                 Metric        = $string[5]
                             }
@@ -164,16 +139,7 @@ Class PsNetRoutingTable{
             }
         }
         catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
+            $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
         }                
         return $resultset
@@ -186,6 +152,9 @@ Class PsNetRoutingTable{
         $resultset  = @()
 
         try{
+
+            $ipv6pattern = '(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))'
+
             if(($CurrentOS -eq [OSType]::Mac) -or ($CurrentOS -eq [OSType]::Linux)){
 
                 $InterfaceList       = $routeprint -match 'Routing tables'
@@ -228,36 +197,19 @@ Class PsNetRoutingTable{
             }
             if($CurrentOS -eq [OSType]::Windows){
 
-                $InterfaceList       = $routeprint -match 'Interface List'
-                $IPv4RouteTable      = $routeprint -match 'IPv4 Route Table'
-                $IPv6RouteTable      = $routeprint -match 'IPv6 Route Table'
+                $IPv6Table = $routeprint
 
-                #$InterfaceListIndex  = $routeprint.IndexOf($InterfaceList)
-                #$IPv4RouteTableIndex = $routeprint.IndexOf($IPv4RouteTable)
-                $IPv6RouteTableIndex = $routeprint.IndexOf($IPv6RouteTable)
-
-                for ($i = 0; $i -lt $routeprint.Length; $i++){
-                    if($i -eq $IPv6RouteTableIndex){
-                        for ($i = $IPv6RouteTableIndex; $i -lt $routeprint.Length -1; $i++){
-                            $IPv6Table += $routeprint[$i]
-                        }
-                    }
-                }
-
-                if($IPv6Table -contains '='){
-                    $IPv6Table = $IPv6Table -replace '=' 
-                }
                 $IPv6Table | ForEach-Object{
                     $string = $_ -split '\s+'
                     if($string){
-                        if($string[1] -match '^\d'){
+                        if($string[3] -match $ipv6pattern){
                             $obj = [PSCustomObject]@{
                                 Succeeded     = $true 
                                 AddressFamily = 'IPv6'
-                                Index         = $string[1]
-                                Metric        = $string[2]
                                 Destination   = $string[3]
                                 Gateway       = $string[4]
+                                Index         = $string[1]
+                                Metric        = $string[2]
                             }
                             $resultset += $obj
                         }
@@ -266,16 +218,7 @@ Class PsNetRoutingTable{
             } 
         }
         catch{
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
-            }
-            $resultset += $obj
+            $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
         }                
         return $resultset
