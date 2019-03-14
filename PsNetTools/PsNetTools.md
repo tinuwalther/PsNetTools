@@ -163,7 +163,7 @@ PsNetTools is a cross platform PowerShell module to test some network features o
   - [NOTES](#notes-8)
   - [RELATED LINKS](#related-links-8)
   - [schema: 2.0.0](#schema-200-9)
-- [Test-PsNetUping](#test-psnetuping)
+- [Test-PsNetTracert](#test-psnettracert)
   - [SYNOPSIS](#synopsis-9)
   - [SYNTAX](#syntax-9)
   - [DESCRIPTION](#description-9)
@@ -173,9 +173,9 @@ PsNetTools is a cross platform PowerShell module to test some network features o
     - [EXAMPLE 3](#example-3-2)
   - [PARAMETERS](#parameters-9)
     - [-Destination](#destination-2)
-    - [-UdpPort](#udpport)
-    - [-MinTimeout](#mintimeout-1)
+    - [-MaxHops](#maxhops)
     - [-MaxTimeout](#maxtimeout-2)
+    - [-Show](#show)
     - [CommonParameters](#commonparameters-9)
   - [INPUTS](#inputs-9)
     - [Hashtable](#hashtable-4)
@@ -184,7 +184,7 @@ PsNetTools is a cross platform PowerShell module to test some network features o
   - [NOTES](#notes-9)
   - [RELATED LINKS](#related-links-9)
   - [schema: 2.0.0](#schema-200-10)
-- [Test-PsNetWping](#test-psnetwping)
+- [Test-PsNetUping](#test-psnetuping)
   - [SYNOPSIS](#synopsis-10)
   - [SYNTAX](#syntax-10)
   - [DESCRIPTION](#description-10)
@@ -194,9 +194,9 @@ PsNetTools is a cross platform PowerShell module to test some network features o
     - [EXAMPLE 3](#example-3-3)
   - [PARAMETERS](#parameters-10)
     - [-Destination](#destination-3)
-    - [-MinTimeout](#mintimeout-2)
+    - [-UdpPort](#udpport)
+    - [-MinTimeout](#mintimeout-1)
     - [-MaxTimeout](#maxtimeout-3)
-    - [-NoProxy](#noproxy)
     - [CommonParameters](#commonparameters-10)
   - [INPUTS](#inputs-10)
     - [Hashtable](#hashtable-5)
@@ -204,6 +204,27 @@ PsNetTools is a cross platform PowerShell module to test some network features o
     - [PSCustomObject](#pscustomobject-10)
   - [NOTES](#notes-10)
   - [RELATED LINKS](#related-links-10)
+  - [schema: 2.0.0](#schema-200-11)
+- [Test-PsNetWping](#test-psnetwping)
+  - [SYNOPSIS](#synopsis-11)
+  - [SYNTAX](#syntax-11)
+  - [DESCRIPTION](#description-11)
+  - [EXAMPLES](#examples-11)
+    - [EXAMPLE 1](#example-1-11)
+    - [EXAMPLE 2](#example-2-5)
+    - [EXAMPLE 3](#example-3-4)
+  - [PARAMETERS](#parameters-11)
+    - [-Destination](#destination-4)
+    - [-MinTimeout](#mintimeout-2)
+    - [-MaxTimeout](#maxtimeout-4)
+    - [-NoProxy](#noproxy)
+    - [CommonParameters](#commonparameters-11)
+  - [INPUTS](#inputs-11)
+    - [Hashtable](#hashtable-6)
+  - [OUTPUTS](#outputs-11)
+    - [PSCustomObject](#pscustomobject-11)
+  - [NOTES](#notes-11)
+  - [RELATED LINKS](#related-links-11)
 
 ---
 external help file: PsNetTools-help.xml
@@ -298,7 +319,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -344,7 +366,8 @@ Get-PsNetAdapterConfiguration
 ## PARAMETERS
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -389,7 +412,8 @@ Get-PsNetAdapters
 ## PARAMETERS
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -449,7 +473,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -514,7 +539,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -591,7 +617,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -667,7 +694,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -750,7 +778,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -904,7 +933,127 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### Hashtable
+## OUTPUTS
+
+### PSCustomObject
+## NOTES
+Author: Martin Walther
+
+## RELATED LINKS
+
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
+
+---
+external help file: PsNetTools-help.xml
+Module Name: PsNetTools
+online version: https://github.com/tinuwalther/PsNetTools
+schema: 2.0.0
+---
+
+# Test-PsNetTracert
+
+## SYNOPSIS
+Test Trace Route
+
+## SYNTAX
+
+```
+Test-PsNetTracert [-Destination] <String[]> [[-MaxHops] <Int32>] [[-MaxTimeout] <Int32>] [-Show]
+ [<CommonParameters>]
+```
+
+## DESCRIPTION
+Test Trace Route to a destination
+
+## EXAMPLES
+
+### EXAMPLE 1
+```
+Test-PsNetTracert -Destination 'www.sbb.ch'
+```
+
+### EXAMPLE 2
+```
+Test-PsNetTracert -Destination 'www.google.com' -MaxHops 15 -MaxTimeout 1000 | Format-Table -AutoSize
+```
+
+### EXAMPLE 3
+```
+Test-PsNetTracert -Destination 'www.google.com' -MaxHops 15 -MaxTimeout 1000 -Show
+```
+
+## PARAMETERS
+
+### -Destination
+A String or an Array of Strings with Url's to test
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MaxHops
+Max gateways, routers to test, default is 30
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: 30
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MaxTimeout
+Max.
+Timeout in ms, default is 1000
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: 1000
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Show
+Show the output for each item online
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -1032,7 +1181,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -1151,7 +1301,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

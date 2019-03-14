@@ -4,6 +4,7 @@
 - [PsNetTools](#psnettools)
 - [Test-PsNetDig](#test-psnetdig)
 - [Test-PsNetTping](#test-psnettping)
+- [Test-PsNetTracert](#test-psnettracert)
 - [Test-PsNetUping](#test-psnetuping)
 - [Test-PsNetWping](#test-psnetwping)
 - [Get-PsNetAdapters](#get-psnetadapters)
@@ -36,17 +37,18 @@ Get-Command -Module PsNetTools
 
 CommandType     Name                                               Version    Source
 -----------     ----                                               -------    ------
-Function        Add-PsNetHostsEntry                                0.5.0      PsNetTools
-Function        Get-PsNetAdapterConfiguration                      0.5.0      PsNetTools
-Function        Get-PsNetAdapters                                  0.5.0      PsNetTools
-Function        Get-PsNetHostsTable                                0.5.0      PsNetTools
-Function        Get-PsNetRoutingTable                              0.5.0      PsNetTools
-Function        Remove-PsNetHostsEntry                             0.5.0      PsNetTools
-Function        Start-PsNetPortListener                            0.5.0      PsNetTools
-Function        Test-PsNetDig                                      0.5.0      PsNetTools
-Function        Test-PsNetTping                                    0.5.0      PsNetTools
-Function        Test-PsNetUping                                    0.5.0      PsNetTools
-Function        Test-PsNetWping                                    0.5.0      PsNetTools
+[] Function        Test-PsNetDig                                      0.6.0      PsNetTools
+[] Function        Test-PsNetTping                                    0.6.0      PsNetTools
+[] Function        Test-PsNetTracert                                  0.6.0      PsNetTools
+[] Function        Test-PsNetUping                                    0.6.0      PsNetTools
+[] Function        Test-PsNetWping                                    0.6.0      PsNetTools
+[] Function        Get-PsNetHostsTable                                0.6.0      PsNetTools
+[] Function        Add-PsNetHostsEntry                                0.6.0      PsNetTools
+[] Function        Remove-PsNetHostsEntry                             0.6.0      PsNetTools
+[] Function        Get-PsNetAdapters                                  0.6.0      PsNetTools
+[] Function        Get-PsNetAdapterConfiguration                      0.6.0      PsNetTools
+[] Function        Get-PsNetRoutingTable                              0.6.0      PsNetTools
+[] Function        Start-PsNetPortListener                            0.6.0      PsNetTools
 ````
 
 # Test-PsNetDig
@@ -160,6 +162,67 @@ TcpSucceeded TcpPort Destination StatusDescription MinTimeout MaxTimeout TimeMs
         True     443 sbb.ch      TCP Test success           0        100      3
         True      80 google.com  TCP Test success           0        100      9
         True     443 google.com  TCP Test success           0        100      2
+````
+
+# Test-PsNetTracert
+
+Test Trace Route to a destination
+
+````powershell
+Test-PsNetTracert [-Destination] <String[]> [[-MaxHops] <Int32>] [[-MaxTimeout] <Int32>] [-Show]
+````
+
+- Destination: Hostname or IP Address or Alias as String or String-Array
+- MaxHops:     Count of gateways or router (optional, default is 30)
+- MaxTimeout:  Timeout in ms (optional, default is 1000ms)
+- Show:        Switch, show the output as line per router instead as Object
+  
+**Example 1:**
+
+````powershell
+Test-PsNetTracert -Destination 'www.microsoft.com' | Format-Table -AutoSize
+
+Hops Time RTT Send Received Destination       Hostname                                 IPAddress                               Status     Message
+---- ---- --- ---- -------- -----------       --------                                 ---------                               ------     -------
+   1   24   0   32        0 www.microsoft.com *                                        *                                       TtlExpired Go to next address
+   2   33   0   32        0 www.microsoft.com ae60-60.ipc-lss690-m-pe-48.bluewin.ch    2001:4d98:bffd:1e::2                    TtlExpired Go to next address
+   3   18   0   32        0 www.microsoft.com ae60-60.ipc-lss690-m-pe-48.bluewin.ch    2001:4d98:bffd:1e::2                    TtlExpired Go to next address
+   4   21   0   32        0 www.microsoft.com be11-v6.i68geb-025.bb.ip-plus.bluewin.ch 2001:4d98:bffd:1b::3                    TtlExpired Go to next address
+   5   17   0   32        0 www.microsoft.com lss-005-lo0-0.ip6.ip-plus.net            2001:918:100:f::1                       TtlExpired Go to next address
+   6   18   0   32        0 www.microsoft.com lss-070-loo6.ip6.ip-plus.net             2001:918:100:2e::1                      TtlExpired Go to next address
+   7   18  14   32       32 www.microsoft.com Could not resolve                        2001:918:ffc8:fe87::356e                Success    Trace route completed
+````
+
+**Example 2:**
+
+````powershell
+Test-PsNetTracert -Destination 'www.google.com' -MaxHops 5 -MaxTimeout 1000 | Format-Table -AutoSize
+
+Hops Time RTT Send Received Destination    Hostname                                 IPAddress                               Status     Message
+---- ---- --- ---- -------- -----------    --------                                 ---------                               ------     -------
+   1   24   0   32        0 www.google.com *                                        *                                       TtlExpired Go to next address
+   2   16   0   32        0 www.google.com ae60-60.ipc-lss690-m-pe-48.bluewin.ch    2001:4d98:bffd:1e::2                    TtlExpired Go to next address
+   3   15   0   32        0 www.google.com ae60-60.ipc-lss690-m-pe-48.bluewin.ch    2001:4d98:bffd:1e::2                    TtlExpired Go to next address
+   4   34   0   32        0 www.google.com be11-v6.i68geb-025.bb.ip-plus.bluewin.ch 2001:4d98:bffd:1b::3                    TtlExpired Go to next address
+   5   19   0   32        0 www.google.com zhb-005-loo646.ip6.ip-plus.net           2001:918:100:646::130                   TtlExpired Go to next address
+````
+
+**Example 3:**
+
+````powershell
+Test-PsNetTracert -Destination 'www.google.com' -MaxHops 15 -MaxTimeout 1000 -Show
+
+Trace route www.google.com over 15 Hops:
+
+Hops, RTT, Send, Received, Destination, Hostname, IPAddress, Status, Messages
+2, 0, 32, 0, www.google.com, ae60-60.ipc-lss690-m-pe-48.bluewin.ch, 2001:4d98:bffd:1e::2, TtlExpired, Go to next address
+3, 0, 32, 0, www.google.com, ae60-60.ipc-lss690-m-pe-48.bluewin.ch, 2001:4d98:bffd:1e::2, TtlExpired, Go to next address
+4, 0, 32, 0, www.google.com, be11-v6.i68geb-025.bb.ip-plus.bluewin.ch, 2001:4d98:bffd:1b::3, TtlExpired, Go to next address
+5, 0, 32, 0, www.google.com, zhb-005-loo646.ip6.ip-plus.net, 2001:918:100:646::130, TtlExpired, Go to next address
+6, 0, 32, 0, www.google.com, Could not resolve, 2001:4860:1:1::c5a, TtlExpired, Go to next address
+7, 0, 32, 0, www.google.com, Could not resolve, 2001:4860:0:9f::1, TtlExpired, Go to next address
+8, 0, 32, 0, www.google.com, Could not resolve, 2001:4860:0:1::156d, TtlExpired, Go to next address
+9, 18, 32, 32, www.google.com, zrh04s14-in-x04.1e100.net, 2a00:1450:400a:802::2004, Success, Trace route completed
 ````
 
 # Test-PsNetUping
