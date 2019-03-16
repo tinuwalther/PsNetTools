@@ -2,6 +2,10 @@
 
 Version | Change
 -|-
+v0.6.2 | Fix empty hosts table
+v0.6.1 | Fix empty routing table for ipversions
+v0.6.0 | Adding Test-PsNetTracert
+v0.5.0 | Refactoring code
 v0.4.3 | Update Markdown help with platyPS
 v0.4.2 | Adding support for CommonTcpPort in Test-PsNetTping
 v0.4.1 | Adding array-support for parameter 'TcpPort' and 'UdpPort'

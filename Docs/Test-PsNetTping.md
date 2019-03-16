@@ -1,7 +1,7 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -55,7 +55,7 @@ Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 100
 Test the connectivity to two Destinations and two Tcp Ports with a max. timeout of 100ms
 ```
 
-Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100
+Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80, 443 -MaxTimeout 100 | Format-Table
 
 ## PARAMETERS
 
@@ -150,5 +150,5 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 

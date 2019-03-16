@@ -1,7 +1,7 @@
 ---
 external help file: PsNetTools-help.xml
 Module Name: PsNetTools
-online version: https://tinuwalther.github.io/
+online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
@@ -34,7 +34,7 @@ Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 
 
 ### EXAMPLE 3
 ```
-Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy
+Test-PsNetWping -Destination 'https://sbb.ch', 'https://google.com' -MaxTimeout 1000 -NoProxy | Format-Table
 ```
 
 ## PARAMETERS
@@ -115,5 +115,5 @@ Author: Martin Walther
 
 ## RELATED LINKS
 
-[https://tinuwalther.github.io/](https://tinuwalther.github.io/)
+[https://github.com/tinuwalther/PsNetTools](https://github.com/tinuwalther/PsNetTools)
 

@@ -3,7 +3,7 @@ function Test-PsNetUping{
     <#
 
    .SYNOPSIS
-      Test the connectivity over a Udp port
+      Test the connectivity over an Udp port
 
    .DESCRIPTION
       Test connectivity to an endpoint over the specified Udp port
@@ -33,7 +33,7 @@ function Test-PsNetUping{
 
     EXAMPLE
       Test the connectivity to two Destinations and two Udp Ports with a max. timeout of 100ms
-      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100
+      Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53, 139 -MaxTimeout 100 | Format-Table
 
    .INPUTS
       Hashtable
@@ -45,13 +45,14 @@ function Test-PsNetUping{
       Author: Martin Walther
 
    .LINK
-      https://tinuwalther.github.io/
+       https://github.com/tinuwalther/PsNetTools
 
     #>
 
     [CmdletBinding()]
     param(
          [Parameter(Mandatory=$true)]
+         [ValidateLength(4,255)]
          [String[]] $Destination,
 
          [Parameter(ParameterSetName = "RemotePort", Mandatory = $True)]
@@ -65,19 +66,27 @@ function Test-PsNetUping{
          [Int] $MaxTimeout = 1000
     )    
     begin {
-      $resultset = @()
-   }
-
-    process {
-      foreach($item in $Destination){
-         foreach($port in $UdpPort){
-            $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
-         }
-      }
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
     }
 
-    end {
-      return $resultset
-    }
+	process {
+		foreach($item in $Destination){
+			foreach($port in $UdpPort){
+                try{
+                    $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
+                }
+				catch{
+					$resultset += [PsNetError]::New("$($function)($item)", $_)
+					$error.Clear()
+				}
+			}
+		}
+	}
+
+	end {
+		return $resultset
+	}
 
 }
