@@ -138,6 +138,18 @@ Class PsNetRoutingTable{
                 }
             }
         }
+        if([String]::IsNullOrEmpty($resultset)){
+            $obj = [PSCustomObject]@{
+                Succeeded     = $true
+                AddressFamily = 'IPv4'
+                Destination   = {}
+                Gateway       = {}
+                Netmask       = {}
+                Interface     = {}
+                Metric        = {}
+            }
+            $resultset += $obj
+        }
         catch{
             $resultset += [PsNetError]::New("$($function)()", $_)
             $error.Clear()
@@ -216,6 +228,18 @@ Class PsNetRoutingTable{
                     }
                 }
             } 
+        }
+        if([String]::IsNullOrEmpty($resultset)){
+            $obj = [PSCustomObject]@{
+                Succeeded     = $true
+                AddressFamily = 'IPv6'
+                Destination   = {}
+                Gateway       = {}
+                Netmask       = {}
+                Interface     = {}
+                Metric        = {}
+            }
+            $resultset += $obj
         }
         catch{
             $resultset += [PsNetError]::New("$($function)()", $_)
