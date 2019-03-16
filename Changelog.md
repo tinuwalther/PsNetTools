@@ -2,6 +2,7 @@
 
 Version | Change
 -|-
+v0.6.1 | Fix empty routing table for ipversions
 v0.6.0 | Adding Test-PsNetTracert
 v0.5.0 | Refactoring code
 v0.4.3 | Update Markdown help with platyPS

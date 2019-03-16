@@ -1,5 +1,5 @@
-<#
-    Generated at 03/14/2019 07:38:15 by Martin Walther
+﻿<#
+    Generated at 03/16/2019 13:01:25 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -1206,6 +1206,18 @@ Class PsNetRoutingTable{
                     }
                 }
             }
+            if([String]::IsNullOrEmpty($resultset)){
+                $obj = [PSCustomObject]@{
+                    Succeeded     = $true
+                    AddressFamily = 'IPv4'
+                    Destination   = {}
+                    Gateway       = {}
+                    Netmask       = {}
+                    Interface     = {}
+                    Metric        = {}
+                }
+                $resultset += $obj
+            }
         }
         catch{
             $resultset += [PsNetError]::New("$($function)()", $_)
@@ -1285,6 +1297,18 @@ Class PsNetRoutingTable{
                     }
                 }
             } 
+            if([String]::IsNullOrEmpty($resultset)){
+                $obj = [PSCustomObject]@{
+                    Succeeded     = $true
+                    AddressFamily = 'IPv6'
+                    Destination   = {}
+                    Gateway       = {}
+                    Netmask       = {}
+                    Interface     = {}
+                    Metric        = {}
+                }
+                $resultset += $obj
+            }
         }
         catch{
             $resultset += [PsNetError]::New("$($function)()", $_)
@@ -1974,7 +1998,7 @@ function Test-PsNetDig{
       Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
     .PARAMETER Destination
-      Hostname or IP Address or Alias
+      Hostname orÂ IP Address or Alias
  
     .EXAMPLE
       Resolve a hostname to the IP Address
