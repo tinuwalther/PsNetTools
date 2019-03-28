@@ -3,6 +3,7 @@
 - [Table of Contents](#table-of-contents)
 - [PsNetTools](#psnettools)
 - [Test-PsNetDig](#test-psnetdig)
+- [Test-PsNetPing](#test-psnetping)
 - [Test-PsNetTping](#test-psnettping)
 - [Test-PsNetTracert](#test-psnettracert)
 - [Test-PsNetUping](#test-psnetuping)
@@ -37,18 +38,19 @@ Get-Command -Module PsNetTools
 
 CommandType     Name                                               Version    Source
 -----------     ----                                               -------    ------
-[] Function        Test-PsNetDig                                      0.6.0      PsNetTools
-[] Function        Test-PsNetTping                                    0.6.0      PsNetTools
-[] Function        Test-PsNetTracert                                  0.6.0      PsNetTools
-[] Function        Test-PsNetUping                                    0.6.0      PsNetTools
-[] Function        Test-PsNetWping                                    0.6.0      PsNetTools
-[] Function        Get-PsNetHostsTable                                0.6.0      PsNetTools
-[] Function        Add-PsNetHostsEntry                                0.6.0      PsNetTools
-[] Function        Remove-PsNetHostsEntry                             0.6.0      PsNetTools
-[] Function        Get-PsNetAdapters                                  0.6.0      PsNetTools
-[] Function        Get-PsNetAdapterConfiguration                      0.6.0      PsNetTools
-[] Function        Get-PsNetRoutingTable                              0.6.0      PsNetTools
-[] Function        Start-PsNetPortListener                            0.6.0      PsNetTools
+Function        Add-PsNetHostsEntry                                0.7.0      PsNetTools
+Function        Get-PsNetAdapterConfiguration                      0.7.0      PsNetTools
+Function        Get-PsNetAdapters                                  0.7.0      PsNetTools
+Function        Get-PsNetHostsTable                                0.7.0      PsNetTools
+Function        Get-PsNetRoutingTable                              0.7.0      PsNetTools
+Function        Remove-PsNetHostsEntry                             0.7.0      PsNetTools
+Function        Start-PsNetPortListener                            0.7.0      PsNetTools
+Function        Test-PsNetDig                                      0.7.0      PsNetTools
+Function        Test-PsNetPing                                     0.7.0      PsNetTools
+Function        Test-PsNetTping                                    0.7.0      PsNetTools
+Function        Test-PsNetTracert                                  0.7.0      PsNetTools
+Function        Test-PsNetUping                                    0.7.0      PsNetTools
+Function        Test-PsNetWping                                    0.7.0      PsNetTools
 ````
 
 # Test-PsNetDig
@@ -92,6 +94,60 @@ Succeeded InputString Destination IpV4Address     IpV6Address                   
 --------- ----------- ----------- -----------     -----------                    ------
      True sbb.ch      sbb.ch      194.150.245.142 2a00:4bc0:ffff:ffff::c296:f58e      4
      True google.com  google.com  216.58.215.238  2a00:1450:400a:801::200e           26
+````
+
+# Test-PsNetPing
+
+Attempts to send an ICMP echo message to a remote computer and receive a corresponding ICMP echo reply message from the remote computer.
+
+````powershell
+Test-PsNetPing [-Destination] <String[]> [[-try] <Int32>] [<CommonParameters>]
+````
+
+- Destination: Hostname or IP Address or Alias as String or String-Array
+- try: Number of attempts to send ICMP echo message
+
+**Example 1:**
+
+````powershell
+Test-PsNetPing -Destination sbb.ch
+
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+````
+
+**Example 2:**
+
+````powershell
+Test-PsNetPing -Destination sbb.ch -try 5
+
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+````
+
+**Example 3:**
+
+````powershell
+Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com
+
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+ICMP ping microsoft.com, IPAddress: 0.0.0.0, time: 0, send: 32, received: 0, ICMP TimedOut
+ICMP ping google.com, IPAddress: 2a00:1450:400a:803::200e, time: 18, send: 32, received: 32, ICMP Success
+````
+
+**Example 4:**
+
+````powershell
+Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com -try 2
+
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 18, send: 32, received: 32, ICMP Success
+ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 20, send: 32, received: 32, ICMP Success
+ICMP ping microsoft.com, IPAddress: 0.0.0.0, time: 0, send: 32, received: 0, ICMP TimedOut
+ICMP ping microsoft.com, IPAddress: 0.0.0.0, time: 0, send: 32, received: 0, ICMP TimedOut
+ICMP ping google.com, IPAddress: 2a00:1450:400a:801::200e, time: 17, send: 32, received: 32, ICMP Success
+ICMP ping google.com, IPAddress: 2a00:1450:400a:801::200e, time: 17, send: 32, received: 32, ICMP Success
 ````
 
 # Test-PsNetTping
