@@ -112,7 +112,15 @@ Test-PsNetPing [-Destination] <String[]> [[-try] <Int32>] [<CommonParameters>]
 ````powershell
 Test-PsNetPing -Destination sbb.ch
 
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+IcmpSucceeded     : True
+IPAddress         : 2a00:4bc0:ffff:ffff::c296:f58e
+BytesSend         : 32
+BytesReceived     : 0
+Destination       : sbb.ch
+StatusDescription : ICMP Success
+MinTimeout        : 0
+MaxTimeout        : 1000
+TimeMs            : 19
 ````
 
 **Example 2:**
@@ -130,11 +138,13 @@ ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32,
 **Example 3:**
 
 ````powershell
-Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com
+Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com | Format-Table
 
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
-ICMP ping microsoft.com, IPAddress: 0.0.0.0, time: 0, send: 32, received: 0, ICMP TimedOut
-ICMP ping google.com, IPAddress: 2a00:1450:400a:803::200e, time: 18, send: 32, received: 32, ICMP Success
+IcmpSucceeded IPAddress                      BytesSend BytesReceived Destination   StatusDescription MinTimeout MaxTimeout TimeMs
+------------- ---------                      --------- ------------- -----------   ----------------- ---------- ---------- ------
+         True 2a00:4bc0:ffff:ffff::c296:f58e        32             0 sbb.ch        ICMP Success               0       1000     18
+        False 0.0.0.0                               32             0 microsoft.com ICMP TimedOut              0       1000      0
+         True 2a00:1450:400a:802::200e              32             0 google.com    ICMP Success               0       1000     18
 ````
 
 **Example 4:**

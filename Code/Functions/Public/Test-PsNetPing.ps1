@@ -61,8 +61,8 @@ function Test-PsNetPing{
       try{
         if($try -gt 0){
           for ($i = 0; $i -lt $try; $i++){
-            [PsNetPing]::ping($item)
-            Start-Sleep -Seconds 2
+            [PsNetPing]::ping($item,$true)
+            Start-Sleep -Seconds 1
           }
         }
         else{
