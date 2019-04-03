@@ -9,6 +9,40 @@ Class PsNetPingType {
 
 }
 
+Class PsNetIcmpPingType : PsNetPingType {
+
+    #$true, $IcmpSucceeded, $Destination, $IPAddress, $Roundtrip, $bytes, $buffer, $StatusMsg, $timeout, $timeout
+
+    [bool]$IcmpSucceeded
+    [string]$IPAddress
+    [int] $BytesSend
+    [int] $BytesReceived
+
+    PsNetIcmpPingType(
+        [bool]   $Succeeded, 
+        [bool]   $IcmpSucceeded, 
+        [String] $Destination, 
+        [string] $IPAddress,
+        [int]    $TimeMs,  
+        [int]    $BytesSend,
+        [int]    $BytesReceived, 
+        [String] $StatusDescription,
+        [int]    $MaxTimeout,
+        [int]    $MinTimeout
+    ){
+        $this.Succeeded         = $Succeeded
+        $this.IcmpSucceeded     = $IcmpSucceeded
+        $this.Destination       = $Destination
+        $this.IPAddress         = $IPAddress
+        $this.MinTimeout        = $MinTimeout
+        $this.MaxTimeout        = $MaxTimeout
+        $this.TimeMs            = $TimeMs
+        $this.BytesSend         = $BytesSend
+        $this.BytesReceived     = $BytesReceived
+        $this.StatusDescription = $StatusDescription
+    }
+}
+
 Class PsNetTpingType : PsNetPingType {
 
     [bool]   $TcpSucceeded
@@ -109,6 +143,7 @@ Class PsNetWebType : PsNetPingType {
 Class PsNetPing {
 
     <#
+        [PsNetPing]::ping('sbb.ch')
         [PsNetPing]::tping('sbb.ch', 80, 100)
         [PsNetPing]::uping('sbb.ch', 53, 100)
     #>
@@ -124,6 +159,105 @@ Class PsNetPing {
     #endregion
     
     #region methods
+    [PsNetIcmpPingType]static ping([String]$destination) {
+
+        $function   = 'ping()'
+    
+        [object]$reply     = $null
+        [int]$Roundtrip    = $null
+        [int]$bytes        = 0
+        [int]$buffer       = $null
+        [string]$IPAddress = 'could not find host'
+        [string]$StatusMsg = $null
+        [int]$timeout      = 1000
+        [bool]$IcmpSucceeded = $false
+        
+        $pingsender  = [System.Net.NetworkInformation.Ping]::new()
+        $datagram    = new-object System.Text.ASCIIEncoding
+        # Create a buffer of 32 bytes of data to be transmitted
+        [byte[]] $buffersize  = $datagram.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        
+        try{
+            $pingoptions = [System.Net.NetworkInformation.PingOptions]::new(64, $true)  
+            $reply       = $pingsender.Send($destination, $timeout, $buffersize, $pingoptions)
+            $Roundtrip   = $reply.RoundtripTime
+            $buffer      = $reply.Buffer.Length
+            $bytes       = $buffersize.Length
+        }
+        catch{
+            $error.Clear()
+        }
+    
+        try{
+            if(-not([String]::IsNullOrEmpty($reply.Address))){
+                $IPAddress = $reply.Address
+            }
+            else{
+            }
+        }
+        catch{
+            $error.clear()
+        }
+    
+        switch($reply.Status){
+            'TtlExpired' {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            'TimedOut'   {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            'Success'    {$IcmpSucceeded = $true; $StatusMsg = "ICMP $($reply.Status.ToString())"}
+            default      {$StatusMsg = "Please check the name and try again"}
+        }
+        
+        return [PsNetIcmpPingType]::New($true, $IcmpSucceeded, $Destination, $IPAddress, $Roundtrip, $bytes, $buffer, $StatusMsg, $timeout, 0)
+    }
+
+    [void]static ping([String]$destination,[bool]$show) {
+
+        $function   = 'ping()'
+    
+        [object]$reply     = $null
+        [int]$Roundtrip    = $null
+        [int]$bytes        = 0
+        [int]$buffer       = $null
+        [string]$IPAddress = 'could not find host'
+        [string]$StatusMsg = $null
+        [int]$timeout      = 1000
+        
+        $pingsender  = [System.Net.NetworkInformation.Ping]::new()
+        $datagram    = new-object System.Text.ASCIIEncoding
+        # Create a buffer of 32 bytes of data to be transmitted
+        [byte[]] $buffersize  = $datagram.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        
+        try{
+            $pingoptions = [System.Net.NetworkInformation.PingOptions]::new(64, $true)  
+            $reply       = $pingsender.Send($destination, $timeout, $buffersize, $pingoptions)
+            $Roundtrip   = $reply.RoundtripTime
+            $buffer      = $reply.Buffer.Length
+            $bytes       = $buffersize.Length
+        }
+        catch{
+            $error.Clear()
+        }
+    
+        try{
+            if(-not([String]::IsNullOrEmpty($reply.Address))){
+                $IPAddress = $reply.Address
+            }
+            else{
+            }
+        }
+        catch{
+            $error.clear()
+        }
+    
+        switch($reply.Status){
+            'TtlExpired' {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            'TimedOut'   {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            'Success'    {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            default      {$StatusMsg = "Please check the name and try again"}
+        }
+
+        Write-Host "ICMP ping $Destination, IPAddress: $IPAddress, time: $Roundtrip, send: $bytes, received: $buffer, $StatusMsg"
+    }
+
     [PsNetTpingType] static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
 
         [DateTime] $start        = Get-Date

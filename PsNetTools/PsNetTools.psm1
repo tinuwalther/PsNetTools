@@ -1,5 +1,5 @@
-﻿<#
-    Generated at 03/16/2019 13:24:34 by Martin Walther
+<#
+    Generated at 03/29/2019 08:27:31 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -140,6 +140,40 @@ Class PsNetPingType {
 
 }
 
+Class PsNetIcmpPingType : PsNetPingType {
+
+    #$true, $IcmpSucceeded, $Destination, $IPAddress, $Roundtrip, $bytes, $buffer, $StatusMsg, $timeout, $timeout
+
+    [bool]$IcmpSucceeded
+    [string]$IPAddress
+    [int] $BytesSend
+    [int] $BytesReceived
+
+    PsNetIcmpPingType(
+        [bool]   $Succeeded, 
+        [bool]   $IcmpSucceeded, 
+        [String] $Destination, 
+        [string] $IPAddress,
+        [int]    $TimeMs,  
+        [int]    $BytesSend,
+        [int]    $BytesReceived, 
+        [String] $StatusDescription,
+        [int]    $MaxTimeout,
+        [int]    $MinTimeout
+    ){
+        $this.Succeeded         = $Succeeded
+        $this.IcmpSucceeded     = $IcmpSucceeded
+        $this.Destination       = $Destination
+        $this.IPAddress         = $IPAddress
+        $this.MinTimeout        = $MinTimeout
+        $this.MaxTimeout        = $MaxTimeout
+        $this.TimeMs            = $TimeMs
+        $this.BytesSend         = $BytesSend
+        $this.BytesReceived     = $BytesReceived
+        $this.StatusDescription = $StatusDescription
+    }
+}
+
 Class PsNetTpingType : PsNetPingType {
 
     [bool]   $TcpSucceeded
@@ -240,6 +274,7 @@ Class PsNetWebType : PsNetPingType {
 Class PsNetPing {
 
     <#
+        [PsNetPing]::ping('sbb.ch')
         [PsNetPing]::tping('sbb.ch', 80, 100)
         [PsNetPing]::uping('sbb.ch', 53, 100)
     #>
@@ -255,6 +290,105 @@ Class PsNetPing {
     #endregion
     
     #region methods
+    [PsNetIcmpPingType]static ping([String]$destination) {
+
+        $function   = 'ping()'
+    
+        [object]$reply     = $null
+        [int]$Roundtrip    = $null
+        [int]$bytes        = 0
+        [int]$buffer       = $null
+        [string]$IPAddress = 'could not find host'
+        [string]$StatusMsg = $null
+        [int]$timeout      = 1000
+        [bool]$IcmpSucceeded = $false
+        
+        $pingsender  = [System.Net.NetworkInformation.Ping]::new()
+        $datagram    = new-object System.Text.ASCIIEncoding
+        # Create a buffer of 32 bytes of data to be transmitted
+        [byte[]] $buffersize  = $datagram.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        
+        try{
+            $pingoptions = [System.Net.NetworkInformation.PingOptions]::new(64, $true)  
+            $reply       = $pingsender.Send($destination, $timeout, $buffersize, $pingoptions)
+            $Roundtrip   = $reply.RoundtripTime
+            $buffer      = $reply.Buffer.Length
+            $bytes       = $buffersize.Length
+        }
+        catch{
+            $error.Clear()
+        }
+    
+        try{
+            if(-not([String]::IsNullOrEmpty($reply.Address))){
+                $IPAddress = $reply.Address
+            }
+            else{
+            }
+        }
+        catch{
+            $error.clear()
+        }
+    
+        switch($reply.Status){
+            'TtlExpired' {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            'TimedOut'   {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            'Success'    {$IcmpSucceeded = $true; $StatusMsg = "ICMP $($reply.Status.ToString())"}
+            default      {$StatusMsg = "Please check the name and try again"}
+        }
+        
+        return [PsNetIcmpPingType]::New($true, $IcmpSucceeded, $Destination, $IPAddress, $Roundtrip, $bytes, $buffer, $StatusMsg, $timeout, 0)
+    }
+
+    [void]static ping([String]$destination,[bool]$show) {
+
+        $function   = 'ping()'
+    
+        [object]$reply     = $null
+        [int]$Roundtrip    = $null
+        [int]$bytes        = 0
+        [int]$buffer       = $null
+        [string]$IPAddress = 'could not find host'
+        [string]$StatusMsg = $null
+        [int]$timeout      = 1000
+        
+        $pingsender  = [System.Net.NetworkInformation.Ping]::new()
+        $datagram    = new-object System.Text.ASCIIEncoding
+        # Create a buffer of 32 bytes of data to be transmitted
+        [byte[]] $buffersize  = $datagram.GetBytes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        
+        try{
+            $pingoptions = [System.Net.NetworkInformation.PingOptions]::new(64, $true)  
+            $reply       = $pingsender.Send($destination, $timeout, $buffersize, $pingoptions)
+            $Roundtrip   = $reply.RoundtripTime
+            $buffer      = $reply.Buffer.Length
+            $bytes       = $buffersize.Length
+        }
+        catch{
+            $error.Clear()
+        }
+    
+        try{
+            if(-not([String]::IsNullOrEmpty($reply.Address))){
+                $IPAddress = $reply.Address
+            }
+            else{
+            }
+        }
+        catch{
+            $error.clear()
+        }
+    
+        switch($reply.Status){
+            'TtlExpired' {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            'TimedOut'   {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            'Success'    {$StatusMsg = "ICMP $($reply.Status.ToString())"}
+            default      {$StatusMsg = "Please check the name and try again"}
+        }
+
+        Write-Host "ICMP ping $Destination, IPAddress: $IPAddress, time: $Roundtrip, send: $bytes, received: $buffer, $StatusMsg"
+    }
+
     [PsNetTpingType] static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
 
         [DateTime] $start        = Get-Date
@@ -1998,7 +2132,7 @@ function Test-PsNetDig{
       Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
     .PARAMETER Destination
-      Hostname orÂ IP Address or Alias
+      Hostname or IP Address or Alias
  
     .EXAMPLE
       Resolve a hostname to the IP Address
@@ -2059,6 +2193,88 @@ function Test-PsNetDig{
         return $resultset
     }
 
+}
+function Test-PsNetPing{
+
+    <#
+
+    .SYNOPSIS
+      Test ICMP echo
+
+    .DESCRIPTION
+      Attempts to send an ICMP echo message to a remote computer and receive a corresponding ICMP echo reply message from the remote computer.
+
+    .PARAMETER Destination
+      A String or an Array of Strings with Names or IP Addresses to test <string>
+
+    .PARAMETER try
+      Number of attempts to send ICMP echo message
+
+    .EXAMPLE
+      Test-PsNetPing -Destination sbb.ch
+
+    .EXAMPLE
+      Test-PsNetPing -Destination sbb.ch -try 5
+
+    .EXAMPLE
+      Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com
+
+    .EXAMPLE
+      Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com -try 3
+
+    .INPUTS
+      Hashtable
+
+    .OUTPUTS
+      String
+
+    .NOTES
+      Author: Martin Walther
+
+    .LINK
+       https://github.com/tinuwalther/PsNetTools
+
+    #>
+
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [ValidateLength(4,255)]
+        [String[]] $Destination,
+
+        [Parameter(Mandatory=$false)]
+        [Int] $try = 0
+    )    
+    begin {
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        $resultset = @()
+    }
+
+    process {
+
+		foreach($item in $Destination){
+      try{
+        if($try -gt 0){
+          for ($i = 0; $i -lt $try; $i++){
+            [PsNetPing]::ping($item,$true)
+            Start-Sleep -Seconds 1
+          }
+        }
+        else{
+          $resultset += [PsNetPing]::ping($item)
+        }
+      }
+      catch{
+        $resultset += [PsNetError]::New("$($function)($item)", $_)
+        $error.Clear()
+      }
+		}
+	}
+
+	end {
+		return $resultset
+	}
 }
 function Test-PsNetTping{
 
