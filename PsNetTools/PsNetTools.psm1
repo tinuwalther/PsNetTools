@@ -1,5 +1,5 @@
 ﻿<#
-    Generated at 04/04/2019 17:24:56 by Martin Walther
+    Generated at 04/04/2019 18:27:59 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -1023,9 +1023,16 @@ Class PsNetHostsTable {
                                 $comment      = 'Mapping IP Address to Computername (to FQDN) is well'
                             }
                             else{
-                                $computername = $line[2]
-                                $fqdn         = $line[1]
-                                $comment      = 'Mapping IP Address to Computername (to FQDN) is wrong'
+                                if($line[1] -match '\.'){
+                                    $computername = $line[2]
+                                    $fqdn         = $line[1]
+                                    $comment      = 'Mapping IP Address to Computername (to FQDN) is wrong'
+                                }
+                                else{
+                                    $computername = $line[1]
+                                    $fqdn         = $line[2]
+                                    $comment      = 'Mapping IP Address to Computername (to FQDN) is well'
+                                }
                             }
                             $resultset += [PsNetHostsTableType]::New($true,'IPv4',$line[0],$computername,$fqdn,$comment)
                         }
@@ -1042,9 +1049,16 @@ Class PsNetHostsTable {
                                 $comment      = 'Mapping IP Address to Computername (to FQDN) is well'
                             }
                             else{
-                                $computername = $line[2]
-                                $fqdn         = $line[1]
-                                $comment      = 'Mapping IP Address to Computername (to FQDN) is wrong'
+                                if($line[1] -match '\.'){
+                                    $computername = $line[2]
+                                    $fqdn         = $line[1]
+                                    $comment      = 'Mapping IP Address to Computername (to FQDN) is wrong'
+                                }
+                                else{
+                                    $computername = $line[1]
+                                    $fqdn         = $line[2]
+                                    $comment      = 'Mapping IP Address to Computername (to FQDN) is well'
+                                }
                             }
                             $resultset += [PsNetHostsTableType]::New($true,'IPv6',$line[0],$computername,$fqdn,$comment)
                         }
