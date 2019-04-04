@@ -1,5 +1,5 @@
-<#
-    Generated at 03/29/2019 08:27:31 by Martin Walther
+﻿<#
+    Generated at 04/04/2019 10:02:06 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -2132,7 +2132,7 @@ function Test-PsNetDig{
       Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
     .PARAMETER Destination
-      Hostname or IP Address or Alias
+      Hostname or IP Address or Alias
  
     .EXAMPLE
       Resolve a hostname to the IP Address
