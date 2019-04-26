@@ -1,5 +1,5 @@
-<#
-    Generated at 03/29/2019 08:27:31 by Martin Walther
+﻿<#
+    Generated at 04/04/2019 18:27:59 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -1009,6 +1009,7 @@ Class PsNetHostsTable {
 
                 $ipv4pattern = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
                 $ipv6pattern = '^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))'
+                $fqdnregex   = '(?=^.{1,254}$)(^(?:(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.?)+(?:[a-zA-Z]{2,})$)'
 
                 $filecontent = Get-Content -Path $Path
                 if($filecontent -match $ipv4pattern){
@@ -1016,7 +1017,24 @@ Class PsNetHostsTable {
                     for ($i = 0; $i -lt $string.Length; $i++){
                         if($string[$i] -notmatch '#'){
                             $line = ($string[$i]) -Split '\s+'
-                            $resultset += [PsNetHostsTableType]::New($true,'IPv4',$line[0],$line[1],$line[2],$null)
+                            if($line[2] -match $fqdnregex){
+                                $computername = $line[1]
+                                $fqdn         = $line[2]
+                                $comment      = 'Mapping IP Address to Computername (to FQDN) is well'
+                            }
+                            else{
+                                if($line[1] -match '\.'){
+                                    $computername = $line[2]
+                                    $fqdn         = $line[1]
+                                    $comment      = 'Mapping IP Address to Computername (to FQDN) is wrong'
+                                }
+                                else{
+                                    $computername = $line[1]
+                                    $fqdn         = $line[2]
+                                    $comment      = 'Mapping IP Address to Computername (to FQDN) is well'
+                                }
+                            }
+                            $resultset += [PsNetHostsTableType]::New($true,'IPv4',$line[0],$computername,$fqdn,$comment)
                         }
                     }
                 }
@@ -1025,7 +1043,24 @@ Class PsNetHostsTable {
                     for ($i = 0; $i -lt $string.Length; $i++){
                         if($string[$i] -notmatch '#'){
                             $line = ($string[$i]) -Split '\s+'
-                            $resultset += [PsNetHostsTableType]::New($true,'IPv6',$line[0],$line[1],$line[2],$null)
+                            if($line[2] -match $fqdnregex){
+                                $computername = $line[1]
+                                $fqdn         = $line[2]
+                                $comment      = 'Mapping IP Address to Computername (to FQDN) is well'
+                            }
+                            else{
+                                if($line[1] -match '\.'){
+                                    $computername = $line[2]
+                                    $fqdn         = $line[1]
+                                    $comment      = 'Mapping IP Address to Computername (to FQDN) is wrong'
+                                }
+                                else{
+                                    $computername = $line[1]
+                                    $fqdn         = $line[2]
+                                    $comment      = 'Mapping IP Address to Computername (to FQDN) is well'
+                                }
+                            }
+                            $resultset += [PsNetHostsTableType]::New($true,'IPv6',$line[0],$computername,$fqdn,$comment)
                         }
                     }
                 }
@@ -2132,7 +2167,7 @@ function Test-PsNetDig{
       Resolves a hostname to the IP addresses or an IP Address to the hostname.
 
     .PARAMETER Destination
-      Hostname or IP Address or Alias
+      Hostname or IP Address or Alias
  
     .EXAMPLE
       Resolve a hostname to the IP Address

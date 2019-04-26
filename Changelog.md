@@ -2,6 +2,9 @@
 
 Version | Change
 -|-
+v0.7.3 | Fix Mappings in GetPsNetHostsTable view
+v0.7.2 | Fix Mappings in GetPsNetHostsTable view
+v0.7.1 | Update Build-Module with general module pester tests
 v0.7.0 | Adding Test-PsNetPing ICMP echo message
 v0.6.2 | Fix empty hosts table
 v0.6.1 | Fix empty routing table for ipversions

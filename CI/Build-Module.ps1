@@ -8,7 +8,6 @@ $Current = (Split-Path -Path $MyInvocation.MyCommand.Path)
 $Root = ((Get-Item $Current).Parent).FullName
 $ModuleName = "PsNetTools"
 $ModuleFolderPath = Join-Path -Path $Root -ChildPath $ModuleName
-$DocsSourcePath   = Join-Path -Path $Root -ChildPath "Docs"
 $CodeSourcePath   = Join-Path -Path $Root -ChildPath "Code"
 
 $ExportPath = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psm1"
@@ -54,6 +53,26 @@ Write-Host "[BUILD] [PSD1 ] Adding functions to export" -ForegroundColor Yellow
 $FunctionsToExport = $PublicFunctions.BaseName
 $Manifest = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
 Update-ModuleManifest -Path $Manifest -FunctionsToExport $FunctionsToExport
+
+Describe 'General module control' -Tags 'FunctionalQuality'   {
+
+    It "Import $ModuleName without errors" {
+        { Import-Module -Name $ModuleFolderPath -Force -ErrorAction Stop } | Should Not Throw
+        Get-Module $ModuleName | Should Not BeNullOrEmpty
+    }
+
+    It "Get-Command $ModuleName without errors" {
+        { Get-Command -Module $ModuleName -ErrorAction Stop } | Should Not Throw
+        Get-Command -Module $ModuleName | Should Not BeNullOrEmpty
+    }
+
+    It "Removes $ModuleName without error" {
+        { Remove-Module -Name $ModuleName -ErrorAction Stop} | Should not Throw
+        Get-Module $ModuleName | Should beNullOrEmpty
+    }
+
+}
+
 Write-Host "[BUILD] [END  ] [PSD1] building Manifest" -ForegroundColor Yellow
 
 <#
