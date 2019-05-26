@@ -300,7 +300,7 @@ Class PsNetPing {
         $tcpclient.Dispose()
 
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetTpingType]::New($true, $tcpsucceeded, $TargetName, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $description, $TcpPort, $mintimeout, $maxtimeout, $duration)
+        return [PsNetTpingType]::New($true, $tcpsucceeded, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $TargetName, $description, $TcpPort, $mintimeout, $maxtimeout, $duration)
     }
 
     [PsNetUpingType] static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
