@@ -222,7 +222,6 @@ Class PsNetPing {
 
         $function   = 'ping()'
     
-        [DateTime] $start  = Get-Date
         [object]$reply     = $null
         [int]$Roundtrip    = $null
         [int]$bytes        = 0
