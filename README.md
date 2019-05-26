@@ -38,19 +38,19 @@ Get-Command -Module PsNetTools
 
 CommandType     Name                                               Version    Source
 -----------     ----                                               -------    ------
-Function        Add-PsNetHostsEntry                                0.7.0      PsNetTools
-Function        Get-PsNetAdapterConfiguration                      0.7.0      PsNetTools
-Function        Get-PsNetAdapters                                  0.7.0      PsNetTools
-Function        Get-PsNetHostsTable                                0.7.0      PsNetTools
-Function        Get-PsNetRoutingTable                              0.7.0      PsNetTools
-Function        Remove-PsNetHostsEntry                             0.7.0      PsNetTools
-Function        Start-PsNetPortListener                            0.7.0      PsNetTools
-Function        Test-PsNetDig                                      0.7.0      PsNetTools
-Function        Test-PsNetPing                                     0.7.0      PsNetTools
-Function        Test-PsNetTping                                    0.7.0      PsNetTools
-Function        Test-PsNetTracert                                  0.7.0      PsNetTools
-Function        Test-PsNetUping                                    0.7.0      PsNetTools
-Function        Test-PsNetWping                                    0.7.0      PsNetTools
+Function        Add-PsNetHostsEntry                                0.7.4      PsNetTools
+Function        Get-PsNetAdapterConfiguration                      0.7.4      PsNetTools
+Function        Get-PsNetAdapters                                  0.7.4      PsNetTools
+Function        Get-PsNetHostsTable                                0.7.4      PsNetTools
+Function        Get-PsNetRoutingTable                              0.7.4      PsNetTools
+Function        Remove-PsNetHostsEntry                             0.7.4      PsNetTools
+Function        Start-PsNetPortListener                            0.7.4      PsNetTools
+Function        Test-PsNetDig                                      0.7.4      PsNetTools
+Function        Test-PsNetPing                                     0.7.4      PsNetTools
+Function        Test-PsNetTping                                    0.7.4      PsNetTools
+Function        Test-PsNetTracert                                  0.7.4      PsNetTools
+Function        Test-PsNetUping                                    0.7.4      PsNetTools
+Function        Test-PsNetWping                                    0.7.4      PsNetTools
 ````
 
 # Test-PsNetDig
@@ -116,6 +116,7 @@ IcmpSucceeded     : True
 IPAddress         : 2a00:4bc0:ffff:ffff::c296:f58e
 BytesSend         : 32
 BytesReceived     : 0
+TimeStamp         : 2019-05-26 09:34:48.388
 Destination       : sbb.ch
 StatusDescription : ICMP Success
 MinTimeout        : 0
@@ -128,11 +129,11 @@ TimeMs            : 19
 ````powershell
 Test-PsNetPing -Destination sbb.ch -try 5
 
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+2019-05-26 09:37:14.577 ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+2019-05-26 09:37:14.577 ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+2019-05-26 09:37:14.577 ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+2019-05-26 09:37:14.577 ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
+2019-05-26 09:37:14.577 ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 19, send: 32, received: 32, ICMP Success
 ````
 
 **Example 3:**
@@ -152,12 +153,10 @@ IcmpSucceeded IPAddress                      BytesSend BytesReceived Destination
 ````powershell
 Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com -try 2
 
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 18, send: 32, received: 32, ICMP Success
-ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 20, send: 32, received: 32, ICMP Success
-ICMP ping microsoft.com, IPAddress: 0.0.0.0, time: 0, send: 32, received: 0, ICMP TimedOut
-ICMP ping microsoft.com, IPAddress: 0.0.0.0, time: 0, send: 32, received: 0, ICMP TimedOut
-ICMP ping google.com, IPAddress: 2a00:1450:400a:801::200e, time: 17, send: 32, received: 32, ICMP Success
-ICMP ping google.com, IPAddress: 2a00:1450:400a:801::200e, time: 17, send: 32, received: 32, ICMP Success
+2019-05-26 09:41:06.319 ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 23, send: 32, received: 32, ICMP Success2019-05-26 09:41:07.350 ICMP ping sbb.ch, IPAddress: 2a00:4bc0:ffff:ffff::c296:f58e, time: 22, send: 32, received: 32, ICMP Success
+2019-05-26 09:41:09.056 ICMP ping microsoft.com, IPAddress: 0.0.0.0, time: 0, send: 32, received: 0, ICMP TimedOut2019-05-26 09:41:11.056 ICMP ping microsoft.com, IPAddress: 0.0.0.0, time: 0, send: 32, received: 0, ICMP TimedOut
+2019-05-26 09:41:12.084 ICMP ping google.com, IPAddress: 2a00:1450:400a:800::200e, time: 19, send: 32, received: 32, ICMP Success
+2019-05-26 09:41:13.110 ICMP ping google.com, IPAddress: 2a00:1450:400a:800::200e, time: 19, send: 32, received: 32, ICMP Success
 ````
 
 # Test-PsNetTping
@@ -185,6 +184,7 @@ Test-PsNetTping -Destination sbb.ch -TcpPort 443 -MaxTimeout 100
 
 TcpSucceeded      : True
 TcpPort           : 443
+TimeStamp         : 2019-05-26 09:41:44.322
 Destination       : sbb.ch
 StatusDescription : TCP Test success
 MinTimeout        : 0
@@ -199,6 +199,7 @@ Test-PsNetTping -Destination sbb.ch -CommonTcpPort HTTPS -MaxTimeout 100
 
 TcpSucceeded      : True
 TcpPort           : 443
+TimeStamp         : 2019-05-26 09:41:44.322
 Destination       : sbb.ch
 StatusDescription : TCP Test success
 MinTimeout        : 0
@@ -312,6 +313,7 @@ Test-PsNetUping -Destination sbb.ch -UdpPort 53
 
 UdpSucceeded      : False
 UdpPort           : 53
+TimeStamp         : 2019-05-26 09:41:44.322
 Destination       : sbb.ch
 StatusDescription : "A connection attempt failed because the connected party did not properly respond after a period
                     of time, or established connection failed because connected host has failed to respond"
@@ -365,6 +367,7 @@ Test-PsNetWping -Destination 'https://sbb.ch'
 HttpSucceeded     : True
 ResponsedUrl      : https://www.sbb.ch/de/
 NoProxy           : False
+TimeStamp         : 2019-05-26 09:43:20.599
 Destination       : https://sbb.ch
 StatusDescription : OK
 MinTimeout        : 0
