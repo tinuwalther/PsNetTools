@@ -1,6 +1,7 @@
 Class PsNetPingType {
 
     hidden [bool]   $Succeeded
+    [String] $TimeStamp
     [String] $Destination
     [String] $StatusDescription
     [int]    $MinTimeout
@@ -21,6 +22,7 @@ Class PsNetIcmpPingType : PsNetPingType {
     PsNetIcmpPingType(
         [bool]   $Succeeded, 
         [bool]   $IcmpSucceeded, 
+        [String] $TimeStamp,
         [String] $Destination, 
         [string] $IPAddress,
         [int]    $TimeMs,  
@@ -32,6 +34,7 @@ Class PsNetIcmpPingType : PsNetPingType {
     ){
         $this.Succeeded         = $Succeeded
         $this.IcmpSucceeded     = $IcmpSucceeded
+        $this.TimeStamp         = $TimeStamp
         $this.Destination       = $Destination
         $this.IPAddress         = $IPAddress
         $this.MinTimeout        = $MinTimeout
@@ -51,6 +54,7 @@ Class PsNetTpingType : PsNetPingType {
     PsNetTpingType(
         [bool] $Succeeded, 
         [bool] $TcpSucceeded, 
+        [String] $TimeStamp,
         [String] $Destination, 
         [String] $StatusDescription, 
         [int] $Port, 
@@ -59,6 +63,7 @@ Class PsNetTpingType : PsNetPingType {
         [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
+        $this.TimeStamp         = $TimeStamp
         $this.Destination       = $Destination
         $this.TcpSucceeded      = $TcpSucceeded
         $this.TcpPort           = $Port
@@ -82,6 +87,7 @@ Class PsNetUpingType : PsNetPingType {
     PsNetUpingType(
         [bool] $Succeeded, 
         [bool] $UdpSucceeded, 
+        [String] $TimeStamp,
         [String] $Destination, 
         [String] $StatusDescription, 
         [int] $Port, 
@@ -90,6 +96,7 @@ Class PsNetUpingType : PsNetPingType {
         [int] $TimeMs
     ){
         $this.Succeeded         = $Succeeded
+        $this.TimeStamp         = $TimeStamp
         $this.Destination       = $Destination
         $this.UdpSucceeded      = $UdpSucceeded
         $this.UdpPort           = $Port
@@ -115,6 +122,7 @@ Class PsNetWebType : PsNetPingType {
     PsNetWebType(
         [bool] $Succeeded, 
         [bool] $HttpSucceeded, 
+        [String] $TimeStamp,
         [String] $Destination, 
         [String] $Url, 
         [String] $StatusDescription, 
@@ -125,6 +133,7 @@ Class PsNetWebType : PsNetPingType {
     ){
         $this.Succeeded         = $Succeeded
         $this.HttpSucceeded     = $HttpSucceeded
+        $this.TimeStamp         = $TimeStamp
         $this.Destination       = $Destination
         $this.ResponsedUrl      = $Url
         $this.StatusDescription = $StatusDescription
@@ -144,8 +153,8 @@ Class PsNetPing {
 
     <#
         [PsNetPing]::ping('sbb.ch')
-        [PsNetPing]::tping('sbb.ch', 80, 100)
-        [PsNetPing]::uping('sbb.ch', 53, 100)
+        [PsNetPing]::tping('sbb.ch', 80, 100, 1000)
+        [PsNetPing]::uping('sbb.ch', 53, 100, 1000)
     #>
 
     #region Properties with default values
@@ -206,13 +215,14 @@ Class PsNetPing {
             default      {$StatusMsg = "Please check the name and try again"}
         }
         
-        return [PsNetIcmpPingType]::New($true, $IcmpSucceeded, $Destination, $IPAddress, $Roundtrip, $bytes, $buffer, $StatusMsg, $timeout, 0)
+        return [PsNetIcmpPingType]::New($true, $IcmpSucceeded, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $Destination, $IPAddress, $Roundtrip, $bytes, $buffer, $StatusMsg, $timeout, 0)
     }
 
     [void]static ping([String]$destination,[bool]$show) {
 
         $function   = 'ping()'
     
+        [DateTime] $start  = Get-Date
         [object]$reply     = $null
         [int]$Roundtrip    = $null
         [int]$bytes        = 0
@@ -255,7 +265,7 @@ Class PsNetPing {
             default      {$StatusMsg = "Please check the name and try again"}
         }
 
-        Write-Host "ICMP ping $Destination, IPAddress: $IPAddress, time: $Roundtrip, send: $bytes, received: $buffer, $StatusMsg"
+        Write-Host "$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff') ICMP ping $Destination, IPAddress: $IPAddress, time: $Roundtrip, send: $bytes, received: $buffer, $StatusMsg"
     }
 
     [PsNetTpingType] static tping([String] $TargetName, [int] $TcpPort, [int] $mintimeout, [int] $maxtimeout) {
@@ -291,7 +301,7 @@ Class PsNetPing {
         $tcpclient.Dispose()
 
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetTpingType]::New($true, $tcpsucceeded, $TargetName, $description, $TcpPort, $mintimeout, $maxtimeout, $duration)
+        return [PsNetTpingType]::New($true, $tcpsucceeded, $TargetName, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $description, $TcpPort, $mintimeout, $maxtimeout, $duration)
     }
 
     [PsNetUpingType] static uping([String] $TargetName, [int] $UdpPort, [int] $mintimeout, [int] $maxtimeout) {
@@ -341,7 +351,7 @@ Class PsNetPing {
         $udpclient.Dispose()
 
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetUpingType]::New($true, $udpsucceeded, $TargetName, $description, $UdpPort, $mintimeout, $maxtimeout, $duration)
+        return [PsNetUpingType]::New($true, $udpsucceeded, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $TargetName, $description, $UdpPort, $mintimeout, $maxtimeout, $duration)
     }
 
     #endregion
@@ -390,7 +400,7 @@ Class PsNetWeb {
             $error.Clear()
         }
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetWebType]::New($true, $webreturn, $Url, $responseuri, $description, $false, $mintimeout, $maxtimeout, $duration)
+        return [PsNetWebType]::New($true, $webreturn, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $Url, $responseuri, $description, $false, $mintimeout, $maxtimeout, $duration)
             
     }
     
@@ -424,7 +434,7 @@ Class PsNetWeb {
             $error.Clear()
         }
         $duration = $([math]::round(((New-TimeSpan $($start) $(get-date)).TotalMilliseconds),0) -(20 + $mintimeout) )
-        return [PsNetWebType]::New($true, $webreturn, $Url, $responseuri, $description, $true, $mintimeout, $maxtimeout, $duration)   
+        return [PsNetWebType]::New($true, $webreturn, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $Url, $responseuri, $description, $true, $mintimeout, $maxtimeout, $duration)   
 
     }
 
