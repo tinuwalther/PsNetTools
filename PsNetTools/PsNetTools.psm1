@@ -1,5 +1,5 @@
 ﻿<#
-    Generated at 05/27/2019 13:54:20 by Martin Walther
+    Generated at 05/27/2019 14:16:11 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -428,7 +428,7 @@ Class PsNetPing {
             }
         }
         else{
-            $description  = 'TCP Test failed'
+            $description  = 'Destination host unreachable'
         }
         $tcpclient.Close()
         $tcpclient.Dispose()
