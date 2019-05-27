@@ -297,7 +297,7 @@ Class PsNetPing {
             }
         }
         else{
-            $description  = 'TCP Test failed'
+            $description  = 'Destination host unreachable'
         }
         $tcpclient.Close()
         $tcpclient.Dispose()
