@@ -296,6 +296,9 @@ Class PsNetPing {
                 $error.Clear()
             }
         }
+        else{
+            $description  = 'TCP Test failed'
+        }
         $tcpclient.Close()
         $tcpclient.Dispose()
 
