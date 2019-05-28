@@ -296,6 +296,9 @@ Class PsNetPing {
                 $error.Clear()
             }
         }
+        else{
+            $description  = 'Destination host unreachable'
+        }
         $tcpclient.Close()
         $tcpclient.Dispose()
 
