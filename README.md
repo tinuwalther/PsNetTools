@@ -2,6 +2,7 @@
 
 - [Table of Contents](#table-of-contents)
 - [PsNetTools](#psnettools)
+  - [Install PsNetTools](#install-psnettools)
 - [Test-PsNetDig](#test-psnetdig)
 - [Test-PsNetPing](#test-psnetping)
 - [Test-PsNetTping](#test-psnettping)
@@ -19,16 +20,24 @@
 
 # PsNetTools
 
-PsNetTools is a cross platform PowerShell module to test some network features on Windows and Mac.  
+PsNetTools is a cross platform PowerShell module to test some network features on Windows, Linux and Mac.  
 
 ![PsNetTools](./Images/NewPsNetTools.png)
 
 Image generated with [PSWordCloud](https://github.com/vexx32/PSWordCloud) by Joel Sallow.
 
+## Install PsNetTools
+
+Clone it from Github:
+
+````powershell
+git clone https://github.com/tinuwalther/PsNetTools.git
+````
+
 Import Module:  
 
 ````powershell
-Import-Module .\PsNetTools.psd1 -Force
+Import-Module .\PsNetTools\PsNetTools.psd1 -Force
 ````
 
 List all ExportedCommands:  
