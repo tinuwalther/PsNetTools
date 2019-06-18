@@ -28,10 +28,10 @@ Image generated with [PSWordCloud](https://github.com/vexx32/PSWordCloud) by Joe
 
 ## Install PsNetTools
 
-Clone it from Github:
+Download the PsNetTools.zip from Github, extract it to one of your $env:PsModulePath:
 
 ````powershell
-git clone https://github.com/tinuwalther/PsNetTools.git
+https://github.com/tinuwalther/PsNetTools/releases/tag/v0.7.5
 ````
 
 Import Module:  
