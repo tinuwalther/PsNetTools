@@ -2,6 +2,7 @@
 
 Version | Change
 -|-
+v0.7.6 | Adding support for DnsSearchSuffix on Windows
 v0.7.5 | Fix empty Description if tping failed
 v0.7.4 | Adding a TimeStamp to PsNetPingType
 v0.7.3 | Fix Mappings in GetPsNetHostsTable view

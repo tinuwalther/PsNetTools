@@ -1,20 +1,22 @@
-function Get-PsNetHostsTable {
+function Remove-PsNetDnsSearchSuffix{
 
     <#
 
     .SYNOPSIS
-       Get the content of the hostsfile
+       Remove-PsNetDnsSearchSuffix
 
     .DESCRIPTION
-       Format the content of the hostsfile to an object
+       Running this command with elevated privilege.
+       Remove any entries from the DnsSearchSuffixList
 
-    .PARAMETER Path
-       Path to the hostsfile, can be empty
+    .PARAMETER DNSSearchSuffix
+       DNSSearchSuffix to remove
  
     .EXAMPLE
-       Get-PsNetHostsTable -Path "$($env:windir)\system32\drivers\etc\hosts"
+       Remove-PsNetDnsSearchSuffix -DNSSearchSuffix 'test.local'
 
     .INPUTS
+       String Array
 
     .OUTPUTS
        PSCustomObject
@@ -26,19 +28,16 @@ function Get-PsNetHostsTable {
        https://github.com/tinuwalther/PsNetTools
 
     #>
-
+    
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$false)]
-        [String]$Path
+        [Parameter(Mandatory=$true)]
+        [String[]]$DNSSearchSuffix
     )
 
-    begin {
+    begin{
         $function = $($MyInvocation.MyCommand.Name)
         Write-Verbose "Running $function"
-    }
-    
-    process {
         if($PSVersionTable.PSVersion.Major -lt 6){
             $CurrentOS = [OSType]::Windows
         }
@@ -53,18 +52,14 @@ function Get-PsNetHostsTable {
                 $CurrentOS = [OSType]::Windows
             }
         }
-        if([String]::IsNullOrEmpty($Path)){
-            if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
-                $Path = "$($env:windir)\system32\drivers\etc\hosts"
-            }
-            else{
-                $Path = "/etc/hosts"
-            }
-        }
-        return [PsNetHostsTable]::GetPsNetHostsTable($CurrentOS, $Path)
     }
-    
-    end {
+
+    process{
+        foreach($item in $DNSSearchSuffix){
+            [PsNetDnsClient]::RemoveDnsSearchSuffix($CurrentOS,$item)
+        }
+    }
+
+    end{
     }
 }
-

@@ -33,7 +33,7 @@ if(!(Get-Module platyPS)){
     Import-Module -Name platyPS
 }
 Import-Module $ModuleFolderPath -Force
-if(Test-Path $DocsSourcePath){
+if(Get-MarkdownMetadata -Path $DocsSourcePath){
     Write-Host "[BUILD] [UPDATE] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
     Update-MarkdownHelp $DocsSourcePath -Force
 }
@@ -47,7 +47,7 @@ Write-Host "[BUILD] [END  ] [MD] $ModuleName Helpfile" -ForegroundColor Yellow
 Set-HeaderLines -Path "$($ModuleFolderPath)\$($ModuleName).md"
 Get-ChildItem $DocsSourcePath | ForEach-Object {
     #"- [$($_.BaseName)](./Docs/$($_.Name))" | Out-File -FilePath "$($Root)\$($ModuleName).md" -Append
-    Get-Content -Path $_.FullName | Out-File -FilePath "$($ModuleFolderPath)\$($ModuleName).md" -Append
+    Get-Content -Path $_.FullName -Filter '*.md' -Exclude 'README.md' | Out-File -FilePath "$($ModuleFolderPath)\$($ModuleName).md" -Append
 }
 
 "`n[ [Top] ](#psnettools)" | Out-File -FilePath "$($ModuleFolderPath)\$($ModuleName).md" -Append
