@@ -31,25 +31,38 @@ Class PsNetDnsClient {
 
     [PsNetDnsClientType] static GetDnsSearchSuffix([OSType]$CurrentOS){
 
-        [String]   $function = 'GetDnsSearchSuffix()'
-        [DateTime] $start    = Get-Date
+        [String]   $function           = 'GetDnsSearchSuffix()'
+        [DateTime] $start              = Get-Date
+        [Object]   $SuffixSearchList   = $null
+        [String]   $ComputerName       = $null
         [PsNetDnsClientType]$resultset = $null
 
         # For Windows only
         if($CurrentOS -eq [OSType]::Windows){
-            
             try{
+                $ComputerName     = $env:ComputerName
                 $SuffixSearchList = (Get-DnsClientGlobalSetting).SuffixSearchList
-                $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
-                $resultset = [PsNetDnsClientType]::New($true,$env:ComputerName,$SuffixSearchList,$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),$duration)
             }
             catch {
                 $resultset += [PsNetError]::New("$($function)()", $_)
                 $error.Clear()
             }
-
         }
 
+        # For Linux and Mac only
+        if(($CurrentOS -eq [OSType]::Linux) -or ($CurrentOS -eq [OSType]::Mac)){
+            try{
+                $ComputerName     = hostname
+                $SuffixSearchList = (Get-Content -Path '/etc/resolv.conf' | Select-String -Pattern 'search\s\S+') -replace 'search\s'
+            }
+            catch {
+                $resultset += [PsNetError]::New("$($function)()", $_)
+                $error.Clear()
+            }
+        }
+
+        $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
+        $resultset = [PsNetDnsClientType]::New($true,$ComputerName,$SuffixSearchList,$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),$duration)
         return $resultset
 
     }
