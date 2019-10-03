@@ -15,8 +15,12 @@
 - [Get-PsNetHostsTable](#get-psnethoststable)
 - [Add-PsNetHostsEntry](#add-psnethostsentry)
 - [Remove-PsNetHostsEntry](#remove-psnethostsentry)
-- [How to Export settings](#how-to-export-settings)
 - [Start-PsNetPortListener](#start-psnetportlistener)
+- [Get-PsNetDnsSearchSuffix](#get-psnetdnssearchsuffix)
+- [Add-PsNetDnsSearchSuffix](#add-psnetdnssearchsuffix)
+- [Remove-PsNetDnsSearchSuffix](#remove-psnetdnssearchsuffix)
+- [Clear-PsNetDnsSearchSuffix](#clear-psnetdnssearchsuffix)
+- [How to Export settings](#how-to-export-settings)
 
 # PsNetTools
 
@@ -31,13 +35,7 @@ Image generated with [PSWordCloud](https://github.com/vexx32/PSWordCloud) by Joe
 Download the PsNetTools.zip from Github, extract it to one of your $env:PsModulePath:
 
 ````powershell
-https://github.com/tinuwalther/PsNetTools/releases/tag/v0.7.5
-````
-
-Import Module:  
-
-````powershell
-Import-Module .\PsNetTools\PsNetTools.psd1 -Force
+https://github.com/tinuwalther/PsNetTools/releases/tag/v0.7.6
 ````
 
 List all ExportedCommands:  
@@ -553,6 +551,82 @@ Succeeded HostsEntry                     BackupPath                   Message
      True 127.0.0.1 tinu tinu.walther.ch D:\hosts_20190301-190104.txt Entry removed
 ````
 
+# Start-PsNetPortListener
+
+Temporarily listen on a given TCP port for connections dumps connections to the screen
+
+- TcpPort: The TCP port that the listener should attach to
+- MaxTimeout: MaxTimeout in milliseconds to wait, default is 5000
+
+````powershell
+Start-PsNetPortListener -TcpPort 443
+
+Listening on TCP port 443, press CTRL+C to cancel
+
+DateTime            AddressFamily Address    Port
+--------            ------------- -------    ----
+21.02.2019 19:55:39  InterNetwork 127.0.0.1 53613
+21.02.2019 19:55:54  InterNetwork 127.0.0.1 53631
+21.02.2019 19:56:07  InterNetwork 127.0.0.1 53666
+Listener Closed Safely
+````
+
+# Get-PsNetDnsSearchSuffix
+
+List all DNS Search suffixes.
+
+````powershell
+Get-PsNetDnsSearchSuffix | Format-Table
+
+Succeeded ComputerName    DnsSearchSuffix TimeStamp               TimeMs
+--------- ------------    --------------- ---------               ------
+     True WIN-J0EFIPPADQS {test.local}    2019-10-03 09:43:52.796    250
+````
+
+# Add-PsNetDnsSearchSuffix
+
+Add one or more new DNS Search suffix to the list.
+
+**WARNING:** Running this command with elevated privilege.
+
+````powershell
+Add-PsNetDnsSearchSuffix -NewDNSSearchSuffix test1.local, test2.local | Format-Table
+
+Succeeded ComputerName    DnsSearchSuffix                        TimeStamp               TimeMs
+--------- ------------    ---------------                        ---------               ------
+     True WIN-J0EFIPPADQS {test.local, test1.local}              2019-10-03 09:47:39.573     78
+     True WIN-J0EFIPPADQS {test.local, test1.local, test2.local} 2019-10-03 09:47:39.588     16
+````
+
+# Remove-PsNetDnsSearchSuffix
+
+Remove one or more DNS Search suffix from the list.
+
+**WARNING:** Running this command with elevated privilege.
+
+````powershell
+Remove-PsNetDnsSearchSuffix -DNSSearchSuffix test1.local, test2.local | Format-Table
+
+Succeeded ComputerName    DnsSearchSuffix           TimeStamp               TimeMs
+--------- ------------    ---------------           ---------               ------
+     True WIN-J0EFIPPADQS {test.local, test2.local} 2019-10-03 09:48:57.471     31
+     True WIN-J0EFIPPADQS {test.local}              2019-10-03 09:48:57.518     47
+````
+
+# Clear-PsNetDnsSearchSuffix
+
+Remove all DNS Search suffix from the list.
+
+**WARNING:** Running this command with elevated privilege.
+
+````powershell
+Clear-PsNetDnsSearchSuffix | Format-Table
+
+Succeeded ComputerName    DnsSearchSuffix TimeStamp               TimeMs
+--------- ------------    --------------- ---------               ------
+     True WIN-J0EFIPPADQS {}              2019-10-03 09:50:46.540     63
+````
+
 # How to Export settings
 
 You can easy export all the output of the commands as a JSON-file with the following CmdLets:
@@ -610,26 +684,6 @@ Export the JSON-Object from Test-PsNetDig to a file:
 
 ````powershell
 Test-PsNetDig sbb.ch | ConvertTo-Json | Set-Content D:\PsNetDig.json
-````
-
-# Start-PsNetPortListener
-
-Temporarily listen on a given TCP port for connections dumps connections to the screen
-
-- TcpPort: The TCP port that the listener should attach to
-- MaxTimeout: MaxTimeout in milliseconds to wait, default is 5000
-
-````powershell
-Start-PsNetPortListener -TcpPort 443
-
-Listening on TCP port 443, press CTRL+C to cancel
-
-DateTime            AddressFamily Address    Port
---------            ------------- -------    ----
-21.02.2019 19:55:39  InterNetwork 127.0.0.1 53613
-21.02.2019 19:55:54  InterNetwork 127.0.0.1 53631
-21.02.2019 19:56:07  InterNetwork 127.0.0.1 53666
-Listener Closed Safely
 ````
 
 [ [Top] ](#table-of-contents)
