@@ -28,7 +28,9 @@ function Get-PsNetAdapters{
     param()  
       
     begin {
-    }
+      $function = $($MyInvocation.MyCommand.Name)
+      Write-Verbose "Running $function"
+   }
     
     process {
         return [PsNetAdapter]::listadapters()

@@ -1,5 +1,5 @@
-<#
-    Generated at 11/03/2019 12:13:44 by Martin Walther
+﻿<#
+    Generated at 05/27/2019 14:16:11 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -79,6 +79,7 @@ Class PsNetDig {
 
     [PsNetDigType]static dig([String] $InputString) {
         
+        [bool]     $IsIpAddress = $false
         [DateTime] $start       = Get-Date
         [Array]    $dnsreturn   = $null
         [Array]    $collection  = $null
@@ -86,17 +87,37 @@ Class PsNetDig {
         [Array]    $ipv6address = $null
         [String]   $TargetName  = $null
 
-        $dnsreturn = [System.Net.Dns]::GetHostEntry($InputString)
-        if(-not([String]::IsNullOrEmpty($dnsreturn))){
-            $TargetName = $dnsreturn.hostname
-            $collection = $dnsreturn.AddressList
+        try {
+            $InputString = [ipaddress]$InputString
+            $IsIpAddress = $true
         }
-        
+        catch {
+            $Error.Clear()
+        }
+
+        # InputType is IPv4Address
+        if($IsIpAddress){
+            $dnsreturn = [System.Net.Dns]::GetHostByAddress($InputString)
+            if(-not([String]::IsNullOrEmpty($dnsreturn))){
+                $TargetName = $dnsreturn.hostname
+                $collection = $dnsreturn.AddressList
+            }
+        }
+
+        # InputType is Hostname
+        else{
+            $dnsreturn = [System.Net.Dns]::GetHostAddressesAsync($InputString).GetAwaiter().GetResult()
+            if(-not([String]::IsNullOrEmpty($dnsreturn))){
+                $TargetName = [System.Net.Dns]::GetHostByName($InputString).Hostname
+                $collection = $dnsreturn
+            }
+        }
+
         foreach($item in $collection){
-            if($($item.AddressFamily) -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
+            if($($item.AddressFamily) -eq 'InterNetwork'){
                 $ipv4address += $item.IPAddressToString
             }
-            if($($item.AddressFamily) -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
+            if($($item.AddressFamily) -eq 'InterNetworkV6'){
                 $ipv6address += $item.IPAddressToString
             }
         }
@@ -641,10 +662,9 @@ Class PsNetAdapterType {
     [String] $OperationalStatus
     [String] $PhysicalAddres
     [String] $IpVersion
-    [bool]   $IsAPIPAActive
+    [bool]   $IsAPIPAEnabled
     [Object] $IpV4Addresses
     [Object] $IpV6Addresses
-    [String] $DNSSuffix
 
     PsNetAdapterType (
         [bool]   $Succeeded,
@@ -652,9 +672,8 @@ Class PsNetAdapterType {
         [Object] $adapter,
         [String] $IpVersion,
         [Object] $IpV4Addresses,
-        [Object] $IpV6Addresses,
-        [String] $DNSSuffix
-        ) {
+        [Object] $IpV6Addresses
+    ) {
         $this.Succeeded            = $Succeeded
         $this.Index                = $IpV4properties.Index
         $this.Name                 = $adapter.Name
@@ -663,10 +682,9 @@ Class PsNetAdapterType {
         $this.OperationalStatus    = $adapter.OperationalStatus
         $this.PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
         $this.IpVersion            = $IpVersion
-        $this.IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingActive
+        $this.IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
         $this.IpV4Addresses        = $IpV4Addresses
         $this.IpV6Addresses        = $IpV6Addresses
-        $this.DNSSuffix            = $DNSSuffix
     }
 
 }
@@ -798,7 +816,6 @@ Class PsNetAdapter {
 
                     $IpVersion      = @()
                     $properties     = $adapter.GetIPProperties()
-                    $DNSSuffix      = $properties.DNSSuffix
                     $IpV4properties = $properties.GetIPv4Properties()
                     $IpV4Addresses  = @()
                     $IpV6Addresses  = @()
@@ -816,13 +833,13 @@ Class PsNetAdapter {
                 
                     foreach ($ip in $properties.UnicastAddresses) {
                         if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
-                            $IpV4Addresses += $ip.Address.IPAddressToString
+                            $IpV4Addresses += $ip.Address.ToString()
                         }
-                        if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
-                            $IpV6Addresses += $ip.Address.IPAddressToString
+                        if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork6){
+                            $IpV6Addresses += $ip.Address.ToString()
                         }
                     }
-                    $resultset += [PsNetAdapterType]::New($true,$IpV4properties,$adapter,$IpVersion,$IpV4Addresses,$IpV6Addresses,$DNSSuffix)
+                    $resultset += [PsNetAdapterType]::New($true,$IpV4properties,$adapter,$IpVersion,$IpV4Addresses,$IpV6Addresses)
                 }
             }
         }
@@ -870,18 +887,18 @@ Class PsNetAdapter {
     
                     foreach ($ip in $properties.UnicastAddresses) {
                         if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
-                            $IpV4Addresses += $ip.Address.IPAddressToString
+                            $IpV4Addresses += $ip.Address.ToString()
                         }
-                        if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
-                            $IpV6Addresses += $ip.Address.IPAddressToString
+                        if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork6){
+                            $IpV6Addresses += $ip.Address.ToString()
                         }
                     }
 
                     foreach($gateway in $properties.GatewayAddresses){
-                        if($gateway.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
+                        if($gateway.Address.AddressFamily -eq 'InterNetwork6'){
                             $GatewayIpV6Addresses += $gateway.Address.IPAddressToString
                         }
-                        if($gateway.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
+                        if($gateway.Address.AddressFamily -eq 'InterNetwork'){
                             $GatewayIpV4Addresses += $gateway.Address.IPAddressToString
                         }
                     }
@@ -908,8 +925,8 @@ Class PsNetAdapter {
                         Index                = $IpV4properties.Index
                         Mtu                  = $IpV4properties.Mtu
                         IsForwardingEnabled  = $IpV4properties.IsForwardingEnabled
-                        IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingEnabled
-                        IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingActive
+                        IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
+                        IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingEnabled
                         IsDhcpEnabled        = $IpV4properties.IsDhcpEnabled
                         UsesWins             = $IpV4properties.UsesWins
                         GatewayIpV4Addresses = $GatewayIpV4Addresses
@@ -1704,249 +1721,6 @@ Class PsNetTracert {
     #endregion
 }
 
-Class PsNetDnsClientType {
-
-    [bool]   $Succeeded
-    [String] $ComputerName
-    [Object] $DnsSearchSuffix
-    [String] $TimeStamp
-    [int]    $TimeMs
-
-    PsNetDnsClientType(
-        [bool]   $Succeeded, 
-        [String] $ComputerName, 
-        [Object] $DnsSearchSuffix, 
-        [String] $TimeStamp,
-        [int]    $TimeMs
-    ) {
-        $this.Succeeded       = $Succeeded
-        $this.ComputerName     = $ComputerName
-        $this.DnsSearchSuffix = $DnsSearchSuffix
-        $this.TimeStamp       = $TimeStamp
-        $this.TimeMs          = $TimeMs
-    }
-    #endregion
-
-}
-
-Class PsNetDnsClient {
-
-    # [PsNetDnsClient]::GetDnsSearchSuffix('Windows')
-
-    PsNetDnsClient(){}
-
-    [PsNetDnsClientType] static GetDnsSearchSuffix([OSType]$CurrentOS){
-
-        [String]   $function           = 'GetDnsSearchSuffix()'
-        [DateTime] $start              = Get-Date
-        [Object]   $SuffixSearchList   = $null
-        [String]   $ComputerName       = $null
-        [PsNetDnsClientType]$resultset = $null
-
-        # For Windows only
-        if($CurrentOS -eq [OSType]::Windows){
-            try{
-                $ComputerName     = $env:ComputerName
-                $SuffixSearchList = (Get-DnsClientGlobalSetting).SuffixSearchList
-            }
-            catch {
-                $resultset += [PsNetError]::New("$($function)()", $_)
-                $error.Clear()
-            }
-        }
-
-        # For Linux and Mac only
-        if(($CurrentOS -eq [OSType]::Linux) -or ($CurrentOS -eq [OSType]::Mac)){
-            try{
-                $ComputerName     = hostname
-                $SuffixSearchList = (Get-Content -Path '/etc/resolv.conf' | Select-String -Pattern 'search\s\S+') -replace 'search\s'
-            }
-            catch {
-                $resultset += [PsNetError]::New("$($function)()", $_)
-                $error.Clear()
-            }
-        }
-
-        $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
-        $resultset = [PsNetDnsClientType]::New($true,$ComputerName,$SuffixSearchList,$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),$duration)
-        return $resultset
-
-    }
-
-    [PsNetDnsClientType] static ClearDnsSearchSuffix([OSType]$CurrentOS){
-
-        [String]   $function = 'ClearDnsSearchSuffix()'
-        [DateTime] $start    = Get-Date
-        [PsNetDnsClientType]$resultset = $null
-
-        # For Windows only
-        if($CurrentOS -eq [OSType]::Windows){
-            $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-            $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-            if($IsAdmin){
-                try{
-                   $SuffixSearchList = (Set-DnsClientGlobalSetting -SuffixSearchList @() -PassThru).SuffixSearchList
-                   $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
-                   $resultset = [PsNetDnsClientType]::New($true,$env:ComputerName,$SuffixSearchList,$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),$duration)
-                }
-                catch {
-                    $resultset += [PsNetError]::New("$($function)()", $_)
-                    $error.Clear()
-                }
-            }
-            else{
-                $resultset += [PsNetDnsClientType]::New($false,$env:ComputerName,'Running this command with elevated privileges',$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),0)
-            }
-
-        }
-
-        return $resultset
-
-    }
-
-    [PsNetDnsClientType] static AddDnsSearchSuffix([OSType]$CurrentOS,[String]$NewEntry){
-
-        [String]   $function = 'AddDnsSearchSuffix()'
-        [DateTime] $start    = Get-Date
-        [PsNetDnsClientType]$resultset = $null
-
-        # For Windows only
-        if($CurrentOS -eq [OSType]::Windows){
-            $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-            $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-            if($IsAdmin){
-                try{
-                    [System.Collections.ArrayList]$aryDNSSuffixes = (Get-DnsClientGlobalSetting).SuffixSearchList
-                    if($aryDNSSuffixes -contains $NewEntry){
-                        $resultset += [PsNetDnsClientType]::New($false,$env:ComputerName,"$NewEntry already exists",$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),0)
-                    }
-                    else{
-                        $aryDNSSuffixes += $NewEntry
-                        $SuffixSearchList = (Set-DnsClientGlobalSetting -SuffixSearchList $aryDNSSuffixes -PassThru).SuffixSearchList
-                        $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
-                        $resultset = [PsNetDnsClientType]::New($true,$env:ComputerName,$SuffixSearchList,$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),$duration)
-                    }
-                }
-                catch {
-                    $resultset += [PsNetError]::New("$($function)()", $_)
-                    $error.Clear()
-                }
-            }
-            else{
-                $resultset += [PsNetDnsClientType]::New($false,$env:ComputerName,'Running this command with elevated privileges',$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),0)
-            }
-
-        }
-
-        return $resultset
-
-    }
-
-    [PsNetDnsClientType] static RemoveDnsSearchSuffix([OSType]$CurrentOS,[String]$Entry){
-
-        [String]   $function = 'RemoveDnsSearchSuffix()'
-        [DateTime] $start    = Get-Date
-        [PsNetDnsClientType]$resultset = $null
-
-        # For Windows only
-        if($CurrentOS -eq [OSType]::Windows){
-            $current   = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-            $IsAdmin   = $current.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-            if($IsAdmin){
-                try{
-                    [System.Collections.ArrayList]$aryDNSSuffixes = (Get-DnsClientGlobalSetting).SuffixSearchList
-                    if($aryDNSSuffixes -contains $Entry){
-                        $aryDNSSuffixes.Remove($Entry)
-                        $SuffixSearchList = (Set-DnsClientGlobalSetting -SuffixSearchList $aryDNSSuffixes -PassThru).SuffixSearchList
-                        $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
-                        $resultset = [PsNetDnsClientType]::New($true,$env:ComputerName,$SuffixSearchList,$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),$duration)
-                    }
-                    else{
-                        $resultset += [PsNetDnsClientType]::New($false,$env:ComputerName,"$Entry not exists",$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),0)
-                   }
-                }
-                catch {
-                    $resultset += [PsNetError]::New("$($function)()", $_)
-                    $error.Clear()
-                }
-            }
-            else{
-                $resultset += [PsNetDnsClientType]::New($false,$env:ComputerName,'Running this command with elevated privileges',$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'),0)
-            }
-
-        }
-
-        return $resultset
-
-    }
-
-}
-function Add-PsNetDnsSearchSuffix{
-
-    <#
-
-    .SYNOPSIS
-       Add-PsNetDnsSearchSuffix
-
-    .DESCRIPTION
-       Running this command with elevated privilege.
-       Adding any entries to the DnsSearchSuffixList
-
-    .PARAMETER NewDNSSearchSuffix
-       DNSSearchSuffix to add
- 
-    .EXAMPLE
-       Add-PsNetDnsSearchSuffix -DNSSearchSuffix 'test.local'
-
-    .INPUTS
-       String Array
-
-    .OUTPUTS
-       PSCustomObject
-
-    .NOTES
-       Author: Martin Walther
-
-    .LINK
-       https://github.com/tinuwalther/PsNetTools
-
-    #>
-    
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$true)]
-        [String[]]$NewDNSSearchSuffix
-    )
-
-    begin{
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
-        if($PSVersionTable.PSVersion.Major -lt 6){
-            $CurrentOS = [OSType]::Windows
-        }
-        else{
-            if($IsMacOS)  {
-                $CurrentOS = [OSType]::Mac
-            }
-            if($IsLinux)  {
-                $CurrentOS = [OSType]::Linux
-            }
-            if($IsWindows){
-                $CurrentOS = [OSType]::Windows
-            }
-        }
-    }
-
-    process{
-        foreach($item in $NewDNSSearchSuffix){
-            [PsNetDnsClient]::AddDnsSearchSuffix($CurrentOS,$item)
-        }
-    }
-
-    end{
-        return $obj
-    }
-}
 function Add-PsNetHostsEntry {
 
     <#
@@ -2003,8 +1777,6 @@ function Add-PsNetHostsEntry {
     )
 
     begin {
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
     }
     
     process {
@@ -2037,61 +1809,6 @@ function Add-PsNetHostsEntry {
     }
 }
 
-function Clear-PsNetDnsSearchSuffix{
-
-    <#
-
-    .SYNOPSIS
-       Clear-PsNetDnsSearchSuffix
-
-    .DESCRIPTION
-       Running this command with elevated privilege.
-       Remove all entries from the DnsSearchSuffixList
-
-    .EXAMPLE
-       Clear-PsNetDnsSearchSuffix
-
-    .OUTPUTS
-       PSCustomObject
-
-    .NOTES
-       Author: Martin Walther
-
-    .LINK
-       https://github.com/tinuwalther/PsNetTools
-
-    #>
-    
-    [CmdletBinding()]
-    param()
-
-    begin{
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
-        if($PSVersionTable.PSVersion.Major -lt 6){
-            $CurrentOS = [OSType]::Windows
-        }
-        else{
-            if($IsMacOS)  {
-                $CurrentOS = [OSType]::Mac
-            }
-            if($IsLinux)  {
-                $CurrentOS = [OSType]::Linux
-            }
-            if($IsWindows){
-                $CurrentOS = [OSType]::Windows
-            }
-        }
-    }
-
-    process{
-        [PsNetDnsClient]::ClearDnsSearchSuffix($CurrentOS)
-    }
-
-    end{
-        return $obj
-    }
-}
 function Get-PsNetAdapterConfiguration{
 
     <#
@@ -2121,8 +1838,6 @@ function Get-PsNetAdapterConfiguration{
    [CmdletBinding()]
    param()   
    begin {
-      $function = $($MyInvocation.MyCommand.Name)
-      Write-Verbose "Running $function"
    }
 
    process {
@@ -2164,9 +1879,7 @@ function Get-PsNetAdapters{
     param()  
       
     begin {
-      $function = $($MyInvocation.MyCommand.Name)
-      Write-Verbose "Running $function"
-   }
+    }
     
     process {
         return [PsNetAdapter]::listadapters()
@@ -2175,61 +1888,6 @@ function Get-PsNetAdapters{
     end {
     }
 
-}
-function Get-PsNetDnsSearchSuffix{
-
-    <#
-
-    .SYNOPSIS
-       Get-PsNetDnsSearchSuffix
-
-    .DESCRIPTION
-       Running this command with elevated privilege.
-       Get all entries from the DnsSearchSuffixList
-
-    .EXAMPLE
-       Get-PsNetDnsSearchSuffix
-
-    .OUTPUTS
-       PSCustomObject
-
-    .NOTES
-       Author: Martin Walther
-
-    .LINK
-       https://github.com/tinuwalther/PsNetTools
-
-    #>
-    
-    [CmdletBinding()]
-    param()
-
-    begin{
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
-        if($PSVersionTable.PSVersion.Major -lt 6){
-            $CurrentOS = [OSType]::Windows
-        }
-        else{
-            if($IsMacOS)  {
-                $CurrentOS = [OSType]::Mac
-            }
-            if($IsLinux)  {
-                $CurrentOS = [OSType]::Linux
-            }
-            if($IsWindows){
-                $CurrentOS = [OSType]::Windows
-            }
-        }
-    }
-
-    process{
-        [PsNetDnsClient]::GetDnsSearchSuffix($CurrentOS)
-    }
-
-    end{
-        return $obj
-    }
 }
 function Get-PsNetHostsTable {
 
@@ -2267,8 +1925,6 @@ function Get-PsNetHostsTable {
     )
 
     begin {
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
     }
     
     process {
@@ -2341,8 +1997,6 @@ function Get-PsNetRoutingTable {
     )  
     
     begin {
-      $function = $($MyInvocation.MyCommand.Name)
-      Write-Verbose "Running $function"
     }
     
     process {
@@ -2358,71 +2012,6 @@ function Get-PsNetRoutingTable {
     }
     
     end {
-    }
-}
-function Remove-PsNetDnsSearchSuffix{
-
-    <#
-
-    .SYNOPSIS
-       Remove-PsNetDnsSearchSuffix
-
-    .DESCRIPTION
-       Running this command with elevated privilege.
-       Remove any entries from the DnsSearchSuffixList
-
-    .PARAMETER DNSSearchSuffix
-       DNSSearchSuffix to remove
- 
-    .EXAMPLE
-       Remove-PsNetDnsSearchSuffix -DNSSearchSuffix 'test.local'
-
-    .INPUTS
-       String Array
-
-    .OUTPUTS
-       PSCustomObject
-
-    .NOTES
-       Author: Martin Walther
-
-    .LINK
-       https://github.com/tinuwalther/PsNetTools
-
-    #>
-    
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$true)]
-        [String[]]$DNSSearchSuffix
-    )
-
-    begin{
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
-        if($PSVersionTable.PSVersion.Major -lt 6){
-            $CurrentOS = [OSType]::Windows
-        }
-        else{
-            if($IsMacOS)  {
-                $CurrentOS = [OSType]::Mac
-            }
-            if($IsLinux)  {
-                $CurrentOS = [OSType]::Linux
-            }
-            if($IsWindows){
-                $CurrentOS = [OSType]::Windows
-            }
-        }
-    }
-
-    process{
-        foreach($item in $DNSSearchSuffix){
-            [PsNetDnsClient]::RemoveDnsSearchSuffix($CurrentOS,$item)
-        }
-    }
-
-    end{
     }
 }
 function Remove-PsNetHostsEntry {
@@ -2469,8 +2058,6 @@ function Remove-PsNetHostsEntry {
     )
 
     begin {
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
     }
     
     process {
@@ -2543,9 +2130,6 @@ function Start-PsNetPortListener {
         [Parameter(Mandatory = $false)]
         [Int]$MaxTimeout = 5000
     )
-    
-    $function = $($MyInvocation.MyCommand.Name)
-    Write-Verbose "Running $function"
 
     $endpoint = New-Object System.Net.IPEndPoint ([System.Net.IPAddress]::Any, $TcpPort)    
     $listener = New-Object System.Net.Sockets.TcpListener $endpoint

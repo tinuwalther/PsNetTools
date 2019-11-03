@@ -5,42 +5,46 @@ online version: https://github.com/tinuwalther/PsNetTools
 schema: 2.0.0
 ---
 
-# Test-PsNetTracert
+# Test-PsNetPing
 
 ## SYNOPSIS
-Test Trace Route
+Test ICMP echo
 
 ## SYNTAX
 
 ```
-Test-PsNetTracert [-Destination] <String[]> [[-MaxHops] <Int32>] [[-MaxTimeout] <Int32>] [-Show]
- [<CommonParameters>]
+Test-PsNetPing [-Destination] <String[]> [[-try] <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Test Trace Route to a destination
+Attempts to send an ICMP echo message to a remote computer and receive a corresponding ICMP echo reply message from the remote computer.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Test-PsNetTracert -Destination 'www.sbb.ch'
+Test-PsNetPing -Destination sbb.ch
 ```
 
 ### EXAMPLE 2
 ```
-Test-PsNetTracert -Destination 'www.google.com' -MaxHops 15 -MaxTimeout 1000 | Format-Table -AutoSize
+Test-PsNetPing -Destination sbb.ch -try 5
 ```
 
 ### EXAMPLE 3
 ```
-Test-PsNetTracert -Destination 'www.google.com' -MaxHops 15 -MaxTimeout 1000 -Show
+Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com
+```
+
+### EXAMPLE 4
+```
+Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com -try 3
 ```
 
 ## PARAMETERS
 
 ### -Destination
-A String or an Array of Strings with Url's to test
+A String or an Array of Strings with Names or IP Addresses to test \<string\>
 
 ```yaml
 Type: String[]
@@ -54,8 +58,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -MaxHops
-Max gateways, routers to test, default is 30
+### -try
+Number of attempts to send ICMP echo message
 
 ```yaml
 Type: Int32
@@ -64,38 +68,7 @@ Aliases:
 
 Required: False
 Position: 2
-Default value: 30
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -MaxTimeout
-Max.
-Timeout in ms, default is 1000
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 3
-Default value: 1000
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Show
-Show the output for each item online
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
+Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -108,7 +81,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Hashtable
 ## OUTPUTS
 
-### PSCustomObject
+### String
 ## NOTES
 Author: Martin Walther
 

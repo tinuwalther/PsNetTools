@@ -42,6 +42,8 @@ function Remove-PsNetHostsEntry {
     )
 
     begin {
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
     }
     
     process {

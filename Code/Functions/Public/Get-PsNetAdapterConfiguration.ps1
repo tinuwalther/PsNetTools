@@ -27,6 +27,8 @@ function Get-PsNetAdapterConfiguration{
    [CmdletBinding()]
    param()   
    begin {
+      $function = $($MyInvocation.MyCommand.Name)
+      Write-Verbose "Running $function"
    }
 
    process {

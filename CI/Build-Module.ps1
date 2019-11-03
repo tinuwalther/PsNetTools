@@ -3,12 +3,17 @@
 
 Write-Host "[BUILD] [START] Launching Build Process" -ForegroundColor Yellow	
 
+if(Get-Module PsNetTools){
+    Remove-Module PsNetTools
+}
+
 # Retrieve parent folder
-$Current = (Split-Path -Path $MyInvocation.MyCommand.Path)
-$Root = ((Get-Item $Current).Parent).FullName
-$ModuleName = "PsNetTools"
+$Current          = (Split-Path -Path $MyInvocation.MyCommand.Path)
+$Root             = ((Get-Item $Current).Parent).FullName
+$ModuleName       = "PsNetTools"
 $ModuleFolderPath = Join-Path -Path $Root -ChildPath $ModuleName
 $CodeSourcePath   = Join-Path -Path $Root -ChildPath "Code"
+$TestsSourcePath  = Join-Path -Path $Root -ChildPath "Tests"
 
 $ExportPath = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psm1"
 if(Test-Path $ExportPath){
@@ -40,12 +45,6 @@ Foreach($file in $MainPSM1Contents){
 }
 "#endregion" | out-File -FilePath $ExportPath -Encoding utf8 -Append
 
-$PostContentPath = Join-Path -Path $Current -ChildPath "03_postContent.ps1"
-if(Test-Path $PostContentPath){
-    Write-Host "[BUILD] [START] [POST] Adding post content" -ForegroundColor Yellow
-    $file = Get-item $PostContentPath
-    Get-Content $File.FullName | out-File -FilePath $ExportPath -Encoding utf8 -Append
-}
 Write-Host "[BUILD] [END  ] [PSM1] building Module PSM1 " -ForegroundColor Yellow
 
 Write-Host "[BUILD] [START] [PSD1] Manifest PSD1" -ForegroundColor Yellow
@@ -53,6 +52,50 @@ Write-Host "[BUILD] [PSD1 ] Adding functions to export" -ForegroundColor Yellow
 $FunctionsToExport = $PublicFunctions.BaseName
 $Manifest = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
 Update-ModuleManifest -Path $Manifest -FunctionsToExport $FunctionsToExport
+
+
+$TestsContent = @'
+$TestsPath  = Split-Path $MyInvocation.MyCommand.Path
+$RootFolder = (get-item $TestsPath).Parent
+
+Push-Location -Path $RootFolder.FullName
+Set-Location  -Path $RootFolder.FullName
+
+Import-Module .\PsNetTools -Force
+if(!(Get-Module Pester)){
+    Import-Module -Name Pester
+}
+
+if($PSVersionTable.PSVersion.Major -lt 6){
+    $CurrentOS = 'Win'
+}
+else{
+    if($IsMacOS){$CurrentOS = 'Mac'}
+    if($IsLinux){$CurrentOS = 'Lnx'}
+    if($IsWindows){$CurrentOS = 'Win'}
+}
+
+Describe "Testing %FUNCTION% on $($CurrentOS) OS" {
+    
+    it "[POS] [$($CurrentOS)] Testing %FUNCTION%"{
+        {%FUNCTION%} | Should Not Throw
+        (%FUNCTION%).Succeeded | should BeTrue
+    }
+
+}
+
+Pop-Location
+'@
+
+Write-Host "[BUILD] [START] [Tests] Pester Tests" -ForegroundColor Yellow
+$FunctionsToExport | ForEach-Object {
+    $TestsFile = "$($TestsSourcePath)\$($_).Tests.ps1"
+    if(-not(Test-Path $TestsFile)){
+        New-Item -Path $TestsFile -ItemType File
+        $TestsContent -replace '%FUNCTION%', $_ | out-File -FilePath $TestsFile -Encoding utf8 -Append
+    }
+}
+Write-Host "[BUILD] [END  ] [Tests] Pester Tests" -ForegroundColor Yellow
 
 Describe 'General module control' -Tags 'FunctionalQuality'   {
 

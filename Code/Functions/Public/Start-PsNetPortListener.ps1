@@ -38,6 +38,9 @@
         [Parameter(Mandatory = $false)]
         [Int]$MaxTimeout = 5000
     )
+    
+    $function = $($MyInvocation.MyCommand.Name)
+    Write-Verbose "Running $function"
 
     $endpoint = New-Object System.Net.IPEndPoint ([System.Net.IPAddress]::Any, $TcpPort)    
     $listener = New-Object System.Net.Sockets.TcpListener $endpoint

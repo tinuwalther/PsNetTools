@@ -2,6 +2,11 @@
 
 Version | Change
 -|-
+v0.7.65 | Fix IPv6-Output in PsNetDig
+v0.7.64 | Fix IPv6-Output in PsNetAdapter
+v0.7.63 | Fix APIPA-Output in PsNetAdapter
+v0.7.62 | Adding DNSSuffix to PsNetAdapter
+v0.7.61 | Adding support for DnsSearchSuffix on Windows
 v0.7.5 | Fix empty Description if tping failed
 v0.7.4 | Adding a TimeStamp to PsNetPingType
 v0.7.3 | Fix Mappings in GetPsNetHostsTable view
