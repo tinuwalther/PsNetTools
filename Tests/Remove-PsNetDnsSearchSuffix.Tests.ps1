@@ -21,8 +21,7 @@ else{
 Describe "Testing Remove-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
     
     it "[POS] [$($CurrentOS)] Testing Remove-PsNetDnsSearchSuffix"{
-        {Remove-PsNetDnsSearchSuffix} | Should Not Throw
-        (Remove-PsNetDnsSearchSuffix).Succeeded | should BeTrue
+        {Remove-PsNetDnsSearchSuffix -DNSSearchSuffix 'test.local'} | Should Not Throw
     }
 
 }

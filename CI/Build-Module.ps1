@@ -3,6 +3,10 @@
 
 Write-Host "[BUILD] [START] Launching Build Process" -ForegroundColor Yellow	
 
+if(Get-Module PsNetTools){
+    Remove-Module PsNetTools
+}
+
 # Retrieve parent folder
 $Current          = (Split-Path -Path $MyInvocation.MyCommand.Path)
 $Root             = ((Get-Item $Current).Parent).FullName

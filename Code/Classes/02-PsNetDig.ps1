@@ -51,7 +51,6 @@ Class PsNetDig {
 
     [PsNetDigType]static dig([String] $InputString) {
         
-        [bool]     $IsIpAddress = $false
         [DateTime] $start       = Get-Date
         [Array]    $dnsreturn   = $null
         [Array]    $collection  = $null
@@ -59,37 +58,17 @@ Class PsNetDig {
         [Array]    $ipv6address = $null
         [String]   $TargetName  = $null
 
-        try {
-            $InputString = [ipaddress]$InputString
-            $IsIpAddress = $true
+        $dnsreturn = [System.Net.Dns]::GetHostEntry($InputString)
+        if(-not([String]::IsNullOrEmpty($dnsreturn))){
+            $TargetName = $dnsreturn.hostname
+            $collection = $dnsreturn.AddressList
         }
-        catch {
-            $Error.Clear()
-        }
-
-        # InputType is IPv4Address
-        if($IsIpAddress){
-            $dnsreturn = [System.Net.Dns]::GetHostByAddress($InputString)
-            if(-not([String]::IsNullOrEmpty($dnsreturn))){
-                $TargetName = $dnsreturn.hostname
-                $collection = $dnsreturn.AddressList
-            }
-        }
-
-        # InputType is Hostname
-        else{
-            $dnsreturn = [System.Net.Dns]::GetHostAddressesAsync($InputString).GetAwaiter().GetResult()
-            if(-not([String]::IsNullOrEmpty($dnsreturn))){
-                $TargetName = [System.Net.Dns]::GetHostByName($InputString).Hostname
-                $collection = $dnsreturn
-            }
-        }
-
+        
         foreach($item in $collection){
-            if($($item.AddressFamily) -eq 'InterNetwork'){
+            if($($item.AddressFamily) -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
                 $ipv4address += $item.IPAddressToString
             }
-            if($($item.AddressFamily) -eq 'InterNetworkV6'){
+            if($($item.AddressFamily) -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
                 $ipv6address += $item.IPAddressToString
             }
         }

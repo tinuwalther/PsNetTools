@@ -21,8 +21,7 @@ else{
 Describe "Testing Add-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
     
     it "[POS] [$($CurrentOS)] Testing Add-PsNetDnsSearchSuffix"{
-        {Add-PsNetDnsSearchSuffix} | Should Not Throw
-        (Add-PsNetDnsSearchSuffix).Succeeded | should BeTrue
+        {Add-PsNetDnsSearchSuffix -NewDNSSearchSuffix 'test.local'} | Should Not Throw
     }
 
 }

@@ -18,12 +18,12 @@ else{
     if($IsWindows){$CurrentOS = 'Win'}
 }
 
-Describe "Testing Add-PsNetHostsEntry on $($CurrentOS) OS" {
+Describe "Testing Start-PsNetPortListener on $($CurrentOS) OS" {
     
-    it "[POS] [$($CurrentOS)] Testing Add-PsNetHostsEntry"{
-        {Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname 'test' -FullyQualifiedName 'test.local'} | Should Not Throw
+    it "[POS] [$($CurrentOS)] Testing Start-PsNetPortListener"{
+        #{Start-PsNetPortListener -TcpPort 443} | Should Not Throw
     }
-    
+
 }
 
 Pop-Location

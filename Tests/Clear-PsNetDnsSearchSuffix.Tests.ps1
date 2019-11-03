@@ -22,7 +22,6 @@ Describe "Testing Clear-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
     
     it "[POS] [$($CurrentOS)] Testing Clear-PsNetDnsSearchSuffix"{
         {Clear-PsNetDnsSearchSuffix} | Should Not Throw
-        (Clear-PsNetDnsSearchSuffix).Succeeded | should BeTrue
     }
 
 }

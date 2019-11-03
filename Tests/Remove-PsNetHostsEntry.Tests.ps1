@@ -21,8 +21,7 @@ else{
 Describe "Testing Remove-PsNetHostsEntry on $($CurrentOS) OS" {
     
     it "[POS] [$($CurrentOS)] Testing Remove-PsNetHostsEntry"{
-        {Remove-PsNetHostsEntry} | Should Not Throw
-        (Remove-PsNetHostsEntry).Succeeded | should BeTrue
+        {Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 test'} | Should Not Throw
     }
 
 }

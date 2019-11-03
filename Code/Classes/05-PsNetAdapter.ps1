@@ -10,9 +10,10 @@ Class PsNetAdapterType {
     [String] $OperationalStatus
     [String] $PhysicalAddres
     [String] $IpVersion
-    [bool]   $IsAPIPAEnabled
+    [bool]   $IsAPIPAActive
     [Object] $IpV4Addresses
     [Object] $IpV6Addresses
+    [String] $DNSSuffix
 
     PsNetAdapterType (
         [bool]   $Succeeded,
@@ -20,8 +21,9 @@ Class PsNetAdapterType {
         [Object] $adapter,
         [String] $IpVersion,
         [Object] $IpV4Addresses,
-        [Object] $IpV6Addresses
-    ) {
+        [Object] $IpV6Addresses,
+        [String] $DNSSuffix
+        ) {
         $this.Succeeded            = $Succeeded
         $this.Index                = $IpV4properties.Index
         $this.Name                 = $adapter.Name
@@ -30,9 +32,10 @@ Class PsNetAdapterType {
         $this.OperationalStatus    = $adapter.OperationalStatus
         $this.PhysicalAddres       = $adapter.GetPhysicalAddress().ToString() -replace '..(?!$)', '$&:'
         $this.IpVersion            = $IpVersion
-        $this.IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
+        $this.IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingActive
         $this.IpV4Addresses        = $IpV4Addresses
         $this.IpV6Addresses        = $IpV6Addresses
+        $this.DNSSuffix            = $DNSSuffix
     }
 
 }
@@ -164,6 +167,7 @@ Class PsNetAdapter {
 
                     $IpVersion      = @()
                     $properties     = $adapter.GetIPProperties()
+                    $DNSSuffix      = $properties.DNSSuffix
                     $IpV4properties = $properties.GetIPv4Properties()
                     $IpV4Addresses  = @()
                     $IpV6Addresses  = @()
@@ -181,13 +185,13 @@ Class PsNetAdapter {
                 
                     foreach ($ip in $properties.UnicastAddresses) {
                         if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
-                            $IpV4Addresses += $ip.Address.ToString()
+                            $IpV4Addresses += $ip.Address.IPAddressToString
                         }
-                        if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork6){
-                            $IpV6Addresses += $ip.Address.ToString()
+                        if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
+                            $IpV6Addresses += $ip.Address.IPAddressToString
                         }
                     }
-                    $resultset += [PsNetAdapterType]::New($true,$IpV4properties,$adapter,$IpVersion,$IpV4Addresses,$IpV6Addresses)
+                    $resultset += [PsNetAdapterType]::New($true,$IpV4properties,$adapter,$IpVersion,$IpV4Addresses,$IpV6Addresses,$DNSSuffix)
                 }
             }
         }
@@ -235,18 +239,18 @@ Class PsNetAdapter {
     
                     foreach ($ip in $properties.UnicastAddresses) {
                         if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
-                            $IpV4Addresses += $ip.Address.ToString()
+                            $IpV4Addresses += $ip.Address.IPAddressToString
                         }
-                        if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork6){
-                            $IpV6Addresses += $ip.Address.ToString()
+                        if ($ip.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
+                            $IpV6Addresses += $ip.Address.IPAddressToString
                         }
                     }
 
                     foreach($gateway in $properties.GatewayAddresses){
-                        if($gateway.Address.AddressFamily -eq 'InterNetwork6'){
+                        if($gateway.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
                             $GatewayIpV6Addresses += $gateway.Address.IPAddressToString
                         }
-                        if($gateway.Address.AddressFamily -eq 'InterNetwork'){
+                        if($gateway.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
                             $GatewayIpV4Addresses += $gateway.Address.IPAddressToString
                         }
                     }
@@ -273,8 +277,8 @@ Class PsNetAdapter {
                         Index                = $IpV4properties.Index
                         Mtu                  = $IpV4properties.Mtu
                         IsForwardingEnabled  = $IpV4properties.IsForwardingEnabled
-                        IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingActive
-                        IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingEnabled
+                        IsAPIPAEnabled       = $IpV4properties.IsAutomaticPrivateAddressingEnabled
+                        IsAPIPAActive        = $IpV4properties.IsAutomaticPrivateAddressingActive
                         IsDhcpEnabled        = $IpV4properties.IsDhcpEnabled
                         UsesWins             = $IpV4properties.UsesWins
                         GatewayIpV4Addresses = $GatewayIpV4Addresses
