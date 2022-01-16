@@ -51,18 +51,33 @@ function Test-PsNetUping{
 
     [CmdletBinding()]
     param(
-         [Parameter(Mandatory=$true)]
+         [Parameter(
+            Mandatory=$true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
+         )]
          [ValidateLength(4,255)]
          [String[]] $Destination,
 
-         [Parameter(ParameterSetName = "RemotePort", Mandatory = $True)]
+         [Parameter(
+            ParameterSetName = "RemotePort",
+            Mandatory = $True,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
+         )]
          [Alias('RemotePort')] [ValidateRange(1,65535)]
          [Int[]] $UdpPort,
  
-         [Parameter(Mandatory=$false)]
+         [Parameter(
+            Mandatory=$false
+         )]
          [Int] $MinTimeout = 0,
 
-         [Parameter(Mandatory=$false)]
+         [Parameter(
+            Mandatory=$false
+         )]
          [Int] $MaxTimeout = 1000
     )    
     begin {

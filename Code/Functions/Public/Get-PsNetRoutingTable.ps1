@@ -33,24 +33,29 @@ function Get-PsNetRoutingTable {
     [CmdletBinding()]
     param(
         [ValidateSet('IPv4','IPv6')]        
-        [Parameter(Mandatory=$true)]
+        [Parameter(
+            Mandatory=$true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
+        )]
         [String] $IpVersion
     )  
     
     begin {
       $function = $($MyInvocation.MyCommand.Name)
       Write-Verbose "Running $function"
+      if($PSVersionTable.PSVersion.Major -lt 6){
+        $CurrentOS = [OSType]::Windows
+      }
+      else{
+          if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
+          if($IsLinux)  {$CurrentOS = [OSType]::Linux}
+          if($IsWindows){$CurrentOS = [OSType]::Windows}
+      }
     }
     
     process {
-        if($PSVersionTable.PSVersion.Major -lt 6){
-            $CurrentOS = [OSType]::Windows
-        }
-        else{
-            if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
-            if($IsLinux)  {$CurrentOS = [OSType]::Linux}
-            if($IsWindows){$CurrentOS = [OSType]::Windows}
-        }
         return [PsNetRoutingTable]::GetNetRoutingTable($CurrentOS, $IpVersion)
     }
     

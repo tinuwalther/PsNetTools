@@ -45,17 +45,28 @@ function Test-PsNetWping{
 
     [CmdletBinding()]
     param(
-         [Parameter(Mandatory=$true)]
+         [Parameter(
+            Mandatory=$true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
+         )]
          [ValidateLength(4,255)]
          [String[]] $Destination,
 
-         [Parameter(Mandatory=$false)]
+         [Parameter(
+            Mandatory=$false
+         )]
          [Int] $MinTimeout = 0,
 
-         [Parameter(Mandatory=$false)]
+         [Parameter(
+            Mandatory=$false
+         )]
          [Int] $MaxTimeout = 1000,
  
-         [Parameter(Mandatory=$false)]
+         [Parameter(
+            Mandatory=$false
+         )]
          [Switch] $NoProxy
     )  
     begin {

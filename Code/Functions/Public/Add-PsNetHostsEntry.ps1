@@ -40,25 +40,42 @@ function Add-PsNetHostsEntry {
 
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $false)]
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
+        )]
         [String]$Path,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
+        )]
         [String]$IPAddress,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 2
+        )]
         [String]$Hostname,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 3
+        )]
         [String]$FullyQualifiedName
     )
 
     begin {
         $function = $($MyInvocation.MyCommand.Name)
         Write-Verbose "Running $function"
-    }
-    
-    process {
         if($PSVersionTable.PSVersion.Major -lt 6){
             $CurrentOS = [OSType]::Windows
         }
@@ -73,6 +90,9 @@ function Add-PsNetHostsEntry {
                 $CurrentOS = [OSType]::Windows
             }
         }
+    }
+    
+    process {
         if([String]::IsNullOrEmpty($Path)){
             if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
                 $Path = "$($env:windir)\system32\drivers\etc\hosts"

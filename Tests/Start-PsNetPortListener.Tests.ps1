@@ -4,11 +4,6 @@ $RootFolder = (get-item $TestsPath).Parent
 Push-Location -Path $RootFolder.FullName
 Set-Location  -Path $RootFolder.FullName
 
-Import-Module .\PsNetTools -Force
-if(!(Get-Module Pester)){
-    Import-Module -Name Pester
-}
-
 if($PSVersionTable.PSVersion.Major -lt 6){
     $CurrentOS = 'Win'
 }
@@ -20,8 +15,17 @@ else{
 
 Describe "Testing Start-PsNetPortListener on $($CurrentOS) OS" {
     
+    BeforeAll {
+        Mock Start-PsNetPortListener {
+            return [PSCustomObject]@{
+                Succeeded = $true
+            }
+        }
+    }
+    
     it "[POS] [$($CurrentOS)] Testing Start-PsNetPortListener"{
-        #{Start-PsNetPortListener -TcpPort 443} | Should Not Throw
+        {Start-PsNetPortListener -TcpPort 443} | Should -Not -Throw
+        {Start-PsNetPortListener -TcpPort 443} | Should -ExpectedType PSCustomObject
     }
 
 }

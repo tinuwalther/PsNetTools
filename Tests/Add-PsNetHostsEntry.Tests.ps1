@@ -4,11 +4,6 @@ $RootFolder = (get-item $TestsPath).Parent
 Push-Location -Path $RootFolder.FullName
 Set-Location  -Path $RootFolder.FullName
 
-Import-Module .\PsNetTools -Force
-if(!(Get-Module Pester)){
-    Import-Module -Name Pester
-}
-
 if($PSVersionTable.PSVersion.Major -lt 6){
     $CurrentOS = 'Win'
 }
@@ -19,11 +14,19 @@ else{
 }
 
 Describe "Testing Add-PsNetHostsEntry on $($CurrentOS) OS" {
-    
-    it "[POS] [$($CurrentOS)] Testing Add-PsNetHostsEntry"{
-        {Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname 'test' -FullyQualifiedName 'test.local'} | Should Not Throw
+
+    BeforeAll {
+        Mock Add-PsNetHostsEntry {
+            return [PSCustomObject]@{
+                Succeeded = $true
+            }
+        }
     }
     
+    it "[POS] [$($CurrentOS)] Testing Add-PsNetHostsEntry"{
+        {Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname 'test' -FullyQualifiedName 'test.local'} | Should -Not -Throw
+        {Add-PsNetHostsEntry -IPAddress '127.0.0.1' -Hostname 'test' -FullyQualifiedName 'test.local'} | Should -ExpectedType PSCustomObject
+    }    
 }
 
 Pop-Location

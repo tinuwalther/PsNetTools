@@ -4,11 +4,6 @@ $RootFolder = (get-item $TestsPath).Parent
 Push-Location -Path $RootFolder.FullName
 Set-Location  -Path $RootFolder.FullName
 
-Import-Module .\PsNetTools -Force
-if(!(Get-Module Pester)){
-    Import-Module -Name Pester
-}
-
 if($PSVersionTable.PSVersion.Major -lt 6){
     $CurrentOS = 'Win'
 }
@@ -19,10 +14,18 @@ else{
 }
 
 Describe "Testing Get-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
-    
+
+    BeforeAll {
+        Mock Get-PsNetDnsSearchSuffix {
+            return [PSCustomObject]@{
+                Succeeded = $true
+            }
+        }
+    }
+
     it "[POS] [$($CurrentOS)] Testing Get-PsNetDnsSearchSuffix"{
-        {Get-PsNetDnsSearchSuffix} | Should Not Throw
-        (Get-PsNetDnsSearchSuffix).Succeeded | should BeTrue
+        {Get-PsNetDnsSearchSuffix} | Should -Not -Throw
+        {Get-PsNetDnsSearchSuffix} | Should -ExpectedType PSCustomObject
     }
 
 }

@@ -4,11 +4,6 @@ $RootFolder = (get-item $TestsPath).Parent
 Push-Location -Path $RootFolder.FullName
 Set-Location  -Path $RootFolder.FullName
 
-Import-Module .\PsNetTools -Force
-if(!(Get-Module Pester)){
-    Import-Module -Name Pester
-}
-
 if($PSVersionTable.PSVersion.Major -lt 6){
     $CurrentOS = 'Win'
 }
@@ -19,15 +14,19 @@ else{
 }
 
 Describe "Testing Get-PsNetAdapters on $($CurrentOS) OS" {
-    
+
+    BeforeAll {
+        Mock Get-PsNetAdapters {
+            return [PSCustomObject]@{
+                Succeeded = $true
+            }
+        }
+    }
+
     it "[POS] [$($CurrentOS)] Testing Get-PsNetAdapters"{
-        (Get-PsNetAdapters).Succeeded | should BeTrue
+        {Get-PsNetAdapters} | Should -Not -Throw
+        {Get-PsNetAdapters} | Should -ExpectedType PSCustomObject
     }
-
-    it "[POS] [$($CurrentOS)] Testing Get-PsNetAdapterConfiguration"{
-        (Get-PsNetAdapterConfiguration).Succeeded | should BeTrue
-    }
-
 }
 
 Pop-Location
