@@ -41,7 +41,7 @@ jobs:
           #Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name, FullName | Sort-Object FullName
           cd PsNetTools
           Write-Output "$(Get-Item . | Select -ExpandProperty Name)"
-          #Import-Module PsNetTools -PassThru -WhatIf
+          Import-Module -FullyQualifiedName .\PsNetTools.psd1 -PassThru
           Get-ChildItem | Select-Object LastWriteTime, Length, Name
           cd ../Tests
           Write-Output "$(Get-Item . | Select -ExpandProperty Name)"
