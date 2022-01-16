@@ -41,11 +41,11 @@ jobs:
           #Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name, FullName | Sort-Object FullName
           cd PsNetTools
           Write-Output "$(Get-Item . | Select -ExpandProperty Name)"
-          Import-Module -FullyQualifiedName .\PsNetTools.psd1 -PassThru
+          Import-Module -FullyQualifiedName .\PsNetTools.psd1 -Verbose
           Get-ChildItem | Select-Object LastWriteTime, Length, Name
           cd ../Tests
           Write-Output "$(Get-Item . | Select -ExpandProperty Name)"
-          Get-ChildItem | Select-Object LastWriteTime, Length, Name
-          #Invoke-Pester
-          #Remove-Module PsNetTools
+          #Get-ChildItem | Select-Object LastWriteTime, Length, Name
+          Invoke-Pester
+          Remove-Module PsNetTools
         shell: pwsh
