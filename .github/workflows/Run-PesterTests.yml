@@ -40,7 +40,7 @@ jobs:
         run: |
           #Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name, FullName | Sort-Object FullName
           cd PsNetTools
-          Import-Module PsNetTools
+          Import-Module PsNetTools/PsNetTools.psd1
           cd ../Tests
           Invoke-Pester
           Remove-Module PsNetTools
