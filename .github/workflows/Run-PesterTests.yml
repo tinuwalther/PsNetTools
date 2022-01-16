@@ -40,7 +40,7 @@ jobs:
         run: |
           #Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name, FullName | Sort-Object FullName
           cd PsNetTools
-          Import-Module PsNetTools -PassThru -WhatIf
+          #Import-Module PsNetTools -PassThru -WhatIf
           Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name
           cd ../Tests
           Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name
