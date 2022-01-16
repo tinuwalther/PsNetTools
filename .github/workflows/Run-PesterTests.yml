@@ -20,7 +20,7 @@ jobs:
     # The type of runner that the job will run on
     strategy:
       matrix:
-        platform: [windows-latest]
+        platform: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
     
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v2
 
       # Clone the repository
-      - name: Pull tinuwalther/PsNetTools
+      - name: Pull PsNetTools
         run: | 
           git pull
           git checkout develop
@@ -40,7 +40,7 @@ jobs:
         run: |
           #Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name, FullName | Sort-Object FullName
           cd PsNetTools
-          Import-Module -FullyQualifiedName .\PsNetTools.psd1 -PassThru | Select -Property Name, Version
+          Import-Module -FullyQualifiedName .\PsNetTools.psd1
           cd ../Tests
           Invoke-Pester -Output Detailed
           Remove-Module PsNetTools
