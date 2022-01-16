@@ -36,12 +36,14 @@ jobs:
         shell: pwsh
 
       # Runs a set of commands using the runners shell
-      - name: Run Test-Functions.ps1
+      - name: Run PesterTests
         run: |
           #Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name, FullName | Sort-Object FullName
           cd PsNetTools
-          Import-Module PsNetTools.psd1 -PassThru
+          Import-Module PsNetTools -PassThru -WhatIf
+          Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name
           cd ../Tests
-          Invoke-Pester
-          Remove-Module PsNetTools
+          Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name
+          #Invoke-Pester
+          #Remove-Module PsNetTools
         shell: pwsh
