@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Run-PesterTests
 
 # Controls when the workflow will run
 on:
@@ -27,7 +27,7 @@ jobs:
 
       # Clone the repository
       - name: Clone tinuwalther/PsNetTools PUBLIC repository
-        uses: tinuwalther/PsNetTools@v1
+        uses: GuillaumeFalourd/clone-github-repo-action@v1
         with:
           owner: 'tinuwalther'
           repository: 'PsNetTools'
