@@ -77,8 +77,8 @@ else{
 Describe "Testing %FUNCTION% on $($CurrentOS) OS" {
     
     it "[POS] [$($CurrentOS)] Testing %FUNCTION%"{
-        {%FUNCTION%} | Should Not Throw
-        (%FUNCTION%).Succeeded | should BeTrue
+        {%FUNCTION%} | Should -Not -Throw
+        (%FUNCTION%).Succeeded | should -BeTrue
     }
 
 }
@@ -99,18 +99,18 @@ Write-Host "[BUILD] [END  ] [Tests] Pester Tests" -ForegroundColor Yellow
 Describe 'General module control' -Tags 'FunctionalQuality'   {
 
     It "Import $ModuleName without errors" {
-        { Import-Module -Name $ModuleFolderPath -Force -ErrorAction Stop } | Should Not Throw
-        Get-Module $ModuleName | Should Not BeNullOrEmpty
+        { Import-Module -Name $ModuleFolderPath -Force -ErrorAction Stop } | Should -Not -Throw
+        Get-Module $ModuleName | Should -Not -BeNullOrEmpty
     }
 
     It "Get-Command $ModuleName without errors" {
-        { Get-Command -Module $ModuleName -ErrorAction Stop } | Should Not Throw
-        Get-Command -Module $ModuleName | Should Not BeNullOrEmpty
+        { Get-Command -Module $ModuleName -ErrorAction Stop } | Should -Not -Throw
+        Get-Command -Module $ModuleName | Should -Not -BeNullOrEmpty
     }
 
     It "Removes $ModuleName without error" {
-        { Remove-Module -Name $ModuleName -ErrorAction Stop} | Should not Throw
-        Get-Module $ModuleName | Should beNullOrEmpty
+        { Remove-Module -Name $ModuleName -ErrorAction Stop} | Should -Not -Throw
+        Get-Module $ModuleName | Should -BeNullOrEmpty
     }
 
 }
