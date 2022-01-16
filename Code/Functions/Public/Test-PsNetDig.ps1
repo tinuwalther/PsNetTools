@@ -43,7 +43,12 @@ function Test-PsNetDig{
 
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory= $true,ValueFromPipeline = $true)]
+        [Parameter(
+            Mandatory= $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
+        )]
         [ValidateLength(4,255)]
         [String[]] $Destination
     ) 

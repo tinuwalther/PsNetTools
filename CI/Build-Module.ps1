@@ -53,7 +53,6 @@ $FunctionsToExport = $PublicFunctions.BaseName
 $Manifest = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
 Update-ModuleManifest -Path $Manifest -FunctionsToExport $FunctionsToExport
 
-
 $TestsContent = @'
 $TestsPath  = Split-Path $MyInvocation.MyCommand.Path
 $RootFolder = (get-item $TestsPath).Parent

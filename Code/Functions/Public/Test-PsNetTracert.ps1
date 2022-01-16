@@ -45,17 +45,31 @@ function Test-PsNetTracert {
 
     [CmdletBinding()]
     param(
-         [Parameter(Mandatory=$true)]
+         [Parameter(
+            Mandatory=$true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
+         )]
          [ValidateLength(4,255)]
          [String[]] $Destination,
 
-         [Parameter(Mandatory=$false)]
+         [Parameter(
+            Mandatory=$false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
+         )]
          [Int] $MaxHops = 30,
 
-         [Parameter(Mandatory=$false)]
+         [Parameter(
+            Mandatory=$false
+         )]
          [Int] $MaxTimeout = 1000,
  
-         [Parameter(Mandatory=$false)]
+         [Parameter(
+            Mandatory=$false
+         )]
          [Switch] $Show
     )  
     begin {

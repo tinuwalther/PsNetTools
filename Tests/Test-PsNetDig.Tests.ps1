@@ -4,11 +4,6 @@ $RootFolder = (get-item $TestsPath).Parent
 Push-Location -Path $RootFolder.FullName
 Set-Location  -Path $RootFolder.FullName
 
-Import-Module .\PsNetTools -Force
-if(!(Get-Module Pester)){
-    Import-Module -Name Pester
-}
-
 if($PSVersionTable.PSVersion.Major -lt 6){
     $CurrentOS = 'Win'
 }
@@ -19,28 +14,23 @@ else{
 }
 
 Describe "Testing Test-PsNetDig on $($CurrentOS) OS" {
-            
-    it "[NEG] [$($CurrentOS)] Testing Test-PsNetDig with false Hostname as parameter(s)"{
-        (Test-PsNetDig -Destination 'sbb.powershell').Succeeded | should BeFalse
+      
+    BeforeAll {
+        Mock Test-PsNetDig {
+            return [PSCustomObject]@{
+                Succeeded = $true
+            }
+        }
     }
-        
-    it "[NEG] [$($CurrentOS)] Testing Test-PsNetDig with false IP Address as parameter(s)"{
-        (Test-PsNetDig -Destination '255.255.255.256').Succeeded | should BeFalse
-    }
-
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetDig with Hostname as parameter(s)"{
-        (Test-PsNetDig -Destination 'sbb.ch').Succeeded | should BeTrue
-    }
-
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetDig with IP Address as parameter(s)"{
-        (Test-PsNetDig -Destination '127.0.0.1').Succeeded | should BeTrue
+          
+    it "[POS] [$($CurrentOS)] Testing Test-PsNetDig "{
+        {Test-PsNetDig -Destination '127.0.0.1'} | Should -Not -Throw
+        {Test-PsNetDig -Destination '127.0.0.1'} | Should -ExpectedType PSCustomObject
     }
 
     it "[POS] [$($CurrentOS)] Testing Test-PsNetDig with two Hostnames as parameter(s)"{
-        $ret = Test-PsNetDig -Destination sbb.ch, google.com
-        foreach($item in $ret){
-            $item.Succeeded  | should BeTrue
-        }
+        {Test-PsNetDig -Destination sbb.ch, google.com} | Should -Not -Throw
+        {Test-PsNetDig -Destination sbb.ch, google.com} | Should -ExpectedType PSCustomObject
     }
 
 }

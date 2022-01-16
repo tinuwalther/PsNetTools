@@ -4,11 +4,6 @@ $RootFolder = (get-item $TestsPath).Parent
 Push-Location -Path $RootFolder.FullName
 Set-Location  -Path $RootFolder.FullName
 
-Import-Module .\PsNetTools -Force
-if(!(Get-Module Pester)){
-    Import-Module -Name Pester
-}
-
 if($PSVersionTable.PSVersion.Major -lt 6){
     $CurrentOS = 'Win'
 }
@@ -19,13 +14,18 @@ else{
 }
 
 Describe "Testing Get-PsNetHostsTable on $($CurrentOS) OS" {
-    
-    it "[NEG] [$($CurrentOS)] Testing Get-PsNetHostsTable"{
-        (Get-PsNetHostsTable -path 'C:\Temp\hosts').Succeeded | should BeFalse
+
+    BeforeAll {
+        Mock Get-PsNetHostsTable {
+            return [PSCustomObject]@{
+                Succeeded = $true
+            }
+        }
     }
 
-    it "[POS] [$($CurrentOS)] Testing Get-PsNetHostsTable"{
-        (Get-PsNetHostsTable).Succeeded | should BeTrue
+    it "[NEG] [$($CurrentOS)] Testing Get-PsNetHostsTable"{
+        {Get-PsNetHostsTable -path 'C:\Temp\hosts'} | Should -Not -Throw
+        {Get-PsNetHostsTable -path 'C:\Temp\hosts'} | Should -ExpectedType PSCustomObject
     }
 
 }

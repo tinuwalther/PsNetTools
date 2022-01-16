@@ -2,6 +2,7 @@
 
 Version | Change
 -|-
+v0.7.66 | Adding AllowFromPipeline
 v0.7.65 | Fix IPv6-Output in PsNetDig
 v0.7.64 | Fix IPv6-Output in PsNetAdapter
 v0.7.63 | Fix APIPA-Output in PsNetAdapter

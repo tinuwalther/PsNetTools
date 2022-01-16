@@ -31,7 +31,12 @@ function Add-PsNetDnsSearchSuffix{
     
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$true)]
+        [Parameter(
+            Mandatory=$true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
+        )]
         [String[]]$NewDNSSearchSuffix
     )
 

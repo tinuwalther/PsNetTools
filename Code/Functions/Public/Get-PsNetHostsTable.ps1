@@ -29,16 +29,18 @@ function Get-PsNetHostsTable {
 
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$false)]
+        [Parameter(
+            Mandatory=$false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
+        )]
         [String]$Path
     )
 
     begin {
         $function = $($MyInvocation.MyCommand.Name)
         Write-Verbose "Running $function"
-    }
-    
-    process {
         if($PSVersionTable.PSVersion.Major -lt 6){
             $CurrentOS = [OSType]::Windows
         }
@@ -53,6 +55,9 @@ function Get-PsNetHostsTable {
                 $CurrentOS = [OSType]::Windows
             }
         }
+    }
+    
+    process {
         if([String]::IsNullOrEmpty($Path)){
             if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
                 $Path = "$($env:windir)\system32\drivers\etc\hosts"
