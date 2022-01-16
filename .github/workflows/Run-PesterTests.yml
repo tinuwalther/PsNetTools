@@ -34,5 +34,5 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          tree /a /f
+          Get-ChildItem -recurse
         shell: pwsh
