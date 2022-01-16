@@ -39,6 +39,9 @@ jobs:
       - name: Run Test-Functions.ps1
         run: |
           #Get-ChildItem -Recurse | Select-Object LastWriteTime, Length, Name, FullName | Sort-Object FullName
-          cd CI
-          ./Test-Functions.ps1
+          cd PsNetTools
+          Import-Module PsNetTools
+          cd ../Tests
+          Invoke-Pester
+          Remove-Module PsNetTools
         shell: pwsh
