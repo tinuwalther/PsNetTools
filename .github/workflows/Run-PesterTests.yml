@@ -37,6 +37,6 @@ jobs:
       - name: Run a multi-line script
         run: |
           cd PsNetTools
-          Get-ChildItem
+          Get-ChildItem PsNetTools
         shell: pwsh
         
