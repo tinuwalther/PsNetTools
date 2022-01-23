@@ -23,8 +23,15 @@ Describe "Testing Get-PsNetHostsTable on $($CurrentOS) OS" {
         }
     }
 
-    it "[NEG] [$($CurrentOS)] Testing Get-PsNetHostsTable"{
+    it "[POS] [$($CurrentOS)] Get-PsNetHostsTable should not throw"{
+        {'C:\Temp\hosts' | Get-PsNetHostsTable} | Should -Not -Throw
+        {Get-PsNetHostsTable 'C:\Temp\hosts'} | Should -Not -Throw
         {Get-PsNetHostsTable -path 'C:\Temp\hosts'} | Should -Not -Throw
+    }
+
+    it "[POS] [$($CurrentOS)] Get-PsNetHostsTable should return a PSCustomObject"{
+        {'C:\Temp\hosts' | Get-PsNetHostsTable} | Should -ExpectedType PSCustomObject
+        {Get-PsNetHostsTable 'C:\Temp\hosts'} | Should -ExpectedType PSCustomObject
         {Get-PsNetHostsTable -path 'C:\Temp\hosts'} | Should -ExpectedType PSCustomObject
     }
 

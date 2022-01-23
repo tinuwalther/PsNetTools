@@ -23,18 +23,30 @@ Describe "Testing Test-PsNetUping on $($CurrentOS) OS" {
         }
     }
     
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetUping with Hostname as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetUping with Hostname as parameter(s) should not throw"{
+        {Test-PsNetUping 'sbb.ch' 53 } | Should -not -Throw
         {Test-PsNetUping -Destination 'sbb.ch' -UdpPort 53 -MaxTimeout 1000} | Should -not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetUping with Hostname as parameter(s) should return a PSCustomObject"{
+        {Test-PsNetUping 'sbb.ch' 53} | Should -ExpectedType PSCustomObject
         {Test-PsNetUping -Destination 'sbb.ch' -UdpPort 53 -MaxTimeout 1000} | Should -ExpectedType PSCustomObject
     }
 
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetUping with two Hostnames as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetUping with two Hostnames as parameter(s) should not throw"{
+        {Test-PsNetUping sbb.ch, google.com 53} | Should -not -Throw
         {Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 1000} | Should -not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetUping with two Hostnames as parameter(s) should return a PSCustomObject"{
+        {Test-PsNetUping sbb.ch, google.com 53} | Should -ExpectedType PSCustomObject
         {Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53 -MaxTimeout 1000} | Should -ExpectedType PSCustomObject
     }
 
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetUping with two Hostnames and UdpPorts as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetUping with two Hostnames and UdpPorts as parameter(s) should not throw"{
+        {Test-PsNetUping sbb.ch, google.com 53,139} | Should -not -Throw
         {Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53,139 -MaxTimeout 1000} | Should -not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetUping with two Hostnames and UdpPorts as parameter(s) should return a PSCustomObject"{
+        {Test-PsNetUping sbb.ch, google.com 53,139} | Should -ExpectedType PSCustomObject
         {Test-PsNetUping -Destination sbb.ch, google.com -UdpPort 53,139 -MaxTimeout 1000} | Should -ExpectedType PSCustomObject
     }
 

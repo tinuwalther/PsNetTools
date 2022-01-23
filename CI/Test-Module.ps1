@@ -5,7 +5,7 @@ $ModuleName = "PsNetTools"
 $ModuleFolderPath = Join-Path -Path $Root -ChildPath $ModuleName
 $Manifest = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
 
-#Import-Module $Manifest -Force
+Import-Module $Manifest -Force
 
 if(!(Get-Module Pester)){
     Import-Module -Name Pester -MinimumVersion 4.4.0

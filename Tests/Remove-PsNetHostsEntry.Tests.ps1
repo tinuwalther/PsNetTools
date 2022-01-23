@@ -23,8 +23,15 @@ Describe "Testing Remove-PsNetHostsEntry on $($CurrentOS) OS" {
         }
     }
     
-    it "[POS] [$($CurrentOS)] Testing Remove-PsNetHostsEntry"{
+    it "[POS] [$($CurrentOS)] Remove-PsNetHostsEntry should not throw"{
+        {'127.0.0.1 test' | Remove-PsNetHostsEntry } | Should -Not -Throw
+        {Remove-PsNetHostsEntry '127.0.0.1 test'} | Should -Not -Throw
         {Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 test'} | Should -Not -Throw
+    }
+
+    it "[POS] [$($CurrentOS)] Remove-PsNetHostsEntry should return a PSCustomObject"{
+        {'127.0.0.1 test' | Remove-PsNetHostsEntry } | Should -ExpectedType PSCustomObject
+        {Remove-PsNetHostsEntry '127.0.0.1 test'} | Should -ExpectedType PSCustomObject
         {Remove-PsNetHostsEntry -Hostsentry '127.0.0.1 test'} | Should -ExpectedType PSCustomObject
     }
 

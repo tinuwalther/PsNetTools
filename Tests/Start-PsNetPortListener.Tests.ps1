@@ -23,8 +23,15 @@ Describe "Testing Start-PsNetPortListener on $($CurrentOS) OS" {
         }
     }
     
-    it "[POS] [$($CurrentOS)] Testing Start-PsNetPortListener"{
+    it "[POS] [$($CurrentOS)] Start-PsNetPortListener should not throw"{
+        {443 | Start-PsNetPortListener} | Should -Not -Throw
+        {Start-PsNetPortListener 443} | Should -Not -Throw
         {Start-PsNetPortListener -TcpPort 443} | Should -Not -Throw
+    }
+
+    it "[POS] [$($CurrentOS)] Start-PsNetPortListener should return a PSCustomObject"{
+        {443 | Start-PsNetPortListener} | Should -ExpectedType PSCustomObject
+        {Start-PsNetPortListener 443} | Should -ExpectedType PSCustomObject
         {Start-PsNetPortListener -TcpPort 443} | Should -ExpectedType PSCustomObject
     }
 

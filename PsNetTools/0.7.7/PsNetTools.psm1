@@ -1,5 +1,5 @@
 <#
-    Generated at 2022-01-23 16:39:16 by Martin Walther
+    Generated at 2022-01-23 16:04:36 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -1995,12 +1995,12 @@ function Add-PsNetHostsEntry {
     [CmdletBinding()]
     param(
         [Parameter(
-            Mandatory = $true,
+            Mandatory = $false,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             Position = 0
         )]
-        [String]$IPAddress,
+        [String]$Path,
 
         [Parameter(
             Mandatory = $true,
@@ -2008,7 +2008,7 @@ function Add-PsNetHostsEntry {
             ValueFromPipelineByPropertyName = $true,
             Position = 1
         )]
-        [String]$Hostname,
+        [String]$IPAddress,
 
         [Parameter(
             Mandatory = $true,
@@ -2016,15 +2016,15 @@ function Add-PsNetHostsEntry {
             ValueFromPipelineByPropertyName = $true,
             Position = 2
         )]
-        [String]$FullyQualifiedName,
+        [String]$Hostname,
 
         [Parameter(
-            Mandatory = $false,
+            Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             Position = 3
         )]
-        [String]$Path
+        [String]$FullyQualifiedName
     )
 
     begin {
