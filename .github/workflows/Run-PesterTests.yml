@@ -31,11 +31,8 @@ jobs:
             ref: develop
 
       # Clone the repository
-      # - name: Pull PsNetTools
-      #   run: | 
-      #    git pull
-      #    git checkout develop
-      #  shell: pwsh
+       - name: Get current branch
+         run: echo "${GITHUB_BRANCH##*/}"
 
       # Runs a set of commands using the runners shell
       - name: Run Pester Tests on develop
@@ -46,12 +43,3 @@ jobs:
           Invoke-Pester -Output Detailed
           Remove-Module PsNetTools
         shell: pwsh
-
-      - uses: quangvo09/pull-request-action@v1
-        name: Create PR to master
-        with:
-          github_token: ${{ secrets.SECRET_TOKEN }}
-          branch_prefix: develop
-          base_branch: master
-          assignees: tinuwalther
-          reviewers: tinuwalther
