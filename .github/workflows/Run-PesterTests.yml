@@ -31,9 +31,9 @@ jobs:
             ref: develop
 
       # Runs a set of commands using the runners shell
-      - name: Run Pester Tests on
+      - name: Run Pester Tests on branch
         run: |
-          echo ${{ env.CURRENT_BRANCH}}
+          echo "${GITHUB_REF#refs/heads/}"
           cd PsNetTools
           Import-Module -FullyQualifiedName .\PsNetTools.psd1
           cd ../Tests
