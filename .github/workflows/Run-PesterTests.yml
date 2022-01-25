@@ -32,10 +32,11 @@ jobs:
 
       # Clone the repository
       - name: Get current branch
-        run: echo "on branch ${GITHUB_REF#refs/heads/}"
+        run: "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+        id: myref
 
       # Runs a set of commands using the runners shell
-      - name: Run Pester Tests on develop
+      - name: Run Pester Tests on ${{ steps.myref.outputs.branch }}
         run: |
           cd PsNetTools
           Import-Module -FullyQualifiedName .\PsNetTools.psd1
