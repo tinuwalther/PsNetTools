@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Run-PesterTests and create PR
+name: Run-PesterTests
 
 # Controls when the workflow will run
 on:
@@ -46,12 +46,3 @@ jobs:
           Invoke-Pester -Output Detailed
           Remove-Module PsNetTools
         shell: pwsh
-
-      # Create pull_request to master
-      - uses: quangvo09/pull-request-action@v1
-        name: Create PR to master
-        with:
-          branch_prefix: develop
-          base_branch: master
-          assignees: tinuwalther
-          reviewers: tinuwalther

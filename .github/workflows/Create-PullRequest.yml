@@ -1,0 +1,17 @@
+name: Create-PullRequest
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  Create-Pull-Request-Action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: quangvo09/pull-request-action@v1
+        name: Create PR to master
+        with:
+          branch_prefix: develop
+          base_branch: master
+          assignees: tinuwalther
+          reviewers: tinuwalther
