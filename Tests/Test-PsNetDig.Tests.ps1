@@ -23,13 +23,25 @@ Describe "Testing Test-PsNetDig on $($CurrentOS) OS" {
         }
     }
           
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetDig "{
+    it "[POS] [$($CurrentOS)] Test-PsNetDig should not throw"{
+        {'127.0.0.1' | Test-PsNetDig} | Should -Not -Throw
+        {Test-PsNetDig '127.0.0.1'} | Should -Not -Throw
         {Test-PsNetDig -Destination '127.0.0.1'} | Should -Not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetDig should return a PSCustomObject"{
+        {'127.0.0.1' | Test-PsNetDig} | Should -ExpectedType PSCustomObject
+        {Test-PsNetDig '127.0.0.1'} | Should -ExpectedType PSCustomObject
         {Test-PsNetDig -Destination '127.0.0.1'} | Should -ExpectedType PSCustomObject
     }
 
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetDig with two Hostnames as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetDig with two Hostnames as parameter(s) should not throw"{
+        {'sbb.ch', 'google.com' | Test-PsNetDig} | Should -Not -Throw
+        {Test-PsNetDig 'sbb.ch', 'google.com'} | Should -Not -Throw
         {Test-PsNetDig -Destination sbb.ch, google.com} | Should -Not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetDig with two Hostnames as parameter(s) should return a PSCustomObject"{
+        {'sbb.ch', 'google.com' | Test-PsNetDig} | Should -ExpectedType PSCustomObject
+        {Test-PsNetDig 'sbb.ch', 'google.com'} | Should -ExpectedType PSCustomObject
         {Test-PsNetDig -Destination sbb.ch, google.com} | Should -ExpectedType PSCustomObject
     }
 

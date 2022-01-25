@@ -41,18 +41,10 @@ function Add-PsNetHostsEntry {
     [CmdletBinding()]
     param(
         [Parameter(
-            Mandatory = $false,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 0
-        )]
-        [String]$Path,
-
-        [Parameter(
             Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
-            Position = 1
+            Position = 0
         )]
         [String]$IPAddress,
 
@@ -60,7 +52,7 @@ function Add-PsNetHostsEntry {
             Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
-            Position = 2
+            Position = 1
         )]
         [String]$Hostname,
 
@@ -68,9 +60,17 @@ function Add-PsNetHostsEntry {
             Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
+            Position = 2
+        )]
+        [String]$FullyQualifiedName,
+
+        [Parameter(
+            Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
             Position = 3
         )]
-        [String]$FullyQualifiedName
+        [String]$Path
     )
 
     begin {

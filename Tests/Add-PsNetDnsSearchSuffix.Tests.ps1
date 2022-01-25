@@ -23,8 +23,15 @@ Describe "Testing Add-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
         }
     }
 
-    it "[POS] [$($CurrentOS)] Testing Add-PsNetDnsSearchSuffix"{
+    it "[POS] [$($CurrentOS)] Add-PsNetDnsSearchSuffix should not throw"{
+        {'test.local' | Add-PsNetDnsSearchSuffix} | Should -Not -Throw
+        {Add-PsNetDnsSearchSuffix 'test.local'} | Should -Not -Throw
         {Add-PsNetDnsSearchSuffix -NewDNSSearchSuffix 'test.local'} | Should -Not -Throw
+    }
+    
+    it "[POS] [$($CurrentOS)] Add-PsNetDnsSearchSuffix should return a PSCustomObject"{
+        {'test.local' | Add-PsNetDnsSearchSuffix} | Should -ExpectedType PSCustomObject
+        {Add-PsNetDnsSearchSuffix 'test.local'} | Should -ExpectedType PSCustomObject
         {Add-PsNetDnsSearchSuffix -NewDNSSearchSuffix 'test.local'} | Should -ExpectedType PSCustomObject
     }
 }

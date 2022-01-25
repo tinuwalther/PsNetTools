@@ -23,8 +23,11 @@ Describe "Testing Get-PsNetAdapters on $($CurrentOS) OS" {
         }
     }
 
-    it "[POS] [$($CurrentOS)] Testing Get-PsNetAdapters"{
+    it "[POS] [$($CurrentOS)] Get-PsNetAdapters should not throw"{
         {Get-PsNetAdapters} | Should -Not -Throw
+    }
+
+    it "[POS] [$($CurrentOS)] Get-PsNetAdapters should return a PSCustomObject"{
         {Get-PsNetAdapters} | Should -ExpectedType PSCustomObject
     }
 }

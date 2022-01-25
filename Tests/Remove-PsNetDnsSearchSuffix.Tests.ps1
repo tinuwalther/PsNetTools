@@ -23,8 +23,15 @@ Describe "Testing Remove-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
         }
     }
 
-    it "[POS] [$($CurrentOS)] Testing Remove-PsNetDnsSearchSuffix"{
+    it "[POS] [$($CurrentOS)] Remove-PsNetDnsSearchSuffix should not throw"{
+        {'test.local' | Remove-PsNetDnsSearchSuffix} | Should -Not -Throw
+        {Remove-PsNetDnsSearchSuffix 'test.local'} | Should -Not -Throw
         {Remove-PsNetDnsSearchSuffix -DNSSearchSuffix 'test.local'} | Should -Not -Throw
+    }
+
+    it "[POS] [$($CurrentOS)] Remove-PsNetDnsSearchSuffix should return a PSCustomObject"{
+        {'test.local' | Remove-PsNetDnsSearchSuffix} | Should -ExpectedType PSCustomObject
+        {Remove-PsNetDnsSearchSuffix 'test.local'} | Should -ExpectedType PSCustomObject
         {Remove-PsNetDnsSearchSuffix -DNSSearchSuffix 'test.local'} | Should -ExpectedType PSCustomObject
     }
 

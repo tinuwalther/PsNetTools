@@ -16,7 +16,7 @@ $TestFolderPath = Join-Path -Path $Test -ChildPath 'Tests'
 
 if(Test-Path $TestFolderPath){
     Write-Host "[TESTS] [START] Launching of Testing Process" -ForegroundColor Yellow
-    $Result = Invoke-Pester $TestFolderPath -PassThru
+    $Result = Invoke-Pester $TestFolderPath -Output Detailed -PassThru
     Write-Host "[TESTS] [END ] End of Testing Process" -ForegroundColor Yellow
     if($Result.FailedCount -eq 0){
         Write-Host "[BUILD] [END ] [OK] All Tests are passed, ready to merge" -ForegroundColor GREEN

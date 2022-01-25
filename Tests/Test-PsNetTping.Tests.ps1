@@ -23,18 +23,34 @@ Describe "Testing Test-PsNetTping on $($CurrentOS) OS" {
         }
     }
            
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetTping with IP Address as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetTping with IP Address as parameter(s) should not throw"{
+        {Test-PsNetTping '194.150.245.142' 443} | Should -not -Throw
+        {Test-PsNetTping '194.150.245.142' 'HTTPS'} | Should -not -Throw
         {Test-PsNetTping -Destination '194.150.245.142' -TcpPort 443 -MaxTimeout 1000} | Should -not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetTping with IP Address as parameter(s) should return a PSCustomObject"{
+        {Test-PsNetTping '194.150.245.142' 443} | Should -ExpectedType PSCustomObject
+        {Test-PsNetTping '194.150.245.142' 'HTTPS'} | Should -ExpectedType PSCustomObject
         {Test-PsNetTping -Destination '194.150.245.142' -TcpPort 443 -MaxTimeout 1000} | Should -ExpectedType PSCustomObject
     }
 
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetTping with two Hostnames as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetTping with two Hostnames as parameter(s) should not throw"{
+        {Test-PsNetTping sbb.ch, google.com 443} | Should -not -Throw
+        {Test-PsNetTping sbb.ch, google.com 'HTTPS'} | Should -not -Throw
         {Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 1000} | Should -not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetTping with two Hostnames as parameter(s) should return a PSCustomObject"{
+        {Test-PsNetTping sbb.ch, google.com 443} | Should -ExpectedType PSCustomObject
+        {Test-PsNetTping sbb.ch, google.com 'HTTPS'} | Should -ExpectedType PSCustomObject
         {Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 443 -MaxTimeout 1000} | Should -ExpectedType PSCustomObject
     }
 
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetTping with two Hostnames and TcpPorts as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetTping with two Hostnames and TcpPorts as parameter(s) should not throw"{
+        {Test-PsNetTping sbb.ch, google.com 80, 443} | Should -not -Throw
         {Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80,443 -MaxTimeout 1000} | Should -not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetTping with two Hostnames and TcpPorts as parameter(s) should return a PSCustomObject"{
+        {Test-PsNetTping sbb.ch, google.com 80, 443} | Should -ExpectedType PSCustomObject
         {Test-PsNetTping -Destination sbb.ch, google.com -TcpPort 80,443 -MaxTimeout 1000} | Should -ExpectedType PSCustomObject
     }
 

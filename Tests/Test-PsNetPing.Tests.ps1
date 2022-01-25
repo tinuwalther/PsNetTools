@@ -23,13 +23,25 @@ Describe "Testing Test-PsNetPing on $($CurrentOS) OS" {
         }
     }
            
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetPing with IP Address as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetPing with IP Address as parameter(s) should not throw"{
+        {'127.0.0.1' | Test-PsNetPing} | Should -not -Throw
+        {Test-PsNetPing '127.0.0.1'} | Should -not -Throw
         {Test-PsNetPing -Destination '127.0.0.1'} | Should -not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetPing with IP Address as parameter(s) should return a PSCustomObject"{
+        {'127.0.0.1' | Test-PsNetPing} | Should -ExpectedType PSCustomObject
+        {Test-PsNetPing '127.0.0.1'} | Should -ExpectedType PSCustomObject
         {Test-PsNetPing -Destination '127.0.0.1'} | Should -ExpectedType PSCustomObject
     }
 
-    it "[POS] [$($CurrentOS)] Testing Test-PsNetPing with two Hostnames as parameter(s)"{
+    it "[POS] [$($CurrentOS)] Test-PsNetPing with two Hostnames as parameter(s) should not throw"{
+        {'sbb.ch', 'google.com' | Test-PsNetPing} | Should -not -Throw
+        {Test-PsNetPing sbb.ch, google.com} | Should -not -Throw
         {Test-PsNetPing -Destination sbb.ch, google.com} | Should -not -Throw
+    }
+    it "[POS] [$($CurrentOS)] Test-PsNetPing with two Hostnames as parameter(s) should return a PSCustomObject"{
+        {'sbb.ch', 'google.com' | Test-PsNetPing} | Should -ExpectedType PSCustomObject
+        {Test-PsNetPing sbb.ch, google.com} | Should -ExpectedType PSCustomObject
         {Test-PsNetPing -Destination sbb.ch, google.com} | Should -ExpectedType PSCustomObject
     }
 
