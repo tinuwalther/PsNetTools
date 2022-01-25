@@ -47,12 +47,6 @@ jobs:
           Remove-Module PsNetTools
         shell: pwsh
 
-  Create-Pull-Request:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-            ref: develop
       - uses: quangvo09/pull-request-action@v1
         name: Create PR to master
         with:
