@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Run-PesterTests
+name: Run-PesterTests and create PR
 
 # Controls when the workflow will run
 on:
@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  Run-PesterTests:
     # The type of runner that the job will run on
     strategy:
       matrix:
@@ -38,7 +38,7 @@ jobs:
       #  shell: pwsh
 
       # Runs a set of commands using the runners shell
-      - name: Run PesterTests
+      - name: Run Pester Tests on develop
         run: |
           cd PsNetTools
           Import-Module -FullyQualifiedName .\PsNetTools.psd1
@@ -46,3 +46,18 @@ jobs:
           Invoke-Pester -Output Detailed
           Remove-Module PsNetTools
         shell: pwsh
+
+  Create-Pull-Request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+            ref: develop
+      - uses: quangvo09/pull-request-action@v1
+        name: Create PR to master
+        with:
+          github_token: ${{ secrets.SECRET_TOKEN }}
+          branch_prefix: develop
+          base_branch: master
+          assignees: tinuwalther
+          reviewers: tinuwalther
