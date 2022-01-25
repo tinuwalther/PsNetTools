@@ -31,8 +31,8 @@ jobs:
             ref: develop
 
       # Clone the repository
-       - name: Get current branch
-         run: echo "${GITHUB_BRANCH##*/}"
+      - name: Get current branch
+        run: echo "${GITHUB_BRANCH##*/}"
 
       # Runs a set of commands using the runners shell
       - name: Run Pester Tests on develop
