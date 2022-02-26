@@ -30,7 +30,7 @@ CompanyName = 'Martin Walther Foto & IT'
 Copyright = '(c) 2019 Martin Walther. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Cross platform PowerShell module to test some network features'
+Description = 'Cross platform PowerShell module to test network functions, like DNS, TCP, UDP, WebRequest, Tracert, Ping, Hostsentries, NICs.. Every test returns a PSCustomObject instead of a Strings.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '5.1'
@@ -102,7 +102,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'dig-test','tcp-test','udp-test','webrequest-test'
+        Tags = 'Linux', 'Mac', 'Windows', 'Dig','TcpTest','UdpTest','WebTest', 'DNS', 'Ping', 'Tracert', 'Hostsfile', 'Network'
 
         # A URL to the license for this module.
         # LicenseUri = ''
@@ -114,7 +114,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'https://github.com/tinuwalther/PsNetTools/blob/master/ChangeLog.md'
+        ReleaseNotes = 'https://github.com/tinuwalther/PsNetTools/blob/master/Changelog.md'
 
         # Prerelease string of this module
         # Prerelease = ''
@@ -130,7 +130,7 @@ PrivateData = @{
  } # End of PrivateData hashtable
 
 # HelpInfo URI of this module
-HelpInfoURI = 'https://github.com/tinuwalther/PsNetTools/blob/master/README.md'
+HelpInfoURI = 'https://github.com/tinuwalther/PsNetTools/blob/master/PsNetTools-help.xml'
 
 # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 # DefaultCommandPrefix = ''
