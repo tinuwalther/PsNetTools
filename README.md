@@ -32,10 +32,10 @@ Image generated with [PSWordCloud](https://github.com/vexx32/PSWordCloud) by Joe
 
 ## Install PsNetTools
 
-Download the PsNetTools.zip from Github, extract it to one of your $env:PsModulePath:
+Install the latest version from PSGallery:
 
 ````powershell
-https://github.com/tinuwalther/PsNetTools/releases/tag/v0.7.6
+Install-Module -Name PsNetTools -Repository PSGallery
 ````
 
 List all ExportedCommands:  
@@ -43,22 +43,29 @@ List all ExportedCommands:
 ````powershell
 Get-Command -Module PsNetTools
 
-CommandType     Name                                               Version    Source
------------     ----                                               -------    ------
-Function        Add-PsNetHostsEntry                                0.7.4      PsNetTools
-Function        Get-PsNetAdapterConfiguration                      0.7.4      PsNetTools
-Function        Get-PsNetAdapters                                  0.7.4      PsNetTools
-Function        Get-PsNetHostsTable                                0.7.4      PsNetTools
-Function        Get-PsNetRoutingTable                              0.7.4      PsNetTools
-Function        Remove-PsNetHostsEntry                             0.7.4      PsNetTools
-Function        Start-PsNetPortListener                            0.7.4      PsNetTools
-Function        Test-PsNetDig                                      0.7.4      PsNetTools
-Function        Test-PsNetPing                                     0.7.4      PsNetTools
-Function        Test-PsNetTping                                    0.7.4      PsNetTools
-Function        Test-PsNetTracert                                  0.7.4      PsNetTools
-Function        Test-PsNetUping                                    0.7.4      PsNetTools
-Function        Test-PsNetWping                                    0.7.4      PsNetTools
+CommandType Name                          Version Source
+----------- ----                          ------- ------
+Function    Add-PsNetDnsSearchSuffix      0.7.7   PsNetTools
+Function    Add-PsNetHostsEntry           0.7.7   PsNetTools
+Function    Clear-PsNetDnsSearchSuffix    0.7.7   PsNetTools
+Function    Get-PsNetAdapterConfiguration 0.7.7   PsNetTools
+Function    Get-PsNetAdapters             0.7.7   PsNetTools
+Function    Get-PsNetDnsSearchSuffix      0.7.7   PsNetTools
+Function    Get-PsNetHostsTable           0.7.7   PsNetTools
+Function    Get-PsNetRoutingTable         0.7.7   PsNetTools
+Function    Remove-PsNetDnsSearchSuffix   0.7.7   PsNetTools
+Function    Remove-PsNetHostsEntry        0.7.7   PsNetTools
+Function    Start-PsNetPortListener       0.7.7   PsNetTools
+Function    Test-PsNetDig                 0.7.7   PsNetTools
+Function    Test-PsNetPing                0.7.7   PsNetTools
+Function    Test-PsNetTping               0.7.7   PsNetTools
+Function    Test-PsNetTracert             0.7.7   PsNetTools
+Function    Test-PsNetUping               0.7.7   PsNetTools
+Function    Test-PsNetWping               0.7.7   PsNetTools
 ````
+
+[ [Top] ](#)
+
 
 # Test-PsNetDig
 
@@ -102,6 +109,9 @@ Succeeded InputString Destination IpV4Address     IpV6Address                   
      True sbb.ch      sbb.ch      194.150.245.142 2a00:4bc0:ffff:ffff::c296:f58e      4
      True google.com  google.com  216.58.215.238  2a00:1450:400a:801::200e           26
 ````
+
+[ [Top] ](#)
+
 
 # Test-PsNetPing
 
@@ -165,6 +175,9 @@ Test-PsNetPing -Destination sbb.ch, microsoft.com, google.com -try 2
 2019-05-26 09:41:12.084 ICMP ping google.com, IPAddress: 2a00:1450:400a:800::200e, time: 19, send: 32, received: 32, ICMP Success
 2019-05-26 09:41:13.110 ICMP ping google.com, IPAddress: 2a00:1450:400a:800::200e, time: 19, send: 32, received: 32, ICMP Success
 ````
+
+[ [Top] ](#)
+
 
 # Test-PsNetTping
 
@@ -238,6 +251,9 @@ TcpSucceeded TcpPort Destination StatusDescription MinTimeout MaxTimeout TimeMs
         True     443 google.com  TCP Test success           0        100      2
 ````
 
+[ [Top] ](#)
+
+
 # Test-PsNetTracert
 
 Test Trace Route to a destination
@@ -299,6 +315,9 @@ Hops, RTT, Send, Received, Destination, Hostname, IPAddress, Status, Messages
 9, 18, 32, 32, www.google.com, zrh04s14-in-x04.1e100.net, 2a00:1450:400a:802::2004, Success, Trace route completed
 ````
 
+[ [Top] ](#)
+
+
 # Test-PsNetUping
 
 Test connectivity to an endpoint over the specified Udp port.  
@@ -353,6 +372,9 @@ Succeeded TargetName UdpPort UdpSucceeded Duration MinTimeout MaxTimeout
      True google.com     139        False 1025ms   0ms        1000ms
 ````
 
+[ [Top] ](#)
+
+
 # Test-PsNetWping
 
 It's like the cmdlet Invoke-WebRequest, but with the ability to specify 'noproxy' with PowerShell 5.1.  
@@ -404,6 +426,20 @@ HttpSucceeded ResponsedUrl            NoProxy Destination        StatusDescripti
          True https://www.google.com/    True https://google.com OK                         0       1000    307
 ````
 
+**Example 4:**
+
+````powershell
+'https://sbb.ch', 'google.com' | Test-PsNetWping | Format-Table
+
+HttpSucceeded ResponsedUrl            NoProxy Destination        StatusDescription MinTimeout MaxTimeout TimeMs
+------------- ------------            ------- -----------        ----------------- ---------- ---------- ------
+         True https://www.sbb.ch/de/     True https://sbb.ch     OK                         0       1000    157
+         True https://www.google.com/    True https://google.com OK                         0       1000    307
+````
+
+[ [Top] ](#)
+
+
 # Get-PsNetAdapters
 
 List all network adapters.
@@ -423,6 +459,9 @@ IsAPIPAEnabled       : True
 IpV4Addresses        : {169.254.68.121}
 IpV6Addresses        : {}
 ````
+
+[ [Top] ](#)
+
 
 # Get-PsNetAdapterConfiguration
 
@@ -461,6 +500,9 @@ GatewayIpV4Addresses : {<IP Address V4>}
 GatewayIpV6Addresses : {<IP Address V6>}
 ````
 
+[ [Top] ](#)
+
+
 # Get-PsNetRoutingTable
 
 Get-PsNetRoutingTable - Get Routing Table
@@ -486,6 +528,9 @@ Succeeded AddressFamily Destination     Netmask         Gateway     Interface   
      True IPv4          255.255.255.255 255.255.255.255 On-link     10.29.191.zzz 301
 ````
 
+[ [Top] ](#)
+
+
 # Get-PsNetHostsTable
 
 Get-PsNetHostsTable - Get hostsfile
@@ -502,6 +547,9 @@ Succeeded IpAddress    Compuername FullyQualifiedName
      True 192.168.1.28 computer2
      True 192.168.1.29 computer3   computername3.fqdn
 ````
+
+[ [Top] ](#)
+
 
 # Add-PsNetHostsEntry
 
@@ -528,6 +576,9 @@ Succeeded HostsEntry                     BackupPath                   Message
      True 127.0.0.1 tinu tinu.walther.ch D:\hosts_20190301-185838.txt Entry added
 ````
 
+[ [Top] ](#)
+
+
 # Remove-PsNetHostsEntry
 
 **WARNING:** Running this command with elevated privilege.
@@ -551,6 +602,9 @@ Succeeded HostsEntry                     BackupPath                   Message
      True 127.0.0.1 tinu tinu.walther.ch D:\hosts_20190301-190104.txt Entry removed
 ````
 
+[ [Top] ](#)
+
+
 # Start-PsNetPortListener
 
 Temporarily listen on a given TCP port for connections dumps connections to the screen
@@ -571,6 +625,9 @@ DateTime            AddressFamily Address    Port
 Listener Closed Safely
 ````
 
+[ [Top] ](#)
+
+
 # Get-PsNetDnsSearchSuffix
 
 List all DNS Search suffixes.
@@ -582,6 +639,9 @@ Succeeded ComputerName    DnsSearchSuffix TimeStamp               TimeMs
 --------- ------------    --------------- ---------               ------
      True WIN-J0EFIPPADQS {test.local}    2019-10-03 09:43:52.796    250
 ````
+
+[ [Top] ](#)
+
 
 # Add-PsNetDnsSearchSuffix
 
@@ -598,6 +658,8 @@ Succeeded ComputerName    DnsSearchSuffix                        TimeStamp      
      True WIN-J0EFIPPADQS {test.local, test1.local, test2.local} 2019-10-03 09:47:39.588     16
 ````
 
+[ [Top] ](#)
+
 # Remove-PsNetDnsSearchSuffix
 
 Remove one or more DNS Search suffix from the list.
@@ -613,6 +675,8 @@ Succeeded ComputerName    DnsSearchSuffix           TimeStamp               Time
      True WIN-J0EFIPPADQS {test.local}              2019-10-03 09:48:57.518     47
 ````
 
+[ [Top] ](#)
+
 # Clear-PsNetDnsSearchSuffix
 
 Remove all DNS Search suffix from the list.
@@ -626,6 +690,8 @@ Succeeded ComputerName    DnsSearchSuffix TimeStamp               TimeMs
 --------- ------------    --------------- ---------               ------
      True WIN-J0EFIPPADQS {}              2019-10-03 09:50:46.540     63
 ````
+
+[ [Top] ](#)
 
 # How to Export settings
 
@@ -686,4 +752,6 @@ Export the JSON-Object from Test-PsNetDig to a file:
 Test-PsNetDig sbb.ch | ConvertTo-Json | Set-Content D:\PsNetDig.json
 ````
 
-[ [Top] ](#table-of-contents)
+[ [Top] ](#)
+
+Enjoy the PsNetTools!
