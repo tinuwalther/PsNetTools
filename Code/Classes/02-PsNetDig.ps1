@@ -58,23 +58,28 @@ Class PsNetDig {
         [Array]    $ipv6address = $null
         [String]   $TargetName  = $null
 
-        $dnsreturn = [System.Net.Dns]::GetHostEntry($InputString)
-        if(-not([String]::IsNullOrEmpty($dnsreturn))){
-            $TargetName = $dnsreturn.hostname
-            $collection = $dnsreturn.AddressList
-        }
-        
-        foreach($item in $collection){
-            if($($item.AddressFamily) -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
-                $ipv4address += $item.IPAddressToString
+        try{
+            $dnsreturn = [System.Net.Dns]::GetHostEntry($InputString)
+            if(-not([String]::IsNullOrEmpty($dnsreturn))){
+                $TargetName = $dnsreturn.hostname
+                $collection = $dnsreturn.AddressList
             }
-            if($($item.AddressFamily) -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
-                $ipv6address += $item.IPAddressToString
+            foreach($item in $collection){
+                if($($item.AddressFamily) -eq [System.Net.Sockets.AddressFamily]::InterNetwork){
+                    $ipv4address += $item.IPAddressToString
+                }
+                if($($item.AddressFamily) -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6){
+                    $ipv6address += $item.IPAddressToString
+                }
             }
+            $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
+            return [PsNetDigType]::New($true, $InputString, $TargetName, $ipv4address, $ipv6address, $duration)    
+        }catch{
+            $TargetName = ($($_.Exception.Message) -split ': ')[1] -replace '"'
+            $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
+            return [PsNetDigType]::New($false, $InputString, $TargetName, $null, $null, $duration)    
         }
 
-        $duration = $([math]::round(((New-TimeSpan $($start) $(Get-Date)).TotalMilliseconds),0))
-        return [PsNetDigType]::New($true, $InputString, $TargetName, $ipv4address, $ipv6address, $duration)
     }
     #endregion
 
