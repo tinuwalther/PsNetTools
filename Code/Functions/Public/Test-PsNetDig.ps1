@@ -65,7 +65,13 @@ function Test-PsNetDig{
                 $resultset += [PsNetDig]::dig($item)
             }
             catch {
-                $resultset += [PsNetError]::New("$($function)($item)", $_)
+                $Message = [PsNetError]::New("$($function)($item)", $_)
+                $SubMessage = $Message.Substring($Message.IndexOf(':')+2)
+                if($SubMessage){
+                  $resultset += $SubMessage -replace '"'
+                }else{
+                  $resultset += $Message
+                }
                 $error.Clear()
             }
         }
