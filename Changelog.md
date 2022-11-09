@@ -2,7 +2,6 @@
 
 Version | Change
 -|-
-v0.7.71 | Fix Return in Test-PsNetDig if host is not known
 v0.7.66 | Adding AllowFromPipeline
 v0.7.65 | Fix IPv6-Output in PsNetDig
 v0.7.64 | Fix IPv6-Output in PsNetAdapter
