@@ -3,7 +3,7 @@ Class PsNetHostsTableType {
     [bool]   $Succeeded
     [String] $IpVersion
     [String] $IpAddress
-    [String] $Compuername
+    [String] $ComputerName
     [String] $FullyQualifiedName
     [String] $Message
 
@@ -11,14 +11,14 @@ Class PsNetHostsTableType {
         [bool]   $Succeeded,
         [String] $IpVersion,
         [String] $IpAddress,
-        [String] $Compuername,
+        [String] $ComputerName,
         [String] $FullyQualifiedName,
         [String] $Message
         ) {
         $this.Succeeded          = $Succeeded
         $this.IpVersion          = $IpVersion
         $this.IpAddress          = $IpAddress
-        $this.Compuername        = $Compuername
+        $this.ComputerName        = $ComputerName
         $this.FullyQualifiedName = $FullyQualifiedName
         $this.Message            = $Message
     }

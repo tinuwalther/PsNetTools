@@ -541,7 +541,7 @@ Get-PsNetHostsTable
 ````powershell
 Get-PsNetHostsTable
 
-Succeeded IpAddress    Compuername FullyQualifiedName
+Succeeded IpAddress    ComputerName FullyQualifiedName
 --------- ---------    ----------- ------------------
      True 192.168.1.27 computer1   computername1.fqdn
      True 192.168.1.28 computer2
