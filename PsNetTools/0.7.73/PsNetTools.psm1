@@ -1,5 +1,5 @@
 <#
-    Generated at 2022-11-09 21:33:07 by Martin Walther
+    Generated at 2023-01-21 09:28:21 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -938,7 +938,7 @@ Class PsNetHostsTableType {
     [bool]   $Succeeded
     [String] $IpVersion
     [String] $IpAddress
-    [String] $Compuername
+    [String] $ComputerName
     [String] $FullyQualifiedName
     [String] $Message
 
@@ -946,14 +946,14 @@ Class PsNetHostsTableType {
         [bool]   $Succeeded,
         [String] $IpVersion,
         [String] $IpAddress,
-        [String] $Compuername,
+        [String] $ComputerName,
         [String] $FullyQualifiedName,
         [String] $Message
         ) {
         $this.Succeeded          = $Succeeded
         $this.IpVersion          = $IpVersion
         $this.IpAddress          = $IpAddress
-        $this.Compuername        = $Compuername
+        $this.ComputerName        = $ComputerName
         $this.FullyQualifiedName = $FullyQualifiedName
         $this.Message            = $Message
     }
