@@ -23,6 +23,10 @@ Describe "Testing Remove-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
         }
     }
 
+    it "[POS] [$($CurrentOS)] Remove-PsNetDnsSearchSuffix -WhatIf should not throw"{
+        {'test.local' | Remove-PsNetDnsSearchSuffix -WhatIf } | Should -Not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Remove-PsNetDnsSearchSuffix should not throw"{
         {'test.local' | Remove-PsNetDnsSearchSuffix} | Should -Not -Throw
         {Remove-PsNetDnsSearchSuffix 'test.local'} | Should -Not -Throw

@@ -32,7 +32,7 @@ function Remove-PsNetHostsEntry {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory = $true,
@@ -71,15 +71,18 @@ function Remove-PsNetHostsEntry {
     }
     
     process {
-        if([String]::IsNullOrEmpty($Path)){
-            if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
-                $Path = "$($env:windir)\system32\drivers\etc\hosts"
+        $item =$Hostsentry
+        if ($PSCmdlet.ShouldProcess($item)){
+            if([String]::IsNullOrEmpty($Path)){
+                if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
+                    $Path = "$($env:windir)\system32\drivers\etc\hosts"
+                }
+                else{
+                    $Path = "/etc/hosts"
+                }
             }
-            else{
-                $Path = "/etc/hosts"
-            }
+            return [PsNetHostsTable]::RemovePsNetHostsEntry($CurrentOS, $Path, $Hostsentry)
         }
-        return [PsNetHostsTable]::RemovePsNetHostsEntry($CurrentOS, $Path, $Hostsentry)
     }
     
     end {

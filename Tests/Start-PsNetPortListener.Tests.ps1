@@ -23,6 +23,10 @@ Describe "Testing Start-PsNetPortListener on $($CurrentOS) OS" {
         }
     }
     
+    it "[POS] [$($CurrentOS)] Start-PsNetPortListener -WhatIf should not throw"{
+        {443 | Start-PsNetPortListener -WhatIf} | Should -Not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Start-PsNetPortListener should not throw"{
         {443 | Start-PsNetPortListener} | Should -Not -Throw
         {Start-PsNetPortListener 443} | Should -Not -Throw

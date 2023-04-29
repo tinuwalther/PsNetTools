@@ -29,7 +29,7 @@ function Add-PsNetDnsSearchSuffix{
 
     #>
     
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory=$true,
@@ -61,7 +61,9 @@ function Add-PsNetDnsSearchSuffix{
 
     process{
         foreach($item in $NewDNSSearchSuffix){
-            [PsNetDnsClient]::AddDnsSearchSuffix($CurrentOS,$item)
+            if ($PSCmdlet.ShouldProcess($item)){
+                [PsNetDnsClient]::AddDnsSearchSuffix($CurrentOS,$item)
+            }
         }
     }
 

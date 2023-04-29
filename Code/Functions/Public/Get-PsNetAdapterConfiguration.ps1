@@ -1,4 +1,4 @@
-function Get-PsNetAdapterConfiguration{
+function Get-PsNetAdapterConfiguration {
 
     <#
 
@@ -24,19 +24,21 @@ function Get-PsNetAdapterConfiguration{
 
     #>
 
-   [CmdletBinding()]
-   param()   
-   begin {
-      $function = $($MyInvocation.MyCommand.Name)
-      Write-Verbose "Running $function"
-   }
+    [CmdletBinding(SupportsShouldProcess = $True)]
+    param()   
+    begin {
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+    }
 
-   process {
-       return [PsNetAdapter]::listadapterconfig()
-   }
+    process {
+        if ($PSCmdlet.ShouldProcess('for all adapters')){
+            return [PsNetAdapter]::listadapterconfig()
+        }
+    }
 
-   end {
-   }
+    end {
+    }
 
 }
 

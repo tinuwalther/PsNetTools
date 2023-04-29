@@ -1,4 +1,4 @@
-function Test-PsNetDig{
+function Test-PsNetDig {
 
     <#
 
@@ -41,15 +41,15 @@ function Test-PsNetDig{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
         [Parameter(
-            Mandatory= $true,
+            Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             Position = 0
         )]
-        [ValidateLength(4,255)]
+        [ValidateLength(4, 255)]
         [String[]] $Destination
     ) 
        
@@ -60,13 +60,15 @@ function Test-PsNetDig{
     }
     
     process {
-        foreach($item in $Destination){
-            try{
-                $resultset += [PsNetDig]::dig($item)
-            }
-            catch {
-                $resultset  += [PsNetError]::New("$($function)($item)", $_)
-                $error.Clear()
+        foreach ($item in $Destination) {
+            if ($PSCmdlet.ShouldProcess($item)){
+                try {
+                    $resultset += [PsNetDig]::dig($item)
+                }
+                catch {
+                    $resultset += [PsNetError]::New("$($function)($item)", $_)
+                    $error.Clear()
+                }
             }
         }
     }

@@ -23,6 +23,10 @@ Describe "Testing Test-PsNetWping on $($CurrentOS) OS" {
         }
     }
         
+    it "[POS] [$($CurrentOS)] Test-PsNetWping -WhatIf should not throw"{
+        {'https://sbb.ch' | Test-PsNetWping -WhatIf} | Should -not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Test-PsNetWping without noproxy parameter(s) should not throw"{
         {'https://sbb.ch' | Test-PsNetWping} | Should -not -Throw
         {Test-PsNetWping 'https://sbb.ch' -MinTimeout 1000 -MaxTimeout 2500} | Should -not -Throw

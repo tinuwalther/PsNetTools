@@ -1,4 +1,4 @@
-function Get-PsNetAdapters{
+function Get-PsNetAdapters {
 
     <#
 
@@ -24,16 +24,18 @@ function Get-PsNetAdapters{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param()  
       
     begin {
-      $function = $($MyInvocation.MyCommand.Name)
-      Write-Verbose "Running $function"
-   }
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+    }
     
     process {
-        return [PsNetAdapter]::listadapters()
+        if ($PSCmdlet.ShouldProcess('all network adapters')){
+            return [PsNetAdapter]::listadapters()
+        }
     }
     
     end {

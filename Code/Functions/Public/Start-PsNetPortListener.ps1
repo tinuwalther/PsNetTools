@@ -30,7 +30,7 @@
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory = $true,
@@ -55,41 +55,44 @@
     }
 
     process{
-        $endpoint = New-Object System.Net.IPEndPoint ([System.Net.IPAddress]::Any, $TcpPort)    
-        $listener = New-Object System.Net.Sockets.TcpListener $endpoint
-        
-        $listener.server.ReceiveTimeout = $MaxTimeout
-        $listener.start()  
+        $item = $TcpPort
+        if ($PSCmdlet.ShouldProcess($item)){
+            $endpoint = New-Object System.Net.IPEndPoint ([System.Net.IPAddress]::Any, $TcpPort)    
+            $listener = New-Object System.Net.Sockets.TcpListener $endpoint
+            
+            $listener.server.ReceiveTimeout = $MaxTimeout
+            $listener.start()  
 
-        try {
-            Write-Host "Listening on TCP port $TcpPort, press CTRL+C to cancel"
+            try {
+                Write-Host "Listening on TCP port $TcpPort, press CTRL+C to cancel"
 
-            While ($true){
-                if (!$listener.Pending()){
-                    Start-Sleep -Seconds 1
-                    continue
+                While ($true){
+                    if (!$listener.Pending()){
+                        Start-Sleep -Seconds 1
+                        continue
+                    }
+                    $client = $listener.AcceptTcpClient()
+                    $client.client.RemoteEndPoint | Add-Member -NotePropertyName DateTime -NotePropertyValue (Get-Date) -PassThru
+                    $client.close()
                 }
-                $client = $listener.AcceptTcpClient()
-                $client.client.RemoteEndPoint | Add-Member -NotePropertyName DateTime -NotePropertyValue (Get-Date) -PassThru
-                $client.close()
             }
-        }
-        catch {
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
+            catch {
+                $obj = [PSCustomObject]@{
+                    Succeeded          = $false
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
+                }
+                $obj
+                $error.Clear()
             }
-            $obj
-            $error.Clear()
-        }
-        finally{
-            $listener.stop()
-            Write-host "Listener Closed Safely"
+            finally{
+                $listener.stop()
+                Write-host "Listener Closed Safely"
+            }
         }
     }
 

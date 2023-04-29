@@ -23,6 +23,10 @@ Describe "Testing Add-PsNetHostsEntry on $($CurrentOS) OS" {
         }
     }
     
+    it "[POS] [$($CurrentOS)] Add-PsNetHostsEntry -WhatIf should not throw"{
+        {'127.0.0.1', 'test', 'test.local' | Add-PsNetHostsEntry -WhatIf} | Should -Not -Throw
+    }   
+
     it "[POS] [$($CurrentOS)] Add-PsNetHostsEntry should not throw"{
         {'127.0.0.1', 'test', 'test.local' | Add-PsNetHostsEntry} | Should -Not -Throw
         {Add-PsNetHostsEntry '127.0.0.1' 'test' 'test.local'} | Should -Not -Throw

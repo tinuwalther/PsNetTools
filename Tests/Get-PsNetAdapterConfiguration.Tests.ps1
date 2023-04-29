@@ -23,6 +23,10 @@ Describe "Testing Get-PsNetAdapterConfiguration on $($CurrentOS) OS" {
         }
     }
     
+    it "[POS] [$($CurrentOS)] Get-PsNetAdapterConfiguration -WhatIf should not throw"{
+        {Get-PsNetAdapterConfiguration -WhatIf} | Should -Not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Get-PsNetAdapterConfiguration should not throw"{
         {Get-PsNetAdapterConfiguration} | Should -Not -Throw
     }

@@ -1,4 +1,4 @@
-function Test-PsNetTping{
+function Test-PsNetTping {
 
     <#
 
@@ -53,44 +53,44 @@ function Test-PsNetTping{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
         [Parameter(
-          Mandatory=$true,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 0
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
         )]
-        [ValidateLength(4,255)]
+        [ValidateLength(4, 255)]
         [String[]] $Destination,
 
         [Parameter(
-          ParameterSetName = "CommonTCPPort", 
-          Mandatory = $True,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 1
+            ParameterSetName = "CommonTCPPort", 
+            Mandatory = $True,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
         )]
-        [ValidateSet('SMB','HTTP','HTTPS','RDP','WINRM','WINRMS','LDAP','LDAPS')]
+        [ValidateSet('SMB', 'HTTP', 'HTTPS', 'RDP', 'WINRM', 'WINRMS', 'LDAP', 'LDAPS')]
         [String] $CommonTcpPort,
 
         [Parameter(
-          ParameterSetName = "RemotePort", 
-          Mandatory = $True,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 1
+            ParameterSetName = "RemotePort", 
+            Mandatory = $True,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
         )]
-        [Alias('RemotePort')] [ValidateRange(1,65535)]
+        [Alias('RemotePort')] [ValidateRange(1, 65535)]
         [Int[]] $TcpPort,
 
         [Parameter(
-          Mandatory=$false
+            Mandatory = $false
         )]
         [Int] $MinTimeout = 0,
 
         [Parameter(
-          Mandatory=$false
+            Mandatory = $false
         )]
         [Int] $MaxTimeout = 1000
     )    
@@ -101,34 +101,36 @@ function Test-PsNetTping{
     }
 
     process {
-      $AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
-        if ($AttemptTcpTest){
-            switch ($CommonTCPPort){
-            "HTTP"   {$TcpPort = 80}
-            "HTTPS"  {$TcpPort = 443}
-            "RDP"    {$TcpPort = 3389}
-            "SMB"    {$TcpPort = 445}
-            "LDAP"   {$TcpPort = 389}
-            "LDAPS"  {$TcpPort = 636}
-            "WINRM"  {$TcpPort = 5985}
-            "WINRMS" {$TcpPort = 5986}
+        $AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
+        if ($AttemptTcpTest) {
+            switch ($CommonTCPPort) {
+                "HTTP" { $TcpPort = 80 }
+                "HTTPS" { $TcpPort = 443 }
+                "RDP" { $TcpPort = 3389 }
+                "SMB" { $TcpPort = 445 }
+                "LDAP" { $TcpPort = 389 }
+                "LDAPS" { $TcpPort = 636 }
+                "WINRM" { $TcpPort = 5985 }
+                "WINRMS" { $TcpPort = 5986 }
             }
         }
 
-        foreach($item in $Destination){
-            foreach($port in $TcpPort){
-                try{
-                    $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
-                }
-                catch{
-                    $resultset += [PsNetError]::New("$($function)($item)", $_)
-                    $error.Clear()
+        foreach ($item in $Destination) {
+            if ($PSCmdlet.ShouldProcess($item)) {
+                foreach ($port in $TcpPort) {
+                    try {
+                        $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
+                    }
+                    catch {
+                        $resultset += [PsNetError]::New("$($function)($item)", $_)
+                        $error.Clear()
+                    }
                 }
             }
         }
     }
 
     end {
-      return $resultset
+        return $resultset
     }
 }

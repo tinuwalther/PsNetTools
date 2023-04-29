@@ -29,7 +29,7 @@ function Remove-PsNetDnsSearchSuffix{
 
     #>
     
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory=$true,
@@ -61,7 +61,9 @@ function Remove-PsNetDnsSearchSuffix{
 
     process{
         foreach($item in $DNSSearchSuffix){
-            [PsNetDnsClient]::RemoveDnsSearchSuffix($CurrentOS,$item)
+            if ($PSCmdlet.ShouldProcess($item)){
+                [PsNetDnsClient]::RemoveDnsSearchSuffix($CurrentOS,$item)
+            }
         }
     }
 

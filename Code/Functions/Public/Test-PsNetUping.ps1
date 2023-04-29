@@ -1,6 +1,6 @@
-function Test-PsNetUping{
+function Test-PsNetUping {
 
-    <#
+	<#
 
    .SYNOPSIS
       Test the connectivity over an Udp port
@@ -49,52 +49,54 @@ function Test-PsNetUping{
 
     #>
 
-    [CmdletBinding()]
-    param(
-         [Parameter(
-            Mandatory=$true,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 0
-         )]
-         [ValidateLength(4,255)]
-         [String[]] $Destination,
+	[CmdletBinding(SupportsShouldProcess = $True)]
+	param(
+		[Parameter(
+			Mandatory = $true,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true,
+			Position = 0
+		)]
+		[ValidateLength(4, 255)]
+		[String[]] $Destination,
 
-         [Parameter(
-            ParameterSetName = "RemotePort",
-            Mandatory = $True,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 1
-         )]
-         [Alias('RemotePort')] [ValidateRange(1,65535)]
-         [Int[]] $UdpPort,
+		[Parameter(
+			ParameterSetName = "RemotePort",
+			Mandatory = $True,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true,
+			Position = 1
+		)]
+		[Alias('RemotePort')] [ValidateRange(1, 65535)]
+		[Int[]] $UdpPort,
  
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MinTimeout = 0,
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Int] $MinTimeout = 0,
 
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MaxTimeout = 1000
-    )    
-    begin {
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
-        $resultset = @()
-    }
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Int] $MaxTimeout = 1000
+	)    
+	begin {
+		$function = $($MyInvocation.MyCommand.Name)
+		Write-Verbose "Running $function"
+		$resultset = @()
+	}
 
 	process {
-		foreach($item in $Destination){
-			foreach($port in $UdpPort){
-                try{
-                    $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
-                }
-				catch{
-					$resultset += [PsNetError]::New("$($function)($item)", $_)
-					$error.Clear()
+		foreach ($item in $Destination) {
+			if ($PSCmdlet.ShouldProcess($item)) {
+				foreach ($port in $UdpPort) {
+					try {
+						$resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
+					}
+					catch {
+						$resultset += [PsNetError]::New("$($function)($item)", $_)
+						$error.Clear()
+					}
 				}
 			}
 		}

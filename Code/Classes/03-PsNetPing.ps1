@@ -212,7 +212,7 @@ Class PsNetPing {
             'TtlExpired' {$StatusMsg = "ICMP $($reply.Status.ToString())"}
             'TimedOut'   {$StatusMsg = "ICMP $($reply.Status.ToString())"}
             'Success'    {$IcmpSucceeded = $true; $StatusMsg = "ICMP $($reply.Status.ToString())"}
-            default      {$StatusMsg = "Please check the name and try again"}
+            default      {$StatusMsg = "Please check the name and try again $($reply.Status)"}
         }
         
         return [PsNetIcmpPingType]::New($true, $IcmpSucceeded, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $Destination, $IPAddress, $Roundtrip, $bytes, $buffer, $StatusMsg, $timeout, 0)
@@ -261,7 +261,7 @@ Class PsNetPing {
             'TtlExpired' {$StatusMsg = "ICMP $($reply.Status.ToString())"}
             'TimedOut'   {$StatusMsg = "ICMP $($reply.Status.ToString())"}
             'Success'    {$StatusMsg = "ICMP $($reply.Status.ToString())"}
-            default      {$StatusMsg = "Please check the name and try again"}
+            default      {$StatusMsg = "ICMP $($reply.Status.ToString())"}
         }
 
         Write-Host "$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff') ICMP ping $Destination, IPAddress: $IPAddress, time: $Roundtrip, send: $bytes, received: $buffer, $StatusMsg"
