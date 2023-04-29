@@ -23,7 +23,7 @@ function Clear-PsNetDnsSearchSuffix{
 
     #>
     
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param()
 
     begin{
@@ -46,7 +46,10 @@ function Clear-PsNetDnsSearchSuffix{
     }
 
     process{
-        [PsNetDnsClient]::ClearDnsSearchSuffix($CurrentOS)
+        $item = $CurrentOS
+        if ($PSCmdlet.ShouldProcess($item)){
+            [PsNetDnsClient]::ClearDnsSearchSuffix($CurrentOS)
+        }
     }
 
     end{

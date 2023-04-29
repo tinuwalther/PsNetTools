@@ -23,7 +23,7 @@ function Get-PsNetDnsSearchSuffix{
 
     #>
     
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param()
 
     begin{
@@ -46,7 +46,10 @@ function Get-PsNetDnsSearchSuffix{
     }
 
     process{
-        [PsNetDnsClient]::GetDnsSearchSuffix($CurrentOS)
+        $item = $CurrentOS
+        if ($PSCmdlet.ShouldProcess($item)){
+            [PsNetDnsClient]::GetDnsSearchSuffix($CurrentOS)
+        }
     }
 
     end{

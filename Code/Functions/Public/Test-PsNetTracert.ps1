@@ -1,6 +1,6 @@
 function Test-PsNetTracert {
 
-    <#
+	<#
 
    .SYNOPSIS
       Test Trace Route
@@ -43,53 +43,55 @@ function Test-PsNetTracert {
 
     #>
 
-    [CmdletBinding()]
-    param(
-         [Parameter(
-            Mandatory=$true,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 0
-         )]
-         [ValidateLength(4,255)]
-         [String[]] $Destination,
+	[CmdletBinding(SupportsShouldProcess = $True)]
+	param(
+		[Parameter(
+			Mandatory = $true,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true,
+			Position = 0
+		)]
+		[ValidateLength(4, 255)]
+		[String[]] $Destination,
 
-         [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 1
-         )]
-         [Int] $MaxHops = 30,
+		[Parameter(
+			Mandatory = $false,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true,
+			Position = 1
+		)]
+		[Int] $MaxHops = 30,
 
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MaxTimeout = 1000,
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Int] $MaxTimeout = 1000,
  
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Switch] $Show
-    )  
-    begin {
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
-        $resultset = @()
-    }
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Switch] $Show
+	)  
+	begin {
+		$function = $($MyInvocation.MyCommand.Name)
+		Write-Verbose "Running $function"
+		$resultset = @()
+	}
 
-    process {
-      foreach($item in $Destination){
-        if($Show){
-            [PsNetTracert]::tracert($item,$MaxTimeout,$MaxHops,$true)
-        }
-        else{
-            $resultset += [PsNetTracert]::tracert($item,$MaxTimeout,$MaxHops)
-            return $resultset
-        }
-      }
-    }
+	process {
+		foreach ($item in $Destination) {
+			if ($PSCmdlet.ShouldProcess($item)) {
+				if ($Show) {
+					[PsNetTracert]::tracert($item, $MaxTimeout, $MaxHops, $true)
+				}
+				else {
+					$resultset += [PsNetTracert]::tracert($item, $MaxTimeout, $MaxHops)
+					return $resultset
+				}
+			}
+		}
+	}
 
-    end{
-    }
+	end {
+	}
 }

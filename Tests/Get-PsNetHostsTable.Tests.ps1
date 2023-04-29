@@ -23,6 +23,10 @@ Describe "Testing Get-PsNetHostsTable on $($CurrentOS) OS" {
         }
     }
 
+    it "[POS] [$($CurrentOS)] Get-PsNetHostsTable -WhatIf should not throw"{
+        {'C:\Temp\hosts' | Get-PsNetHostsTable -WhatIf} | Should -Not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Get-PsNetHostsTable should not throw"{
         {'C:\Temp\hosts' | Get-PsNetHostsTable} | Should -Not -Throw
         {Get-PsNetHostsTable 'C:\Temp\hosts'} | Should -Not -Throw

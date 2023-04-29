@@ -13,7 +13,15 @@ if(Get-Module PsNetTools){
 $Current          = (Split-Path -Path $MyInvocation.MyCommand.Path)
 $Root             = ((Get-Item $Current).Parent).FullName
 $ModuleName       = "PsNetTools"
-$ModuleFolderPath = Join-Path -Path $Root -ChildPath $ModuleName
+$prompt           = (Read-Host "Enter the Version number of this module in the Semantic Versioning notation [1.0.0]")
+if (!$prompt -eq "") {
+    $Version = $prompt
+}
+
+$ModuleFolderRootPath = Join-Path -Path $Root -ChildPath $ModuleName
+$ModuleFolderPath     = Join-Path -Path $ModuleFolderRootPath -ChildPath $Version
+$Manifest             = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
+
 $CodeSourcePath   = Join-Path -Path $Root -ChildPath "Code"
 $TestsSourcePath  = Join-Path -Path $Root -ChildPath "Tests"
 
@@ -21,9 +29,6 @@ $ExportPath       = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName)
 $PublicClasses    = Get-ChildItem -Path "$CodeSourcePath\Classes\" -Filter *.ps1 | sort-object Name
 $PrivateFunctions = Get-ChildItem -Path "$CodeSourcePath\Functions\Private" -Filter *.ps1
 $PublicFunctions  = Get-ChildItem -Path "$CodeSourcePath\Functions\Public" -Filter *.ps1
-$Manifest         = Join-Path -Path $ModuleFolderPath -ChildPath "$($ModuleName).psd1"
-$CurrentVersion   = (Get-Module -ListAvailable -FullyQualifiedName $Manifest).Version.ToString()
-$Version          = (Read-Host "Enter the Version number of this module in the Semantic Versioning notation [$($CurrentVersion)]")
 
 $MainPSM1Contents = @()
 $MainPSM1Contents += $PublicClasses

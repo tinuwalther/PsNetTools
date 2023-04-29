@@ -23,6 +23,10 @@ Describe "Testing Clear-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
         }
     }
 
+    it "[POS] [$($CurrentOS)] Clear-PsNetDnsSearchSuffix -WhatIf should not throw"{
+        {Clear-PsNetDnsSearchSuffix -WhatIf} | Should -Not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Clear-PsNetDnsSearchSuffix should not throw"{
         {Clear-PsNetDnsSearchSuffix} | Should -Not -Throw
     }

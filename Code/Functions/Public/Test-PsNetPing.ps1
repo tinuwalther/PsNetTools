@@ -1,4 +1,4 @@
-function Test-PsNetPing{
+function Test-PsNetPing {
 
     <#
 
@@ -40,22 +40,22 @@ function Test-PsNetPing{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
         [Parameter(
-          Mandatory=$true,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 0
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
         )]
-        [ValidateLength(4,255)]
+        [ValidateLength(4, 255)]
         [String[]] $Destination,
 
         [Parameter(
-          Mandatory=$false,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 1
+            Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
         )]
         [Int] $try = 0
     )    
@@ -66,26 +66,28 @@ function Test-PsNetPing{
     }
 
     process {
-      foreach($item in $Destination){
-        try{
-          if($try -gt 0){
-            for ($i = 0; $i -lt $try; $i++){
-              [PsNetPing]::ping($item,$true)
-              Start-Sleep -Seconds 1
+        foreach ($item in $Destination) {
+            if ($PSCmdlet.ShouldProcess($item)) {
+                try {
+                    if ($try -gt 0) {
+                        for ($i = 0; $i -lt $try; $i++) {
+                            [PsNetPing]::ping($item, $true)
+                            Start-Sleep -Seconds 1
+                        }
+                    }
+                    else {
+                        $resultset += [PsNetPing]::ping($item)
+                    }
+                }
+                catch {
+                    $resultset += [PsNetError]::New("$($function)($item)", $_)
+                    $error.Clear()
+                }
             }
-          }
-          else{
-            $resultset += [PsNetPing]::ping($item)
-          }
         }
-        catch{
-          $resultset += [PsNetError]::New("$($function)($item)", $_)
-          $error.Clear()
-        }
-      }
-	  }
+    }
 
-	  end {
-		  return $resultset
-	  }
+    end {
+        return $resultset
+    }
 }

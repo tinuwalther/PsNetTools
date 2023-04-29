@@ -27,7 +27,7 @@ function Get-PsNetHostsTable {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory=$false,
@@ -58,15 +58,18 @@ function Get-PsNetHostsTable {
     }
     
     process {
-        if([String]::IsNullOrEmpty($Path)){
-            if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
-                $Path = "$($env:windir)\system32\drivers\etc\hosts"
+        $item = $Path
+        if ($PSCmdlet.ShouldProcess($item)){
+            if([String]::IsNullOrEmpty($Path)){
+                if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
+                    $Path = "$($env:windir)\system32\drivers\etc\hosts"
+                }
+                else{
+                    $Path = "/etc/hosts"
+                }
             }
-            else{
-                $Path = "/etc/hosts"
-            }
+            return [PsNetHostsTable]::GetPsNetHostsTable($CurrentOS, $Path)
         }
-        return [PsNetHostsTable]::GetPsNetHostsTable($CurrentOS, $Path)
     }
     
     end {

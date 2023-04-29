@@ -23,6 +23,10 @@ Describe "Testing Test-PsNetPing on $($CurrentOS) OS" {
         }
     }
            
+    it "[POS] [$($CurrentOS)] Test-PsNetPing -WhatIf should not throw"{
+        {'127.0.0.1' | Test-PsNetPing -WhatIf} | Should -not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Test-PsNetPing with IP Address as parameter(s) should not throw"{
         {'127.0.0.1' | Test-PsNetPing} | Should -not -Throw
         {Test-PsNetPing '127.0.0.1'} | Should -not -Throw

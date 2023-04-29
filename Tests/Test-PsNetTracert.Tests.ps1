@@ -23,11 +23,16 @@ Describe "Testing Test-PsNetTracert on $($CurrentOS) OS" {
         }
     }
 
+    it "[POS] [$($CurrentOS)] Test-PsNetTracert -WhatIf should not throw"{
+        {'www.sbb.ch' | Test-PsNetTracert -WhatIf} | Should -not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Test-PsNetTracert with Hostname as parameter(s) should not throw"{
         {'www.sbb.ch' | Test-PsNetTracert} | Should -not -Throw
         {Test-PsNetTracert 'www.sbb.ch' 1} | Should -not -Throw
         {Test-PsNetTracert -Destination 'www.sbb.ch' -MaxHops 1} | Should -not -Throw
     }
+
     it "[POS] [$($CurrentOS)] Test-PsNetTracert with Hostname as parameter(s) should return a PSCustomObject"{
         {'www.sbb.ch' | Test-PsNetTracert} | Should -ExpectedType PSCustomObject
         {Test-PsNetTracert 'www.sbb.ch' 1} | Should -ExpectedType PSCustomObject

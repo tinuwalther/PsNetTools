@@ -23,6 +23,9 @@ Describe "Testing Remove-PsNetHostsEntry on $($CurrentOS) OS" {
         }
     }
     
+    it "[POS] [$($CurrentOS)] Remove-PsNetHostsEntry -WhatIf should not throw"{
+        {'127.0.0.1 test' | Remove-PsNetHostsEntry -WhatIf} | Should -Not -Throw
+    }
     it "[POS] [$($CurrentOS)] Remove-PsNetHostsEntry should not throw"{
         {'127.0.0.1 test' | Remove-PsNetHostsEntry } | Should -Not -Throw
         {Remove-PsNetHostsEntry '127.0.0.1 test'} | Should -Not -Throw

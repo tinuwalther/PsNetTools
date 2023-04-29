@@ -1,5 +1,5 @@
 <#
-    Generated at 2023-01-21 09:28:21 by Martin Walther
+    Generated at 2023-04-29 13:40:45 by Martin Walther
     using module ..\PsNetTools\PsNetTools.psm1
 #>
 #region namespace PsNetTools
@@ -327,7 +327,7 @@ Class PsNetPing {
             'TtlExpired' {$StatusMsg = "ICMP $($reply.Status.ToString())"}
             'TimedOut'   {$StatusMsg = "ICMP $($reply.Status.ToString())"}
             'Success'    {$IcmpSucceeded = $true; $StatusMsg = "ICMP $($reply.Status.ToString())"}
-            default      {$StatusMsg = "Please check the name and try again"}
+            default      {$StatusMsg = "Please check the name and try again $($reply.Status)"}
         }
         
         return [PsNetIcmpPingType]::New($true, $IcmpSucceeded, $(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff'), $Destination, $IPAddress, $Roundtrip, $bytes, $buffer, $StatusMsg, $timeout, 0)
@@ -376,7 +376,7 @@ Class PsNetPing {
             'TtlExpired' {$StatusMsg = "ICMP $($reply.Status.ToString())"}
             'TimedOut'   {$StatusMsg = "ICMP $($reply.Status.ToString())"}
             'Success'    {$StatusMsg = "ICMP $($reply.Status.ToString())"}
-            default      {$StatusMsg = "Please check the name and try again"}
+            default      {$StatusMsg = "ICMP $($reply.Status.ToString())"}
         }
 
         Write-Host "$(Get-Date -f 'yyyy-MM-dd HH:mm:ss.fff') ICMP ping $Destination, IPAddress: $IPAddress, time: $Roundtrip, send: $bytes, received: $buffer, $StatusMsg"
@@ -1917,7 +1917,7 @@ function Add-PsNetDnsSearchSuffix{
 
     #>
     
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory=$true,
@@ -1949,7 +1949,9 @@ function Add-PsNetDnsSearchSuffix{
 
     process{
         foreach($item in $NewDNSSearchSuffix){
-            [PsNetDnsClient]::AddDnsSearchSuffix($CurrentOS,$item)
+            if ($PSCmdlet.ShouldProcess($item)){
+                [PsNetDnsClient]::AddDnsSearchSuffix($CurrentOS,$item)
+            }
         }
     }
 
@@ -1997,7 +1999,7 @@ function Add-PsNetHostsEntry {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory = $true,
@@ -2052,15 +2054,18 @@ function Add-PsNetHostsEntry {
     }
     
     process {
-        if([String]::IsNullOrEmpty($Path)){
-            if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
-                $Path = "$($env:windir)\system32\drivers\etc\hosts"
+        $item = "$($IPAddress), $($Hostname), $($FullyQualifiedName)"
+        if ($PSCmdlet.ShouldProcess($item)){
+            if([String]::IsNullOrEmpty($Path)){
+                if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
+                    $Path = "$($env:windir)\system32\drivers\etc\hosts"
+                }
+                else{
+                    $Path = "/etc/hosts"
+                }
             }
-            else{
-                $Path = "/etc/hosts"
-            }
+            return [PsNetHostsTable]::AddPsNetHostsEntry($CurrentOS, $Path, $IPAddress, $Hostname, $FullyQualifiedName)
         }
-        return [PsNetHostsTable]::AddPsNetHostsEntry($CurrentOS, $Path, $IPAddress, $Hostname, $FullyQualifiedName)
     }
     
     end {
@@ -2092,7 +2097,7 @@ function Clear-PsNetDnsSearchSuffix{
 
     #>
     
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param()
 
     begin{
@@ -2115,14 +2120,17 @@ function Clear-PsNetDnsSearchSuffix{
     }
 
     process{
-        [PsNetDnsClient]::ClearDnsSearchSuffix($CurrentOS)
+        $item = $CurrentOS
+        if ($PSCmdlet.ShouldProcess($item)){
+            [PsNetDnsClient]::ClearDnsSearchSuffix($CurrentOS)
+        }
     }
 
     end{
         return $obj
     }
 }
-function Get-PsNetAdapterConfiguration{
+function Get-PsNetAdapterConfiguration {
 
     <#
 
@@ -2148,23 +2156,25 @@ function Get-PsNetAdapterConfiguration{
 
     #>
 
-   [CmdletBinding()]
-   param()   
-   begin {
-      $function = $($MyInvocation.MyCommand.Name)
-      Write-Verbose "Running $function"
-   }
+    [CmdletBinding(SupportsShouldProcess = $True)]
+    param()   
+    begin {
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+    }
 
-   process {
-       return [PsNetAdapter]::listadapterconfig()
-   }
+    process {
+        if ($PSCmdlet.ShouldProcess('for all adapters')){
+            return [PsNetAdapter]::listadapterconfig()
+        }
+    }
 
-   end {
-   }
+    end {
+    }
 
 }
 
-function Get-PsNetAdapters{
+function Get-PsNetAdapters {
 
     <#
 
@@ -2190,16 +2200,18 @@ function Get-PsNetAdapters{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param()  
       
     begin {
-      $function = $($MyInvocation.MyCommand.Name)
-      Write-Verbose "Running $function"
-   }
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+    }
     
     process {
-        return [PsNetAdapter]::listadapters()
+        if ($PSCmdlet.ShouldProcess('all network adapters')){
+            return [PsNetAdapter]::listadapters()
+        }
     }
     
     end {
@@ -2231,7 +2243,7 @@ function Get-PsNetDnsSearchSuffix{
 
     #>
     
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param()
 
     begin{
@@ -2254,7 +2266,10 @@ function Get-PsNetDnsSearchSuffix{
     }
 
     process{
-        [PsNetDnsClient]::GetDnsSearchSuffix($CurrentOS)
+        $item = $CurrentOS
+        if ($PSCmdlet.ShouldProcess($item)){
+            [PsNetDnsClient]::GetDnsSearchSuffix($CurrentOS)
+        }
     }
 
     end{
@@ -2290,7 +2305,7 @@ function Get-PsNetHostsTable {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory=$false,
@@ -2321,15 +2336,18 @@ function Get-PsNetHostsTable {
     }
     
     process {
-        if([String]::IsNullOrEmpty($Path)){
-            if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
-                $Path = "$($env:windir)\system32\drivers\etc\hosts"
+        $item = $Path
+        if ($PSCmdlet.ShouldProcess($item)){
+            if([String]::IsNullOrEmpty($Path)){
+                if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
+                    $Path = "$($env:windir)\system32\drivers\etc\hosts"
+                }
+                else{
+                    $Path = "/etc/hosts"
+                }
             }
-            else{
-                $Path = "/etc/hosts"
-            }
+            return [PsNetHostsTable]::GetPsNetHostsTable($CurrentOS, $Path)
         }
-        return [PsNetHostsTable]::GetPsNetHostsTable($CurrentOS, $Path)
     }
     
     end {
@@ -2368,11 +2386,11 @@ function Get-PsNetRoutingTable {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
-        [ValidateSet('IPv4','IPv6')]        
+        [ValidateSet('IPv4', 'IPv6')]        
         [Parameter(
-            Mandatory=$true,
+            Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             Position = 0
@@ -2381,20 +2399,23 @@ function Get-PsNetRoutingTable {
     )  
     
     begin {
-      $function = $($MyInvocation.MyCommand.Name)
-      Write-Verbose "Running $function"
-      if($PSVersionTable.PSVersion.Major -lt 6){
-        $CurrentOS = [OSType]::Windows
-      }
-      else{
-          if($IsMacOS)  {$CurrentOS = [OSType]::Mac}
-          if($IsLinux)  {$CurrentOS = [OSType]::Linux}
-          if($IsWindows){$CurrentOS = [OSType]::Windows}
-      }
+        $function = $($MyInvocation.MyCommand.Name)
+        Write-Verbose "Running $function"
+        if ($PSVersionTable.PSVersion.Major -lt 6) {
+            $CurrentOS = [OSType]::Windows
+        }
+        else {
+            if ($IsMacOS) { $CurrentOS = [OSType]::Mac }
+            if ($IsLinux) { $CurrentOS = [OSType]::Linux }
+            if ($IsWindows) { $CurrentOS = [OSType]::Windows }
+        }
     }
     
     process {
-        return [PsNetRoutingTable]::GetNetRoutingTable($CurrentOS, $IpVersion)
+        $item = $IpVersion
+        if ($PSCmdlet.ShouldProcess($item)){
+            return [PsNetRoutingTable]::GetNetRoutingTable($CurrentOS, $IpVersion)
+        }
     }
     
     end {
@@ -2431,7 +2452,7 @@ function Remove-PsNetDnsSearchSuffix{
 
     #>
     
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory=$true,
@@ -2463,7 +2484,9 @@ function Remove-PsNetDnsSearchSuffix{
 
     process{
         foreach($item in $DNSSearchSuffix){
-            [PsNetDnsClient]::RemoveDnsSearchSuffix($CurrentOS,$item)
+            if ($PSCmdlet.ShouldProcess($item)){
+                [PsNetDnsClient]::RemoveDnsSearchSuffix($CurrentOS,$item)
+            }
         }
     }
 
@@ -2504,7 +2527,7 @@ function Remove-PsNetHostsEntry {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory = $true,
@@ -2543,15 +2566,18 @@ function Remove-PsNetHostsEntry {
     }
     
     process {
-        if([String]::IsNullOrEmpty($Path)){
-            if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
-                $Path = "$($env:windir)\system32\drivers\etc\hosts"
+        $item =$Hostsentry
+        if ($PSCmdlet.ShouldProcess($item)){
+            if([String]::IsNullOrEmpty($Path)){
+                if(($CurrentOS -eq [OSType]::Windows) -and ([String]::IsNullOrEmpty($Path))){
+                    $Path = "$($env:windir)\system32\drivers\etc\hosts"
+                }
+                else{
+                    $Path = "/etc/hosts"
+                }
             }
-            else{
-                $Path = "/etc/hosts"
-            }
+            return [PsNetHostsTable]::RemovePsNetHostsEntry($CurrentOS, $Path, $Hostsentry)
         }
-        return [PsNetHostsTable]::RemovePsNetHostsEntry($CurrentOS, $Path, $Hostsentry)
     }
     
     end {
@@ -2590,7 +2616,7 @@ function Start-PsNetPortListener {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$True)]
     param(
         [Parameter(
             Mandatory = $true,
@@ -2615,41 +2641,44 @@ function Start-PsNetPortListener {
     }
 
     process{
-        $endpoint = New-Object System.Net.IPEndPoint ([System.Net.IPAddress]::Any, $TcpPort)    
-        $listener = New-Object System.Net.Sockets.TcpListener $endpoint
-        
-        $listener.server.ReceiveTimeout = $MaxTimeout
-        $listener.start()  
+        $item = $TcpPort
+        if ($PSCmdlet.ShouldProcess($item)){
+            $endpoint = New-Object System.Net.IPEndPoint ([System.Net.IPAddress]::Any, $TcpPort)    
+            $listener = New-Object System.Net.Sockets.TcpListener $endpoint
+            
+            $listener.server.ReceiveTimeout = $MaxTimeout
+            $listener.start()  
 
-        try {
-            Write-Host "Listening on TCP port $TcpPort, press CTRL+C to cancel"
+            try {
+                Write-Host "Listening on TCP port $TcpPort, press CTRL+C to cancel"
 
-            While ($true){
-                if (!$listener.Pending()){
-                    Start-Sleep -Seconds 1
-                    continue
+                While ($true){
+                    if (!$listener.Pending()){
+                        Start-Sleep -Seconds 1
+                        continue
+                    }
+                    $client = $listener.AcceptTcpClient()
+                    $client.client.RemoteEndPoint | Add-Member -NotePropertyName DateTime -NotePropertyValue (Get-Date) -PassThru
+                    $client.close()
                 }
-                $client = $listener.AcceptTcpClient()
-                $client.client.RemoteEndPoint | Add-Member -NotePropertyName DateTime -NotePropertyValue (Get-Date) -PassThru
-                $client.close()
             }
-        }
-        catch {
-            $obj = [PSCustomObject]@{
-                Succeeded          = $false
-                Function           = $function
-                Message            = $($_.Exception.Message)
-                Category           = $($_.CategoryInfo).Category
-                Exception          = $($_.Exception.GetType().FullName)
-                CategoryActivity   = $($_.CategoryInfo).Activity
-                CategoryTargetName = $($_.CategoryInfo).TargetName
+            catch {
+                $obj = [PSCustomObject]@{
+                    Succeeded          = $false
+                    Function           = $function
+                    Message            = $($_.Exception.Message)
+                    Category           = $($_.CategoryInfo).Category
+                    Exception          = $($_.Exception.GetType().FullName)
+                    CategoryActivity   = $($_.CategoryInfo).Activity
+                    CategoryTargetName = $($_.CategoryInfo).TargetName
+                }
+                $obj
+                $error.Clear()
             }
-            $obj
-            $error.Clear()
-        }
-        finally{
-            $listener.stop()
-            Write-host "Listener Closed Safely"
+            finally{
+                $listener.stop()
+                Write-host "Listener Closed Safely"
+            }
         }
     }
 
@@ -2657,7 +2686,7 @@ function Start-PsNetPortListener {
         Write-Verbose "Finish $function"
     }
 }
-function Test-PsNetDig{
+function Test-PsNetDig {
 
     <#
 
@@ -2700,15 +2729,15 @@ function Test-PsNetDig{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
         [Parameter(
-            Mandatory= $true,
+            Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             Position = 0
         )]
-        [ValidateLength(4,255)]
+        [ValidateLength(4, 255)]
         [String[]] $Destination
     ) 
        
@@ -2719,13 +2748,15 @@ function Test-PsNetDig{
     }
     
     process {
-        foreach($item in $Destination){
-            try{
-                $resultset += [PsNetDig]::dig($item)
-            }
-            catch {
-                $resultset  += [PsNetError]::New("$($function)($item)", $_)
-                $error.Clear()
+        foreach ($item in $Destination) {
+            if ($PSCmdlet.ShouldProcess($item)){
+                try {
+                    $resultset += [PsNetDig]::dig($item)
+                }
+                catch {
+                    $resultset += [PsNetError]::New("$($function)($item)", $_)
+                    $error.Clear()
+                }
             }
         }
     }
@@ -2735,7 +2766,7 @@ function Test-PsNetDig{
     }
 
 }
-function Test-PsNetPing{
+function Test-PsNetPing {
 
     <#
 
@@ -2777,22 +2808,22 @@ function Test-PsNetPing{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
         [Parameter(
-          Mandatory=$true,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 0
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
         )]
-        [ValidateLength(4,255)]
+        [ValidateLength(4, 255)]
         [String[]] $Destination,
 
         [Parameter(
-          Mandatory=$false,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 1
+            Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
         )]
         [Int] $try = 0
     )    
@@ -2803,30 +2834,32 @@ function Test-PsNetPing{
     }
 
     process {
-      foreach($item in $Destination){
-        try{
-          if($try -gt 0){
-            for ($i = 0; $i -lt $try; $i++){
-              [PsNetPing]::ping($item,$true)
-              Start-Sleep -Seconds 1
+        foreach ($item in $Destination) {
+            if ($PSCmdlet.ShouldProcess($item)) {
+                try {
+                    if ($try -gt 0) {
+                        for ($i = 0; $i -lt $try; $i++) {
+                            [PsNetPing]::ping($item, $true)
+                            Start-Sleep -Seconds 1
+                        }
+                    }
+                    else {
+                        $resultset += [PsNetPing]::ping($item)
+                    }
+                }
+                catch {
+                    $resultset += [PsNetError]::New("$($function)($item)", $_)
+                    $error.Clear()
+                }
             }
-          }
-          else{
-            $resultset += [PsNetPing]::ping($item)
-          }
         }
-        catch{
-          $resultset += [PsNetError]::New("$($function)($item)", $_)
-          $error.Clear()
-        }
-      }
-	  }
+    }
 
-	  end {
-		  return $resultset
-	  }
+    end {
+        return $resultset
+    }
 }
-function Test-PsNetTping{
+function Test-PsNetTping {
 
     <#
 
@@ -2881,44 +2914,44 @@ function Test-PsNetTping{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
         [Parameter(
-          Mandatory=$true,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 0
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0
         )]
-        [ValidateLength(4,255)]
+        [ValidateLength(4, 255)]
         [String[]] $Destination,
 
         [Parameter(
-          ParameterSetName = "CommonTCPPort", 
-          Mandatory = $True,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 1
+            ParameterSetName = "CommonTCPPort", 
+            Mandatory = $True,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
         )]
-        [ValidateSet('SMB','HTTP','HTTPS','RDP','WINRM','WINRMS','LDAP','LDAPS')]
+        [ValidateSet('SMB', 'HTTP', 'HTTPS', 'RDP', 'WINRM', 'WINRMS', 'LDAP', 'LDAPS')]
         [String] $CommonTcpPort,
 
         [Parameter(
-          ParameterSetName = "RemotePort", 
-          Mandatory = $True,
-          ValueFromPipeline = $true,
-          ValueFromPipelineByPropertyName = $true,
-          Position = 1
+            ParameterSetName = "RemotePort", 
+            Mandatory = $True,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1
         )]
-        [Alias('RemotePort')] [ValidateRange(1,65535)]
+        [Alias('RemotePort')] [ValidateRange(1, 65535)]
         [Int[]] $TcpPort,
 
         [Parameter(
-          Mandatory=$false
+            Mandatory = $false
         )]
         [Int] $MinTimeout = 0,
 
         [Parameter(
-          Mandatory=$false
+            Mandatory = $false
         )]
         [Int] $MaxTimeout = 1000
     )    
@@ -2929,40 +2962,42 @@ function Test-PsNetTping{
     }
 
     process {
-      $AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
-        if ($AttemptTcpTest){
-            switch ($CommonTCPPort){
-            "HTTP"   {$TcpPort = 80}
-            "HTTPS"  {$TcpPort = 443}
-            "RDP"    {$TcpPort = 3389}
-            "SMB"    {$TcpPort = 445}
-            "LDAP"   {$TcpPort = 389}
-            "LDAPS"  {$TcpPort = 636}
-            "WINRM"  {$TcpPort = 5985}
-            "WINRMS" {$TcpPort = 5986}
+        $AttemptTcpTest = ($PSCmdlet.ParameterSetName -eq "CommonTCPPort") -or ($PSCmdlet.ParameterSetName -eq "RemotePort")
+        if ($AttemptTcpTest) {
+            switch ($CommonTCPPort) {
+                "HTTP" { $TcpPort = 80 }
+                "HTTPS" { $TcpPort = 443 }
+                "RDP" { $TcpPort = 3389 }
+                "SMB" { $TcpPort = 445 }
+                "LDAP" { $TcpPort = 389 }
+                "LDAPS" { $TcpPort = 636 }
+                "WINRM" { $TcpPort = 5985 }
+                "WINRMS" { $TcpPort = 5986 }
             }
         }
 
-        foreach($item in $Destination){
-            foreach($port in $TcpPort){
-                try{
-                    $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
-                }
-                catch{
-                    $resultset += [PsNetError]::New("$($function)($item)", $_)
-                    $error.Clear()
+        foreach ($item in $Destination) {
+            if ($PSCmdlet.ShouldProcess($item)) {
+                foreach ($port in $TcpPort) {
+                    try {
+                        $resultset += [PsNetPing]::tping($item, $port, $MinTimeout, $MaxTimeout)
+                    }
+                    catch {
+                        $resultset += [PsNetError]::New("$($function)($item)", $_)
+                        $error.Clear()
+                    }
                 }
             }
         }
     }
 
     end {
-      return $resultset
+        return $resultset
     }
 }
 function Test-PsNetTracert {
 
-    <#
+	<#
 
    .SYNOPSIS
       Test Trace Route
@@ -3005,59 +3040,61 @@ function Test-PsNetTracert {
 
     #>
 
-    [CmdletBinding()]
-    param(
-         [Parameter(
-            Mandatory=$true,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 0
-         )]
-         [ValidateLength(4,255)]
-         [String[]] $Destination,
+	[CmdletBinding(SupportsShouldProcess = $True)]
+	param(
+		[Parameter(
+			Mandatory = $true,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true,
+			Position = 0
+		)]
+		[ValidateLength(4, 255)]
+		[String[]] $Destination,
 
-         [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 1
-         )]
-         [Int] $MaxHops = 30,
+		[Parameter(
+			Mandatory = $false,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true,
+			Position = 1
+		)]
+		[Int] $MaxHops = 30,
 
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MaxTimeout = 1000,
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Int] $MaxTimeout = 1000,
  
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Switch] $Show
-    )  
-    begin {
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
-        $resultset = @()
-    }
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Switch] $Show
+	)  
+	begin {
+		$function = $($MyInvocation.MyCommand.Name)
+		Write-Verbose "Running $function"
+		$resultset = @()
+	}
 
-    process {
-      foreach($item in $Destination){
-        if($Show){
-            [PsNetTracert]::tracert($item,$MaxTimeout,$MaxHops,$true)
-        }
-        else{
-            $resultset += [PsNetTracert]::tracert($item,$MaxTimeout,$MaxHops)
-            return $resultset
-        }
-      }
-    }
+	process {
+		foreach ($item in $Destination) {
+			if ($PSCmdlet.ShouldProcess($item)) {
+				if ($Show) {
+					[PsNetTracert]::tracert($item, $MaxTimeout, $MaxHops, $true)
+				}
+				else {
+					$resultset += [PsNetTracert]::tracert($item, $MaxTimeout, $MaxHops)
+					return $resultset
+				}
+			}
+		}
+	}
 
-    end{
-    }
+	end {
+	}
 }
-function Test-PsNetUping{
+function Test-PsNetUping {
 
-    <#
+	<#
 
    .SYNOPSIS
       Test the connectivity over an Udp port
@@ -3106,52 +3143,54 @@ function Test-PsNetUping{
 
     #>
 
-    [CmdletBinding()]
-    param(
-         [Parameter(
-            Mandatory=$true,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 0
-         )]
-         [ValidateLength(4,255)]
-         [String[]] $Destination,
+	[CmdletBinding(SupportsShouldProcess = $True)]
+	param(
+		[Parameter(
+			Mandatory = $true,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true,
+			Position = 0
+		)]
+		[ValidateLength(4, 255)]
+		[String[]] $Destination,
 
-         [Parameter(
-            ParameterSetName = "RemotePort",
-            Mandatory = $True,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            Position = 1
-         )]
-         [Alias('RemotePort')] [ValidateRange(1,65535)]
-         [Int[]] $UdpPort,
+		[Parameter(
+			ParameterSetName = "RemotePort",
+			Mandatory = $True,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true,
+			Position = 1
+		)]
+		[Alias('RemotePort')] [ValidateRange(1, 65535)]
+		[Int[]] $UdpPort,
  
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MinTimeout = 0,
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Int] $MinTimeout = 0,
 
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MaxTimeout = 1000
-    )    
-    begin {
-        $function = $($MyInvocation.MyCommand.Name)
-        Write-Verbose "Running $function"
-        $resultset = @()
-    }
+		[Parameter(
+			Mandatory = $false
+		)]
+		[Int] $MaxTimeout = 1000
+	)    
+	begin {
+		$function = $($MyInvocation.MyCommand.Name)
+		Write-Verbose "Running $function"
+		$resultset = @()
+	}
 
 	process {
-		foreach($item in $Destination){
-			foreach($port in $UdpPort){
-                try{
-                    $resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
-                }
-				catch{
-					$resultset += [PsNetError]::New("$($function)($item)", $_)
-					$error.Clear()
+		foreach ($item in $Destination) {
+			if ($PSCmdlet.ShouldProcess($item)) {
+				foreach ($port in $UdpPort) {
+					try {
+						$resultset += [PsNetPing]::uping($item, $port, $MinTimeout, $MaxTimeout)
+					}
+					catch {
+						$resultset += [PsNetError]::New("$($function)($item)", $_)
+						$error.Clear()
+					}
 				}
 			}
 		}
@@ -3162,7 +3201,7 @@ function Test-PsNetUping{
 	}
 
 }
-function Test-PsNetWping{
+function Test-PsNetWping {
 
     <#
 
@@ -3207,31 +3246,31 @@ function Test-PsNetWping{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
-         [Parameter(
-            Mandatory=$true,
+        [Parameter(
+            Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             Position = 0
-         )]
-         [ValidateLength(4,255)]
-         [String[]] $Destination,
+        )]
+        [ValidateLength(4, 255)]
+        [String[]] $Destination,
 
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MinTimeout = 0,
+        [Parameter(
+            Mandatory = $false
+        )]
+        [Int] $MinTimeout = 0,
 
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MaxTimeout = 1000,
+        [Parameter(
+            Mandatory = $false
+        )]
+        [Int] $MaxTimeout = 1000,
  
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Switch] $NoProxy
+        [Parameter(
+            Mandatory = $false
+        )]
+        [Switch] $NoProxy
     )  
     begin {
         $function = $($MyInvocation.MyCommand.Name)
@@ -3240,32 +3279,36 @@ function Test-PsNetWping{
     }
 
     process {
-        if($NoProxy) {
-            foreach($item in $Destination){
-                if($item -notmatch '^http'){
-                    $item = "http://$($item)"
+        if ($NoProxy) {
+            foreach ($item in $Destination) {
+                if ($PSCmdlet.ShouldProcess($item)) {
+                    if ($item -notmatch '^http') {
+                        $item = "http://$($item)"
+                    }
+                    try {
+                        $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout, $true)
+                    }
+                    catch {
+                        $resultset += [PsNetError]::New("$($function)($item)", $_)
+                        $error.Clear()
+                    }
                 }
-                try{
-                    $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout, $true)
-                }
-				catch{
-					$resultset += [PsNetError]::New("$($function)($item)", $_)
-					$error.Clear()
-				}
             }
         }
-        else{
-            foreach($item in $Destination){
-                if($item -notmatch '^http'){
-                    $item = "http://$($item)"
+        else {
+            foreach ($item in $Destination) {
+                if ($PSCmdlet.ShouldProcess($item)) {
+                    if ($item -notmatch '^http') {
+                        $item = "http://$($item)"
+                    }
+                    try {
+                        $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout)
+                    }
+                    catch {
+                        $resultset += [PsNetError]::New("$($function)($item)", $_)
+                        $error.Clear()
+                    }
                 }
-                try{
-                    $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout)
-                }
-				catch{
-					$resultset += [PsNetError]::New("$($function)($item)", $_)
-					$error.Clear()
-				}
             }
         }
     }

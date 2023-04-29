@@ -23,6 +23,10 @@ Describe "Testing Get-PsNetDnsSearchSuffix on $($CurrentOS) OS" {
         }
     }
 
+    it "[POS] [$($CurrentOS)] Get-PsNetDnsSearchSuffix -WhatIf should not throw"{
+        {Get-PsNetDnsSearchSuffix -WhatIf} | Should -Not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Get-PsNetDnsSearchSuffix should not throw"{
         {Get-PsNetDnsSearchSuffix} | Should -Not -Throw
     }

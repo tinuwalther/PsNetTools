@@ -1,4 +1,4 @@
-function Test-PsNetWping{
+function Test-PsNetWping {
 
     <#
 
@@ -43,31 +43,31 @@ function Test-PsNetWping{
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $True)]
     param(
-         [Parameter(
-            Mandatory=$true,
+        [Parameter(
+            Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             Position = 0
-         )]
-         [ValidateLength(4,255)]
-         [String[]] $Destination,
+        )]
+        [ValidateLength(4, 255)]
+        [String[]] $Destination,
 
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MinTimeout = 0,
+        [Parameter(
+            Mandatory = $false
+        )]
+        [Int] $MinTimeout = 0,
 
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Int] $MaxTimeout = 1000,
+        [Parameter(
+            Mandatory = $false
+        )]
+        [Int] $MaxTimeout = 1000,
  
-         [Parameter(
-            Mandatory=$false
-         )]
-         [Switch] $NoProxy
+        [Parameter(
+            Mandatory = $false
+        )]
+        [Switch] $NoProxy
     )  
     begin {
         $function = $($MyInvocation.MyCommand.Name)
@@ -76,32 +76,36 @@ function Test-PsNetWping{
     }
 
     process {
-        if($NoProxy) {
-            foreach($item in $Destination){
-                if($item -notmatch '^http'){
-                    $item = "http://$($item)"
+        if ($NoProxy) {
+            foreach ($item in $Destination) {
+                if ($PSCmdlet.ShouldProcess($item)) {
+                    if ($item -notmatch '^http') {
+                        $item = "http://$($item)"
+                    }
+                    try {
+                        $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout, $true)
+                    }
+                    catch {
+                        $resultset += [PsNetError]::New("$($function)($item)", $_)
+                        $error.Clear()
+                    }
                 }
-                try{
-                    $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout, $true)
-                }
-				catch{
-					$resultset += [PsNetError]::New("$($function)($item)", $_)
-					$error.Clear()
-				}
             }
         }
-        else{
-            foreach($item in $Destination){
-                if($item -notmatch '^http'){
-                    $item = "http://$($item)"
+        else {
+            foreach ($item in $Destination) {
+                if ($PSCmdlet.ShouldProcess($item)) {
+                    if ($item -notmatch '^http') {
+                        $item = "http://$($item)"
+                    }
+                    try {
+                        $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout)
+                    }
+                    catch {
+                        $resultset += [PsNetError]::New("$($function)($item)", $_)
+                        $error.Clear()
+                    }
                 }
-                try{
-                    $resultset += [PsNetWeb]::wping($item, $MinTimeout, $MaxTimeout)
-                }
-				catch{
-					$resultset += [PsNetError]::New("$($function)($item)", $_)
-					$error.Clear()
-				}
             }
         }
     }

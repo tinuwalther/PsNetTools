@@ -23,6 +23,10 @@ Describe "Testing Get-PsNetRoutingTable on $($CurrentOS) OS" {
         }
     }
 
+    it "[POS] [$($CurrentOS)] Get-PsNetRoutingTable -WhatIf should not throw"{
+        {'IPv4' | Get-PsNetRoutingTable -WhatIf} | Should -Not -Throw
+    }
+
     it "[POS] [$($CurrentOS)] Get-PsNetRoutingTable for IPv4 should not throw"{
         {'IPv4' | Get-PsNetRoutingTable} | Should -Not -Throw
         {Get-PsNetRoutingTable IPv4} | Should -Not -Throw
